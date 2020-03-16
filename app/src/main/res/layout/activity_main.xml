@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_marginLeft="-16dp"
         android:layout_height="wrap_content">
@@ -39,7 +39,25 @@
 
 
         </androidx.appcompat.widget.Toolbar>
-    </androidx.appcompat.widget.Toolbar>
-    />
+    </com.google.android.material.appbar.AppBarLayout>
 
+
+    <!--https://stackoverflow.com/questions/55035102/error-java-lang-classnotfoundexception-when-inflating-tablayout-in-fragment-->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:tabSelectedTextColor="@color/colorBlanco"
+        app:tabIndicatorColor="@color/colorBlanco"
+        app:tabTextColor="@color/colorBlanco">
+    </com.google.android.material.tabs.TabLayout>
+
+    <!--https://stackoverflow.com/questions/58186121/binary-xml-file-line-7-error-inflating-class-android-support-v4-view-viewpager-->
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    </androidx.viewpager.widget.ViewPager>
 </LinearLayout>

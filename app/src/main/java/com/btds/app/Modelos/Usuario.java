@@ -1,4 +1,4 @@
-package com.btds.app.modelos;
+package com.btds.app.Modelos;
 
 public class Usuario {
 
