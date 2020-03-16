@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/email"
             android:inputType="textEmailAddress"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="15dp"
             app:met_floatingLabel="normal"
             android:hint="@string/email"/>
 
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/password"
             android:inputType="textPassword"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="15dp"
             app:met_floatingLabel="normal"
             android:hint="@string/contraseña"/>
 
