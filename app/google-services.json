@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "757788109957",
+    "firebase_url": "https://btsd-andstudio.firebaseio.com",
+    "project_id": "btsd-andstudio",
+    "storage_bucket": "btsd-andstudio.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757788109957:android:f4c2f67f6d0b26bbe30dec",
+        "android_client_info": {
+          "package_name": "com.btds.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "757788109957-og8gh44e5ldun4tiqb2d10c1de64e0nf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3aJ7KQVV814XEajo0JVMfaZXlBDVRKRc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "757788109957-og8gh44e5ldun4tiqb2d10c1de64e0nf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
