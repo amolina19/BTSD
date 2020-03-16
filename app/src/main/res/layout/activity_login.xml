@@ -17,7 +17,7 @@
         android:layout_below="@+id/toolbar"
         android:padding="16dp"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="100sp">
+        android:layout_marginVertical="50sp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/email"
             android:inputType="textEmailAddress"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:layout_marginBottom="15dp"
             app:met_floatingLabel="normal"
             android:hint="@string/email"/>

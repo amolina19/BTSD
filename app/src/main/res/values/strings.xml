@@ -12,11 +12,11 @@
     <string name="login">Iniciar Sesión</string>
     <string name="iniciarSesion">Iniciar Sesion</string>
     <string name="salir">Salir</string>
-    <string name="cerrarSesionCorrectamente">Acabas de cerrar sesión.</string>
-    <string name="iniciarSesionCorrectamente">Acabas de iniciar sesión.</string>
-    <string name="cuentaCreada">Cuenta creada correctamente.</string>
+    <string name="cerrarSesionCorrectamente">Acabas de cerrar sesión</string>
+    <string name="iniciarSesionCorrectamente">Acabas de iniciar sesión</string>
+    <string name="cuentaCreada">Cuenta creada correctamente</string>
 
     <string name="completar">Es necesario completar los campos</string>
     <string name="contraseñaPequeña">La contraseña debe ser al menos de 8 caracteres</string>
-    <string name="autentificacionFallida">Autentificacion fallida.</string>
+    <string name="autentificacionFallida">Autentificacion fallida</string>
 </resources>
