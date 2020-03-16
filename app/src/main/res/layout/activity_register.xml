@@ -17,7 +17,7 @@
         android:layout_below="@+id/toolbar"
         android:padding="16dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp">
+        android:layout_marginTop="50dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -27,15 +27,15 @@
             android:text="@string/crearCuenta"/>
 
         <com.rengwuxian.materialedittext.MaterialEditText
-            android:layout_width="match_parent"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:id="@+id/username"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="30dp"
             app:met_floatingLabel="normal"
             android:hint="@string/usuario"/>
 
         <com.rengwuxian.materialedittext.MaterialEditText
-            android:layout_width="match_parent"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:id="@+id/email"
             android:inputType="textEmailAddress"
@@ -45,7 +45,7 @@
 
 
         <com.rengwuxian.materialedittext.MaterialEditText
-            android:layout_width="match_parent"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:id="@+id/password"
             android:inputType="textPassword"
@@ -55,7 +55,7 @@
 
 
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:text="@string/registrarse"
             android:id="@+id/button_registrar"
