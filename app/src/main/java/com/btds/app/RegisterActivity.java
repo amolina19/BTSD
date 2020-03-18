@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.btds.app.Modelos.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -19,7 +20,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -37,6 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+
+        reference = FirebaseDatabase.getInstance().getReference();
         //Toolbar
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -83,15 +89,38 @@ public class RegisterActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
                             userID = firebaseUser.getUid();
+                            //Donde se generan los campos en la base de datos
+                            Usuario usuarioRegistrandose = new Usuario();
 
-                            reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
+                            String saveCurrentDate, saveCurrentTime;
+                            Calendar calForDate = Calendar.getInstance();
+                            SimpleDateFormat currentDate = new SimpleDateFormat("dd MM yyyy");
+                            saveCurrentDate = currentDate.format(calForDate.getTime());
+
+                            Calendar calForTime = Calendar.getInstance();
+                            SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm A");
+                            saveCurrentTime = currentTime.format(calForTime.getTime());
+
+                            /*
                             HashMap<String,String> hashMap = new HashMap<>();
                             hashMap.put("id",userID);
                             hashMap.put("usuario",username);
                             hashMap.put("imagenURL","default");
+                            hashMap.put("hora",saveCurrentTime);
+                            hashMap.put("fecha",saveCurrentDate);
+                            hashMap.put("estado","En Linea");
+                            */
 
-                            reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            usuarioRegistrandose.setId(userID);
+                            usuarioRegistrandose.setUsuario(username);
+                            usuarioRegistrandose.setImagenURL("default");
+                            usuarioRegistrandose.setHora(saveCurrentTime);
+                            usuarioRegistrandose.setFecha(saveCurrentDate);
+                            usuarioRegistrandose.setEstado("En Linea");
+
+
+                            reference.child("Usuarios").child(firebaseUser.getUid()).setValue(usuarioRegistrandose).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful()){
@@ -107,5 +136,6 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
 }

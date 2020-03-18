@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="android:textColorPrimary">@color/colorBlanco</item>
+
     </style>
 
     <style name="menuStyle" parent="Theme.AppCompat.Light">

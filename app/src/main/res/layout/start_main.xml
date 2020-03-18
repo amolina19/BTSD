@@ -34,5 +34,13 @@
             android:background="@color/colorPrimaryDark"
             android:text="@string/registrarse" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/version"
+            android:textSize="10sp"
+            android:layout_marginTop="150dp"
+            android:textStyle="bold" />
+
 
 </LinearLayout>

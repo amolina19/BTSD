@@ -1,5 +1,12 @@
 package com.btds.app;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,20 +15,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-//
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.btds.app.Fragmentos.Amigos;
 import com.btds.app.Fragmentos.Chats;
 import com.btds.app.Fragmentos.Estados;
 import com.btds.app.Modelos.Usuario;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,18 +32,30 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.google.firebase.database.FirebaseDatabase.getInstance;
+
+//
 
 public class MainActivity extends AppCompatActivity {
 
     CircleImageView imagen_perfil;
     TextView usuario;
     Usuario usuarioObject;
+    ViewPager viewPager;
+    ViewPageAdapter viewPageAdapter;
+    Boolean exit = false;
 
     FirebaseUser firebaseUser;
-    DatabaseReference reference;
+    DatabaseReference referenceUserDataBase;
+    DatabaseReference mainDatabasePath;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,20 +69,35 @@ public class MainActivity extends AppCompatActivity {
         usuario = findViewById(R.id.usuario);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        referenceUserDataBase = getInstance().getReference("Usuarios");
+        mainDatabasePath = getInstance().getReference();
 
-        reference.addValueEventListener(new ValueEventListener() {
+        //actualizarBaseDatos();
+        actualizarConexion(getResources().getString(R.string.online));
+
+
+        referenceUserDataBase.child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usuarioObject = dataSnapshot.getValue(Usuario.class);
-                usuario.setText(usuarioObject.getUsuario());
 
-                if(usuarioObject.getImagenURL().equals("default")){
-                    imagen_perfil.setImageResource(R.mipmap.ic_launcher);
+                if(usuarioObject !=null){
+                    usuario.setText(usuarioObject.getUsuario());
+
+                    if(usuarioObject.getImagenURL().equals("default")){
+                        imagen_perfil.setImageResource(R.mipmap.ic_launcher);
+                    }else{
+                        //https://stackoverflow.com/questions/39093730/you-cannot-start-a-load-for-a-destroyed-activity-in-relativelayout-image-using-g
+                        //getApplicationContext() FOR FIX
+                        Glide.with(getApplicationContext()).load(usuarioObject.getImagenURL()).into(imagen_perfil);
+                    }
                 }else{
-                    Glide.with(MainActivity.this).load(usuarioObject.getImagenURL()).into(imagen_perfil);
+                    FirebaseAuth.getInstance().signOut();
+                    Toast.makeText(MainActivity.this, R.string.errorSesion, Toast.LENGTH_SHORT).show();
+                    Intent backToLogin = new Intent(MainActivity.this,StartActivity.class);
+                    startActivity(backToLogin);
+                    finish();
                 }
-
             }
 
             @Override
@@ -79,8 +107,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
-        ViewPager viewPager = findViewById(R.id.view_pager);
-        ViewPageAdapter viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
+        viewPager = findViewById(R.id.view_pager);
+        viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
         viewPageAdapter.añadirFragmento(new Chats(),"Chats");
         viewPageAdapter.añadirFragmento(new Amigos(),"Amigos");
         viewPageAdapter.añadirFragmento(new Estados(),"Estados");
@@ -98,8 +126,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.salir:
+                actualizarConexion(getResources().getString(R.string.offline));
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MainActivity.this,StartActivity.class));
+                Intent intent = new Intent(this,StartActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
                 Toast.makeText(this, R.string.cerrarSesionCorrectamente, Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
@@ -139,5 +170,68 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int posicion) {
             return this.titulos.get(posicion);
         }
+    }
+
+    public void actualizarConexion(@NonNull final String estado) {
+
+        final String saveCurrentDate, saveCurrentTime;
+
+        Calendar calForDate = Calendar.getInstance();
+        SimpleDateFormat currentDate = new SimpleDateFormat("dd MM yyyy");
+        saveCurrentDate = currentDate.format(calForDate.getTime());
+
+        Calendar calForTime = Calendar.getInstance();
+        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
+        saveCurrentTime = currentTime.format(calForTime.getTime());
+
+        Map currentTimeMap = new HashMap<>();
+        currentTimeMap.put("hora", saveCurrentTime);
+        currentTimeMap.put("fecha", saveCurrentDate);
+        currentTimeMap.put("estado", estado);
+
+        //addListenerForSingleValueEvent() me ha solucionado un problema grandisimo
+        //Antes utilizaba el addValueEventListener() y al salir de la aplicacion aunque estuviese cerrada, la base de datos entraba en bucles sobrescibiendo los valores de Linea a Desconectado sin parar.
+        referenceUserDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    usuarioObject = snapshot.getValue(Usuario.class);
+                    if (usuarioObject != null) {
+                        if (usuarioObject.getId().equals(firebaseUser.getUid())) {
+                            usuarioObject.setEstado(estado);
+                            usuarioObject.setHora(saveCurrentTime);
+                            usuarioObject.setFecha(saveCurrentDate);
+                            referenceUserDataBase.child(firebaseUser.getUid()).setValue(usuarioObject);
+                            System.out.println(estado);
+                            System.out.println("RECURSO "+getResources().getString(R.string.offline));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        actualizarConexion(getResources().getString(R.string.offline));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        actualizarConexion(getResources().getString(R.string.offline));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        actualizarConexion(getResources().getString(R.string.online));
     }
 }
