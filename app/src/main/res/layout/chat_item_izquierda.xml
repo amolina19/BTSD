@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TEXT"
+        android:padding="15dp"
+        android:textSize="15sp"
+        android:id="@+id/enseñar_mensaje"
+        android:layout_marginStart="10dp"
+        android:background="@drawable/background_messages_left"/>
+
+
+    <TextView
+        android:id="@+id/hora"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="-25dp"
+        android:layout_toRightOf="@id/enseñar_mensaje"
+        android:layout_marginTop="35sp"
+        android:text="TEXT"
+        android:textColor="@color/colorNegro"
+        android:textSize="8sp" />
+    />
+</RelativeLayout>

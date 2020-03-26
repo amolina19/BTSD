@@ -18,8 +18,11 @@ public class Usuario {
 
 
 
+
     public Usuario(){
     }
+
+
 
     public Usuario(String id, String usuario, String imagenURL) {
         this.id = id;

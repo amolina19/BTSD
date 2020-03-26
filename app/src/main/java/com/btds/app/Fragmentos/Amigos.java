@@ -28,11 +28,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.btds.app.R.menu.context_menu_amigo;
+import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
 public class Amigos extends Fragment {
 
@@ -69,7 +73,7 @@ public class Amigos extends Fragment {
     }
 
 
-    private void obtenerUsuarios(){
+    public void obtenerUsuarios(){
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
 
@@ -80,23 +84,14 @@ public class Amigos extends Fragment {
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Usuario usuario = snapshot.getValue(Usuario.class);
                     if(usuario !=null){
-                        //System.out.println("VALOR USUARIO "+usuario.getId());
-
                         if(!usuario.getId().equals(firebaseUser.getUid())){
                             listaUsuarios.add(usuario);
                         }
                     }
                 }
 
-                /*for(Usuario usuario:listaUsuarios){
-                    System.out.println("USUARIO:"+ usuario.getUsuario()+ " ID: "+usuario.getId());
-                    System.out.println("3");
-                }*/
-
-
                 usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios);
                 recyclerView.setAdapter(usuariosAdapter);
-                //System.out.println("USUARIOS "+listaUsuarios.size());
             }
 
             @Override
@@ -166,4 +161,6 @@ public class Amigos extends Fragment {
             }
         });
     }
+
+
 }

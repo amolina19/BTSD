@@ -33,8 +33,9 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     //Auntetificacion Firebase
-    private FirebaseAuth mAuth;
-    private DatabaseReference reference;
+    FirebaseAuth mAuth;
+    DatabaseReference reference;
+    Usuario usuarioRegistrandose;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
                             userID = firebaseUser.getUid();
                             //Donde se generan los campos en la base de datos
-                            Usuario usuarioRegistrandose = new Usuario();
+                            usuarioRegistrandose = new Usuario();
 
 
                             String saveCurrentDate, saveCurrentTime;
@@ -99,7 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
                             saveCurrentDate = currentDate.format(calForDate.getTime());
 
                             Calendar calForTime = Calendar.getInstance();
-                            SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm A");
+                            SimpleDateFormat currentTime = new SimpleDateFormat("HH:MM");
                             saveCurrentTime = currentTime.format(calForTime.getTime());
 
                             /*
@@ -118,7 +119,9 @@ public class RegisterActivity extends AppCompatActivity {
                             usuarioRegistrandose.setHora(saveCurrentTime);
                             usuarioRegistrandose.setFecha(saveCurrentDate);
                             usuarioRegistrandose.setEstado("En Linea");
+                            Toast.makeText(RegisterActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
 
+                            String string = "holaa";
 
                             reference.child("Usuarios").child(firebaseUser.getUid()).setValue(usuarioRegistrandose).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override

@@ -17,10 +17,17 @@ import com.btds.app.MessageActivity;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.btds.app.R.menu.context_menu_amigo;
 
@@ -99,4 +106,5 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
         */
 
     }
+
 }

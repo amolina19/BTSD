@@ -21,16 +21,14 @@ import com.btds.app.Fragmentos.Chats;
 import com.btds.app.Fragmentos.Estados;
 import com.btds.app.Modelos.Usuario;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     Usuario usuarioObject;
     ViewPager viewPager;
     ViewPageAdapter viewPageAdapter;
-    Boolean exit = false;
 
     FirebaseUser firebaseUser;
     DatabaseReference referenceUserDataBase;
@@ -181,8 +178,10 @@ public class MainActivity extends AppCompatActivity {
         saveCurrentDate = currentDate.format(calForDate.getTime());
 
         Calendar calForTime = Calendar.getInstance();
-        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
+        SimpleDateFormat currentTime = new SimpleDateFormat("HH:MM");
         saveCurrentTime = currentTime.format(calForTime.getTime());
+
+        System.out.println("ACTUALIZAR HORA "+saveCurrentTime);
 
         Map currentTimeMap = new HashMap<>();
         currentTimeMap.put("hora", saveCurrentTime);
@@ -216,6 +215,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /*
+    @Override
+    protected void onStart() {
+        super.onStart();
+        viewPageAdapter.notifyDataSetChanged();
+        actualizarConexion(getResources().getString(R.string.online));
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -223,15 +230,28 @@ public class MainActivity extends AppCompatActivity {
         actualizarConexion(getResources().getString(R.string.offline));
     }
 
+
+
+
+    */
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewPageAdapter.notifyDataSetChanged();
+        //actualizarConexion(getResources().getString(R.string.online));
+    }
+
+    /*
+
     @Override
     protected void onStop() {
         super.onStop();
         actualizarConexion(getResources().getString(R.string.offline));
     }
+    */
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        actualizarConexion(getResources().getString(R.string.online));
-    }
+
+
 }
