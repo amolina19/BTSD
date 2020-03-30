@@ -54,7 +54,7 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
 
         Mensaje mensaje = listaMensajes.get(posicion);
         holder.show_message.setText(mensaje.getMensaje());
-        System.out.println(mensaje.getHora());
+        //System.out.println(mensaje.getHora());
         holder.hora.setText(mensaje.getHora());
     }
 

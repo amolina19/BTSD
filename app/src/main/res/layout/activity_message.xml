@@ -24,8 +24,8 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imagen_perfil"
-                android:layout_width="30dp"
-                android:layout_height="30dp">
+                android:layout_width="50dp"
+                android:layout_height="50dp">
             </de.hdodenhof.circleimageview.CircleImageView>
 
             <RelativeLayout

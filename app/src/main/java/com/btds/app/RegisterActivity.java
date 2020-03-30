@@ -1,10 +1,12 @@
 package com.btds.app;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,10 +22,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -36,6 +34,8 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     DatabaseReference reference;
     Usuario usuarioRegistrandose;
+
+    Fecha fecha;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,10 +80,14 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void registrarse(final String username, String email, String password){
+
+        fecha = new Fecha();
 
         mAuth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
@@ -92,16 +96,6 @@ public class RegisterActivity extends AppCompatActivity {
                             userID = firebaseUser.getUid();
                             //Donde se generan los campos en la base de datos
                             usuarioRegistrandose = new Usuario();
-
-
-                            String saveCurrentDate, saveCurrentTime;
-                            Calendar calForDate = Calendar.getInstance();
-                            SimpleDateFormat currentDate = new SimpleDateFormat("dd MM yyyy");
-                            saveCurrentDate = currentDate.format(calForDate.getTime());
-
-                            Calendar calForTime = Calendar.getInstance();
-                            SimpleDateFormat currentTime = new SimpleDateFormat("HH:MM");
-                            saveCurrentTime = currentTime.format(calForTime.getTime());
 
                             /*
                             HashMap<String,String> hashMap = new HashMap<>();
@@ -116,8 +110,8 @@ public class RegisterActivity extends AppCompatActivity {
                             usuarioRegistrandose.setId(userID);
                             usuarioRegistrandose.setUsuario(username);
                             usuarioRegistrandose.setImagenURL("default");
-                            usuarioRegistrandose.setHora(saveCurrentTime);
-                            usuarioRegistrandose.setFecha(saveCurrentDate);
+                            usuarioRegistrandose.setHora(fecha.obtenerHora()+":"+fecha.obtenerMinutos());
+                            usuarioRegistrandose.setFecha(fecha.obtenerDia()+" "+fecha.obtenerMes()+" "+fecha.obtenerAño());
                             usuarioRegistrandose.setEstado("En Linea");
                             Toast.makeText(RegisterActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
 

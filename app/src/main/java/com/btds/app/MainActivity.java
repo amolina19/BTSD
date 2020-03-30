@@ -1,6 +1,7 @@
 package com.btds.app;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -49,14 +51,20 @@ public class MainActivity extends AppCompatActivity {
     Usuario usuarioObject;
     ViewPager viewPager;
     ViewPageAdapter viewPageAdapter;
+    Funciones funciones = new Funciones();
+    Fecha fecha;
 
     FirebaseUser firebaseUser;
     DatabaseReference referenceUserDataBase;
     DatabaseReference mainDatabasePath;
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        fecha = new Fecha();
+        System.out.println(fecha.toString());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -70,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         mainDatabasePath = getInstance().getReference();
 
         //actualizarBaseDatos();
-        actualizarConexion(getResources().getString(R.string.online));
+        funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, referenceUserDataBase, getApplicationContext());
 
 
         referenceUserDataBase.child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
@@ -123,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.salir:
-                actualizarConexion(getResources().getString(R.string.offline));
+                Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser, referenceUserDataBase, getApplicationContext());
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(this,StartActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -169,89 +177,38 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void actualizarConexion(@NonNull final String estado) {
 
-        final String saveCurrentDate, saveCurrentTime;
-
-        Calendar calForDate = Calendar.getInstance();
-        SimpleDateFormat currentDate = new SimpleDateFormat("dd MM yyyy");
-        saveCurrentDate = currentDate.format(calForDate.getTime());
-
-        Calendar calForTime = Calendar.getInstance();
-        SimpleDateFormat currentTime = new SimpleDateFormat("HH:MM");
-        saveCurrentTime = currentTime.format(calForTime.getTime());
-
-        System.out.println("ACTUALIZAR HORA "+saveCurrentTime);
-
-        Map currentTimeMap = new HashMap<>();
-        currentTimeMap.put("hora", saveCurrentTime);
-        currentTimeMap.put("fecha", saveCurrentDate);
-        currentTimeMap.put("estado", estado);
-
-        //addListenerForSingleValueEvent() me ha solucionado un problema grandisimo
-        //Antes utilizaba el addValueEventListener() y al salir de la aplicacion aunque estuviese cerrada, la base de datos entraba en bucles sobrescibiendo los valores de Linea a Desconectado sin parar.
-        referenceUserDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    usuarioObject = snapshot.getValue(Usuario.class);
-                    if (usuarioObject != null) {
-                        if (usuarioObject.getId().equals(firebaseUser.getUid())) {
-                            usuarioObject.setEstado(estado);
-                            usuarioObject.setHora(saveCurrentTime);
-                            usuarioObject.setFecha(saveCurrentDate);
-                            referenceUserDataBase.child(firebaseUser.getUid()).setValue(usuarioObject);
-                            System.out.println(estado);
-                            System.out.println("RECURSO "+getResources().getString(R.string.offline));
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    /*
     @Override
     protected void onStart() {
         super.onStart();
         viewPageAdapter.notifyDataSetChanged();
-        actualizarConexion(getResources().getString(R.string.online));
+        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser,referenceUserDataBase, getApplicationContext());
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        actualizarConexion(getResources().getString(R.string.offline));
+        if(!Funciones.getActividadEnUso()){
+            Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser,referenceUserDataBase, getApplicationContext());
+        }
     }
-
-
-
-
-    */
-
 
     @Override
     protected void onResume() {
         super.onResume();
         viewPageAdapter.notifyDataSetChanged();
-        //actualizarConexion(getResources().getString(R.string.online));
+        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser,referenceUserDataBase, getApplicationContext());
     }
 
-    /*
 
     @Override
     protected void onStop() {
         super.onStop();
-        actualizarConexion(getResources().getString(R.string.offline));
+        if(!Funciones.getActividadEnUso()){
+            Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser,referenceUserDataBase, getApplicationContext());
+        }
     }
-    */
-
 
 
 }

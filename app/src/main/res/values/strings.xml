@@ -24,6 +24,11 @@
     <string name="online">En Linea</string>
     <string name="offline">Desconectado</string>
 
+    <string name="hoy">Hoy a las</string>
+    <string name="ayer">Ayer a las </string>
+    <string name="ultavez1parte">Visto últ vez el</string>
+    <string name="ultavez2parte">a las</string>
+
     <string name="escribirMensaje">Escribir mensaje...</string>
 
     <!-- TODO: Remove or change this placeholder text -->

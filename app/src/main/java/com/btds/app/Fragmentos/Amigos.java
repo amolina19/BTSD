@@ -144,7 +144,7 @@ public class Amigos extends Fragment {
                         System.out.println("VALOR USUARIO "+usuario.getId());
 
                         if(!usuario.getId().equals(firebaseUser.getUid()) &&  hashMap.containsValue(usuario.getId())){
-                            System.out.println(listaAmigos.size());
+                            System.out.println("LISTA AMIGOS "+listaAmigos.size());
                             listaAmigos.add(usuario);
                         }
                     }

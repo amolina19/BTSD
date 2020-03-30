@@ -1,9 +1,12 @@
 package com.btds.app;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -35,30 +38,37 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.google.firebase.database.FirebaseDatabase.getInstance;
+
 public class MessageActivity extends AppCompatActivity {
 
     CircleImageView imagen_perfil;
     TextView usuario;
     TextView estado;
 
-    FirebaseUser firebaseUser;
+    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    DatabaseReference referenceUserDataBase = getInstance().getReference("Usuarios");
     DatabaseReference reference;
 
     ImageButton enviar_button;
     EditText enviar_texto;
 
     Usuario usuarioChat;
-    Integer[] diasPasados;
+    int diasPasados;
     Intent intent;
 
     MensajesAdapter mensajesAdapter;
     List<Mensaje> listaMensajes;
     RecyclerView recyclerView;
 
+    Fecha fecha;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
+        Funciones.setActividadEnUso(true);
+        Funciones.setBackPressed(false);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -83,16 +93,15 @@ public class MessageActivity extends AppCompatActivity {
         imagen_perfil = findViewById(R.id.imagen_perfil);
         usuario = findViewById(R.id.usuario);
         estado = findViewById(R.id.estado);
-        diasPasados = new Integer[2];
-
 
         intent = getIntent();
         final String usuarioID = intent.getStringExtra("userID");
 
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //firebaseUser =
         reference = FirebaseDatabase.getInstance().getReference("Usuarios").child(usuarioID);
 
         enviar_button.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 String mensaje = enviar_texto.getText().toString();
@@ -107,6 +116,7 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         reference.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -115,16 +125,16 @@ public class MessageActivity extends AppCompatActivity {
 
                 if(usuarioChat.getEstado().contentEquals("Desconectado")) {
 
-                    diasPasados = obtenerDiasPasados();
+                    diasPasados = Integer.valueOf((int) Funciones.obtenerDiasPasados(usuarioChat));
 
-                    if (diasPasados[0] == 0) {
-                        estado.setText("Ult vez hoy a las " + usuarioChat.getHora().toUpperCase());
+                    if (diasPasados == 0) {
+                        estado.setText(getResources().getString(R.string.hoy) +" "+ usuarioChat.getHora());
                     } else {
-                        if (diasPasados[0] == 1 && diasPasados[1] == 0) {
-                            estado.setText("Ayer a las " + usuarioChat.getHora().toUpperCase());
-                        } else if (diasPasados[1] == 1) {
+                        if (diasPasados == 1 ) {
+                            estado.setText(getResources().getString(R.string.ayer) +" "+usuarioChat.getHora());
+                        } else if (diasPasados > 1) {
                             String fecha = usuarioChat.getFecha().replace(" ", "/");
-                            estado.setText("Visto ult vez el " + fecha + " a las " + usuarioChat.getHora().toUpperCase());
+                            estado.setText(getResources().getString(R.string.ultavez1parte)+" "+fecha+" "+ getResources().getString(R.string.ultavez2parte)+" "+ usuarioChat.getHora());
                         }
                     }
                 }else {
@@ -147,19 +157,19 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void enviarMensaje(String emisor, String receptor, String mensaje){
+        fecha = new Fecha();
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        String[] fechaActual = obtenerHoraYFechaActual();
 
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("emisor",emisor);
         hashMap.put("receptor",receptor);
         hashMap.put("mensaje",mensaje);
-        hashMap.put("hora",fechaActual[0]);
-        hashMap.put("fecha",fechaActual[1]);
+        hashMap.put("hora",fecha.obtenerHora()+":"+fecha.obtenerMinutos());
+        hashMap.put("fecha",fecha.obtenerDia()+" "+fecha.obtenerMes()+" "+fecha.obtenerAño());
         hashMap.put("leido","false");
-        System.out.println(fechaActual[0]);
 
         reference.child("Chats").push().setValue(hashMap);
     }
@@ -186,7 +196,7 @@ public class MessageActivity extends AppCompatActivity {
                     mensajesAdapter = new MensajesAdapter(MessageActivity.this,listaMensajes);
                     recyclerView.setAdapter(mensajesAdapter);
                 }
-                System.out.println("LISTA MENSAJES"+ listaMensajes.size());
+                //System.out.println("LISTA MENSAJES "+ listaMensajes.size());
             }
 
             @Override
@@ -197,59 +207,48 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-    private Integer[] obtenerDiasPasados(){
-        String fecha = usuarioChat.getFecha();
 
-        String saveCurrentDate;
-        Calendar calForDate = Calendar.getInstance();
-        SimpleDateFormat currentDate = new SimpleDateFormat("dd MM yyyy");
-        saveCurrentDate = currentDate.format(calForDate.getTime());
-
-        int userChatDateDay = Integer.valueOf(fecha.replace(" ","").substring(1,2));
-        int actualDateDay = Integer.valueOf(saveCurrentDate.replace(" ","").substring(1,2));
-
-
-        int userChatDateMonth = Integer.valueOf(fecha.replace(" ","").substring(3,4));
-        int actualDateMonth = Integer.valueOf(saveCurrentDate.replace(" ","").substring(3,4));
-
-        //System.out.println("DAY "+userChatDateDay+" MES "+userChatDateMonth);
-
-        Integer[] valores = new Integer[2];
-        valores[0] = 0; //Saber cuantos dias han pasado
-        valores[1] = 0; // 1 Si el mes del usuario es anterior , 0 si se conecto en el mismo mes
-
-        if(userChatDateDay < actualDateDay ){
-
-            valores[0] = actualDateDay - userChatDateDay;
-
-            if(userChatDateMonth < actualDateMonth){
-                valores[1] = 1;
-            }else{
-                valores[1] = 0;
-            }
-        }
-        System.out.println(valores[0]+" "+valores[1]);
-
-        return valores;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Funciones.setActividadEnUso(true);
+        //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, referenceUserDataBase, getApplicationContext());
     }
 
-    private String[] obtenerHoraYFechaActual(){
 
-        String[] fecha = new String[2];
-        String saveCurrentDate, saveCurrentTime;
-        Calendar calForDate = Calendar.getInstance();
-        SimpleDateFormat currentDate = new SimpleDateFormat("dd MM yyyy");
-        saveCurrentDate = currentDate.format(calForDate.getTime());
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Funciones.setActividadEnUso(false);
+        if(!Funciones.getBackPressed() && !Funciones.getActividadEnUso()){
+            Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser, referenceUserDataBase, getApplicationContext());
+        }
+    }
 
-        Calendar calForTime = Calendar.getInstance();
-        SimpleDateFormat currentTime = new SimpleDateFormat("HH:MM");
-        saveCurrentTime = currentTime.format(calForTime.getTime());
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Funciones.setActividadEnUso(true);
+        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, referenceUserDataBase, getApplicationContext());
 
-        //Posicion Hora
-        fecha[0] = saveCurrentTime;
-        //Posicion Fecha
-        fecha[1] = saveCurrentDate;
-        
-        return fecha;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Funciones.setActividadEnUso(false);
+        if(!Funciones.getBackPressed() && !Funciones.getActividadEnUso()){
+            Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser, referenceUserDataBase, getApplicationContext());
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Funciones.setBackPressed(true);
+        super.onBackPressed();
     }
 }
