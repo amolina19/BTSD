@@ -1,25 +1,20 @@
 package com.btds.app.Fragmentos;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
 import com.btds.app.Adaptadores.UsuariosAdapter;
 import com.btds.app.Modelos.Usuario;
+import com.btds.app.Modelos.UsuarioBloqueado;
 import com.btds.app.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,30 +23,49 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static com.btds.app.R.menu.context_menu_amigo;
-import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
 public class Amigos extends Fragment {
+
+
+
 
     private RecyclerView recyclerView;
     private UsuariosAdapter usuariosAdapter;
     private List<Usuario> listaUsuarios;
     private List<Usuario> listaAmigos;
+    HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados;
+    FloatingActionButton fab;
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_amigos,container,false);
+
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        fab = view.findViewById(R.id.button_buscar_amigos);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              /*  Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+
+
+            }
+        });
+
+        //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //DatabaseReference referenceUserDataBase = FirebaseDatabase.getInstance().getReference("Usuarios");
+        //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, referenceUserDataBase, getContext());
+
+
+        //new TaskProgressBar().execute();
 
         listaUsuarios = new ArrayList<>();
         obtenerUsuarios();
@@ -77,6 +91,7 @@ public class Amigos extends Fragment {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
 
+
         references.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -86,10 +101,11 @@ public class Amigos extends Fragment {
                     if(usuario !=null){
                         if(!usuario.getId().equals(firebaseUser.getUid())){
                             listaUsuarios.add(usuario);
+
                         }
                     }
                 }
-
+                System.out.println("ARRAY "+listaUsuarios.size());
                 usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios);
                 recyclerView.setAdapter(usuariosAdapter);
             }
@@ -161,6 +177,4 @@ public class Amigos extends Fragment {
             }
         });
     }
-
-
 }

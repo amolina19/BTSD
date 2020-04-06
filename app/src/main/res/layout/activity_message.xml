@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E6E6E6"
-    tools:context=".MessageActivity">
+    tools:context=".Activitys.MessageActivity">
 
 
     <com.google.android.material.appbar.AppBarLayout
@@ -84,11 +83,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/enviar_mensaje"
             android:background="@android:color/transparent"
-            android:layout_toLeftOf="@+id/enviar_mensaje_button"
+            android:layout_toLeftOf="@+id/foto_enviar"
             android:hint="@string/escribirMensaje"
             android:layout_centerVertical="true"
             />
-        
+
         <ImageButton
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -96,7 +95,31 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:background="@drawable/ic_send_message"
+            android:clickable="true"
             />
+
+        <ImageButton
+            android:id="@+id/audio_enviar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/ic_mic"
+            android:layout_marginRight="40dp"
+            />
+
+        <ImageButton
+            android:id="@+id/foto_enviar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/ic_camera"
+            android:layout_marginRight="80dp"
+            android:clickable="true"
+            />
+
+
     </RelativeLayout>
 
 

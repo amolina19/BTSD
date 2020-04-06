@@ -21,13 +21,20 @@
         android:id="@+id/hora"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="-25dp"
+        android:layout_marginStart="-23dp"
         android:layout_toRightOf="@id/enseñar_mensaje"
         android:layout_marginTop="35sp"
         android:text="TEXT"
         android:textColor="@color/colorBlanco"
         android:textSize="8sp" />
-    />
 
+    <ImageView
+        android:id="@+id/leido"
+        android:layout_width="12dp"
+        android:layout_height="10dp"
+        android:background="@drawable/ic_visto"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="22dp"
+        android:layout_toStartOf="@id/hora" />
 
 </RelativeLayout>

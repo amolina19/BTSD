@@ -2,6 +2,8 @@ package com.btds.app.Modelos;
 
 public class Mensaje {
 
+    private String key;
+    private String id;
     private String emisor;
     private String receptor;
     private String mensaje;
@@ -15,13 +17,30 @@ public class Mensaje {
     public Mensaje(){
     }
 
-    public Mensaje(String emisor, String receptor, String mensaje, String hora, String fecha,String leido) {
+    public Mensaje(String id, String emisor, String receptor, String mensaje, String hora, String fecha,String leido) {
+        this.id = id;
         this.emisor = emisor;
         this.receptor = receptor;
         this.mensaje = mensaje;
         this.hora = hora;
         this.fecha = fecha;
         this.leido = leido;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getEmisor() {

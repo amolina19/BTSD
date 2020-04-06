@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragmentos.Amigos"
+    android:orientation="vertical">
+
+   <!-- <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/buscar_amigos"
+        android:hint="@string/buscarAmigos"
+        android:textAlignment="center"
+        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+        android:inputType="textFilter"
+        android:textColor="@color/colorPrimaryDark"
+        android:visibility="visible"/>-->
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:progress="5"
+        android:layout_centerHorizontal="true"/>1
+
+    <EditText
+        android:id="@+id/buscar_amigos_editText"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="@string/buscarAmigos"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark"
+        />
+
+    
+    
+    <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/recycler_view"
+                android:background="?android:attr/selectableItemBackground"/>
+
+</LinearLayout>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,8 +14,11 @@ import com.btds.app.Modelos.Mensaje;
 import com.btds.app.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import org.w3c.dom.Text;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -27,6 +31,7 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
     private List<Mensaje> listaMensajes;
 
     FirebaseUser firebaseUser;
+    DatabaseReference referenceChats = FirebaseDatabase.getInstance().getReference("Chats");
 
 
     public MensajesAdapter(Context contexto, List<Mensaje> listaMensajes){
@@ -52,10 +57,36 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull com.btds.app.Adaptadores.MensajesAdapter.ViewHolder holder, int posicion) {
 
-        Mensaje mensaje = listaMensajes.get(posicion);
+        final Mensaje mensaje = listaMensajes.get(posicion);
+        //mensaje.setLeido("true");
+
+        if(mensaje.getLeido().contentEquals("true")){
+            referenceChats.child(mensaje.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    referenceChats.child(mensaje.getId()).setValue(mensaje);
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
         holder.show_message.setText(mensaje.getMensaje());
-        //System.out.println(mensaje.getHora());
         holder.hora.setText(mensaje.getHora());
+
+        // != null me ha solucionado el problema de Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'void android.widget.ImageView.setVisibility(int)' on a null object reference
+        //Decia que ImagenView no existia, al haber un chat donde la conversacion son de ambas partes y el layout esta dividio en 2, en una existe el ImagenView y en la otra no.
+        if(holder.visto != null){
+            if(mensaje.getLeido().contentEquals("false")){
+                holder.visto.setVisibility(View.GONE);
+            }else{
+
+            }
+        }
     }
 
     @Override
@@ -68,19 +99,18 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
         public TextView show_message;
         public TextView hora;
         public TextView estado;
-        //public ImageView imagen_perfil;
-
+        ImageView visto;
 
         public ViewHolder(View itemView){
             super(itemView);
 
             show_message = itemView.findViewById(R.id.enseñar_mensaje);
             hora = itemView.findViewById(R.id.hora);
-            //imagen_perfil = itemView.findViewById(R.id.imagen_perfil);
             estado = itemView.findViewById(R.id.estado);
-            //Registrar menu contextual
-            //itemView.setOnCreateContextMenuListener(this);
+            visto = itemView.findViewById(R.id.leido);
+
         }
+
     }
 
     @Override

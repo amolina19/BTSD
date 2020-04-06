@@ -1,18 +1,21 @@
-package com.btds.app;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+package com.btds.app.Activitys;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.Toolbar;
+
 import com.btds.app.Modelos.Usuario;
+import com.btds.app.R;
+import com.btds.app.Utils.Fecha;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -23,7 +26,28 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BasicActivity {
+
+
+    class TaskProgressBar extends AsyncTask<Void, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // TODO Auto-generated method stub
+
+            for(int i=0;i<100;i++){
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                progressBar.setProgress(i);
+            }
+            return null;
+        }
+    }
+
 
     String userID;
     MaterialEditText username, email, password;
@@ -36,6 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
     Usuario usuarioRegistrandose;
 
     Fecha fecha;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +81,15 @@ public class RegisterActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         button_registrar = findViewById(R.id.button_registrar);
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
 
 
         //Instancio el autentificador
         mAuth = FirebaseAuth.getInstance();
 
         button_registrar.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
 
@@ -84,6 +112,9 @@ public class RegisterActivity extends AppCompatActivity {
     private void registrarse(final String username, String email, String password){
 
         fecha = new Fecha();
+        progressBar.setVisibility(View.VISIBLE);
+        new TaskProgressBar().execute();
+
 
         mAuth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -115,7 +146,6 @@ public class RegisterActivity extends AppCompatActivity {
                             usuarioRegistrandose.setEstado("En Linea");
                             Toast.makeText(RegisterActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
 
-                            String string = "holaa";
 
                             reference.child("Usuarios").child(firebaseUser.getUid()).setValue(usuarioRegistrandose).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
@@ -134,5 +164,6 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-
 }
+
+

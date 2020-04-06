@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".Activitys.PerfilActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:popupTheme="@style/menuStyle"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorBlanco"
+            android:text="@string/perfilAjustes"
+            android:textSize="25sp"/>
+    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="50sp">
+
+
+        <ImageView
+            android:id="@+id/imagen_perfil"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="150dp"
+            android:layout_height="150dp">
+        </ImageView>
+
+        <Button
+            android:id="@+id/imagenButton"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:contentDescription="TODO"
+            android:layout_marginTop="-150dp"
+            android:visibility="visible"
+            />
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorNegro"
+            android:text="@string/descripcion"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/descripcionCampoPerfil"
+            android:hint="@string/descripcionCampo"
+            android:textColor="@color/colorPrimaryDark"
+            android:maxLength="80"/>
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorNegro"
+            android:text="@string/nombreUsuario"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:id="@+id/usuarioCampoPerfil"/>
+
+        <Button
+            android:id="@+id/cambiarContraseña"
+            android:layout_marginTop="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/colorBlanco"
+            android:text="@string/cambiarContraseña"
+            />
+
+        <Button
+        android:id="@+id/guardarButton"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/colorBlanco"
+        android:text="@string/guardar"
+        />
+
+    </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

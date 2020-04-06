@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">BTSD</string>
-    <string name="version">Version Dev Alpha 1.1</string>
+    <string name="version">Version Dev Alpha 1.3</string>
 
     <string name="usuario">Usuario</string>
     <string name="email">Email</string>
@@ -12,7 +12,7 @@
     <string name="logearse">Inicia sesión en tu cuenta</string>
     <string name="login">Iniciar Sesión</string>
     <string name="iniciarSesion">Iniciar Sesion</string>
-    <string name="salir">Salir</string>
+    <string name="desconectar">Desconectar</string>
     <string name="cerrarSesionCorrectamente">Acabas de cerrar sesión</string>
     <string name="iniciarSesionCorrectamente">Acabas de iniciar sesión</string>
     <string name="cuentaCreada">Cuenta creada correctamente</string>
@@ -23,6 +23,7 @@
     <string name="errorSesion">Error de sesión</string>
     <string name="online">En Linea</string>
     <string name="offline">Desconectado</string>
+    <string name="bloqueado">Bloqueado</string>
 
     <string name="hoy">Hoy a las</string>
     <string name="ayer">Ayer a las </string>
@@ -31,6 +32,29 @@
 
     <string name="escribirMensaje">Escribir mensaje...</string>
 
+
+    <string name="descripcion">Descripción</string>
+    <string name="descripcionCampo">Introduce una descripción</string>
+    <string name="nombreUsuario">Nombre de usuario</string>
+    <string name="perfil">Perfil</string>
+    <string name="perfilAjustes">Ajustes del perfil</string>
+    <string name="guardar">Guardar</string>
+    <string name="cambiosGuardados">Se ha guardado correctamente.</string>
+    <string name="descripcionGrandeError">La descripción deber tener menos de 140 caracteres.</string>
+    <string name="cambiarContraseña">Cambiar contraseña</string>
+    <string name="opcionesSeleccionarImagen">Sube una foto o imagen a tú perfil</string>
+
+    <string name="escribiendo">Escribiendo..</string>
+    <string name="buscarAmigos">Buscar amigos</string>
+
+    <string name="llamar">Llamar</string>
+    <string name="bloquear">Bloquear</string>
+    <string name="desbloquear">Desbloquear</string>
+    <string name="silenciar">Silenciar</string>
+    <string name="eliminarAmigo">Eliminar Amigo</string>
+
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

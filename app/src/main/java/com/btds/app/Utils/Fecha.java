@@ -1,4 +1,4 @@
-package com.btds.app;
+package com.btds.app.Utils;
 
 import android.os.Build;
 
@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 public class Fecha {
 
+    private String milisegundos;
     private String segundos;
     private String minutos;
     private String hora;
@@ -15,12 +16,20 @@ public class Fecha {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Fecha(){
+        this.milisegundos = this.obtenerMilisegundos();
         this.segundos = this.obtenerSegundos();
         this.minutos = this.obtenerMinutos();
         this.hora = this.obtenerHora();
         this.dia = this.obtenerDia();
         this.mes = this.obtenerMes();
         this.año = this.obtenerAño();
+    }
+
+    public String obtenerMilisegundos(){
+        int posicion = java.time.LocalDateTime.now().toString().lastIndexOf(".");
+        int longitud = java.time.LocalDateTime.now().toString().length();
+        this.milisegundos = java.time.LocalDateTime.now().toString().substring(posicion+1,longitud);
+        return milisegundos;
     }
 
 
@@ -70,5 +79,9 @@ public class Fecha {
 
     public String toString(){
         return this.hora+":"+this.minutos+" "+this.segundos+" Sec "+this.dia+"/"+this.mes+"/"+this.año;
+    }
+
+    public String obtenerFechaTotal(){
+        return this.obtenerAño()+""+this.obtenerMes()+""+this.obtenerDia()+""+this.obtenerHora()+""+this.obtenerMinutos()+""+this.obtenerSegundos()+""+this.obtenerMilisegundos();
     }
 }

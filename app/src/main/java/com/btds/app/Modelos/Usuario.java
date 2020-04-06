@@ -1,9 +1,5 @@
 package com.btds.app.Modelos;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class Usuario {
 
     private String id;
@@ -12,17 +8,13 @@ public class Usuario {
     private String estado;
     private String hora;
     private String fecha;
-    //private List<Usuario> amigos;
-    //private List<Usuario> bloqueados;
-    //private List<Usuario> peticionesAmistad;
+    private String descripcion;
+    private String bloqueado;
 
-
-
+    private String escribiendo;
 
     public Usuario(){
     }
-
-
 
     public Usuario(String id, String usuario, String imagenURL) {
         this.id = id;
@@ -78,32 +70,27 @@ public class Usuario {
         this.fecha = fecha;
     }
 
-    /*
-
-    public List<Usuario> getAmigos() {
-        return amigos;
+    public String getDescripcion() {
+        return descripcion;
     }
 
-    public void setAmigos(List<Usuario> amigos) {
-        this.amigos = amigos;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
-    public List<Usuario> getBloqueados() {
-        return bloqueados;
+    public String getEscribiendo() {
+        return escribiendo;
     }
 
-    public void setBloqueados(List<Usuario> bloqueados) {
-        this.bloqueados = bloqueados;
+    public void setEscribiendo(String escribiendo) {
+        this.escribiendo = escribiendo;
     }
 
-    public List<Usuario> getPeticionesAmistad() {
-        return peticionesAmistad;
+    public String getBloqueado() {
+        return bloqueado;
     }
 
-    public void setPeticionesAmistad(List<Usuario> peticionesAmistad) {
-        this.peticionesAmistad = peticionesAmistad;
+    public void setBloqueado(String bloqueado) {
+        this.bloqueado = bloqueado;
     }
-
-    */
-
 }

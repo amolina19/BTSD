@@ -4,7 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">#E136F4</item><!--Color de la barra del movil-->
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
@@ -15,4 +15,6 @@
         <item name="android:background">@android:color/white</item>
     </style>
 
+
+   <!-- <item name="colorPrimaryDark">@color/colorPrimaryDark</item> -->
 </resources>
