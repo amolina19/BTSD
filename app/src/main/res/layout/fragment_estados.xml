@@ -1,14 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragmentos.Estados">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragmentos.Amigos"
+    android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+   <!-- <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="50dp"
+        android:id="@+id/buscar_amigos"
+        android:hint="@string/buscarAmigos"
+        android:textAlignment="center"
+        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+        android:inputType="textFilter"
+        android:textColor="@color/colorPrimaryDark"
+        android:visibility="visible"/>-->
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                android:background="@drawable/relative_layout_border">
+                
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="80dp"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_height="80dp"
+                    app:civ_border_width="2dp"
+                    app:civ_border_color="@color/colorVerde"
+                    android:src="@drawable/ic_iconlogo"/>
+
+            </RelativeLayout>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/recycler_view"
+                android:background="?android:attr/selectableItemBackground">
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+
+
+
+
+</RelativeLayout>

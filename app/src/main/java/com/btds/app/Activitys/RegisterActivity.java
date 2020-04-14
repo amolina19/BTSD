@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -24,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.vdx.designertoast.DesignerToast;
 
 
 public class RegisterActivity extends BasicActivity {
@@ -36,9 +38,9 @@ public class RegisterActivity extends BasicActivity {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
 
-            for(int i=0;i<100;i++){
+            for (int i = 0; i < 100; i++) {
                 try {
-                    Thread.sleep(20);
+                    Thread.sleep(15);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -151,7 +153,9 @@ public class RegisterActivity extends BasicActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful()){
-                                        Toast.makeText(RegisterActivity.this, R.string.cuentaCreada, Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(RegisterActivity.this, R.string.cuentaCreada, Toast.LENGTH_SHORT).show();
+
+                                        DesignerToast.Success(RegisterActivity.this, getResources().getString(R.string.cuentaCreada), Gravity.BOTTOM, Toast.LENGTH_SHORT);
                                         Intent intentRegister = new Intent(RegisterActivity.this,MainActivity.class);
                                         intentRegister.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intentRegister);

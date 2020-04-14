@@ -101,7 +101,6 @@ public class Amigos extends Fragment {
                     if(usuario !=null){
                         if(!usuario.getId().equals(firebaseUser.getUid())){
                             listaUsuarios.add(usuario);
-
                         }
                     }
                 }

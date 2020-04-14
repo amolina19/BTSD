@@ -1,6 +1,5 @@
 package com.btds.app.Utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 
@@ -26,7 +25,7 @@ import java.util.Map;
 
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
-public class Funciones extends Activity {
+public class Funciones {
     private static Usuario usuario;
     private static Boolean actividadEnUso = false;
     private static  Boolean backPressed = false;
@@ -142,6 +141,8 @@ public class Funciones extends Activity {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference refernceBloquedUsers = getInstance().getReference("Bloqueados");
         refernceBloquedUsers.child(firebaseUser.getUid()+""+usuarioChat.getId()).removeValue();
+
+        getListaUsuariosBloqueados().remove(usuarioChat.getId());
     }
 
     public static void bloquearUsuario(Usuario usuarioChat){
@@ -183,9 +184,6 @@ public class Funciones extends Activity {
                             System.out.println(entry.getKey());
                             UsuarioBloqueado value = entry.getValue();
                             System.out.println(value.getUsuarioBloqueado());
-
-                            // do what you have to do here
-                            // In your case, another loop.
                         }
                     }
                 }
@@ -205,40 +203,6 @@ public class Funciones extends Activity {
         return listaUsuariosBloqueados;
     }
 
- /*
-    public static void escribiendo(final FirebaseUser firebaseUser, final Context contexto){
-        final DatabaseReference referenceUserDataBase = getInstance().getReference("Usuarios");
-
-        referenceUserDataBase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-                    for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                        Usuario usuarioObj = snapshot.getValue(Usuario.class);
-                        if (usuarioObj != null) {
-
-                            if (firebaseUser.getUid().contentEquals(usuarioObj.getId())) {
-                                usuarioObj.setEscribiendo(contexto.getResources().getString(R.string.escribiendo));
-                                referenceUserDataBase.child(firebaseUser.getUid()).setValue(usuario).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-
-                                    }
-                                });
-                            }
-                        }
-                    }
-
-                }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-    */
 
 
     public ArrayList<String> ObtenerListaUsuariosStringID(String firebaseID){
@@ -266,6 +230,7 @@ public class Funciones extends Activity {
 
         return arrayList;
     }
+
 
 
 }

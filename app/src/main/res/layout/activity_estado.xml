@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activitys.EstadoActivity"
+    android:background="@color/colorPrimaryDark"
+    android:orientation="vertical">
+
+    <jp.shts.android.storiesprogressview.StoriesProgressView
+        android:id="@+id/stories"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_gravity="top"
+        android:layout_marginTop="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/stories_imagen_perfil_usuario"
+            android:layout_marginStart="10dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_launcher_foreground"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/stories_nombre_usuario"
+                android:layout_marginTop="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_width="200dp"
+                android:layout_height="18dp"
+                android:text="crespovidagrimey750"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/stories_fecha_subida_usuario"
+                android:layout_marginStart="5dp"
+                android:layout_width="100dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/white"
+                android:text="Ayer 23:47"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_marginTop="-56dp"
+        android:id="@+id/stories_imageview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+</LinearLayout>

@@ -18,6 +18,10 @@ import java.net.URLConnection;
 
 public class BasicActivity extends AppCompatActivity {
 
+    private int listaMensajesLeidosGlobal = 0;
+    private int listaMensajesNoLeidosGlobal = 0;
+    private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
 
     class TaskConnectionChecker extends AsyncTask<Void, Void, Void> {
 
@@ -44,7 +48,13 @@ public class BasicActivity extends AppCompatActivity {
     }
 
 
-    FirebaseUser firebaseUser;
+    public FirebaseUser getFirebaseUser() {
+        return firebaseUser;
+    }
+
+    public void setFirebaseUser(FirebaseUser firebaseUser) {
+        this.firebaseUser = firebaseUser;
+    }
 
     @Override
     protected void onStart() {

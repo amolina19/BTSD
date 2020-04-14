@@ -47,10 +47,6 @@ public class Chats extends Fragment {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         ListaUsuariosIdString = new ArrayList<String>();
 
-
-
-
-
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

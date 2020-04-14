@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">BTSD</string>
-    <string name="version">Version Dev Alpha 1.3</string>
+    <string name="version">Version Dev Alpha 1.5</string>
+    <string name="Autor">Alejandro Molina Louchnikov</string>
 
     <string name="usuario">Usuario</string>
     <string name="email">Email</string>
@@ -42,7 +43,9 @@
     <string name="cambiosGuardados">Se ha guardado correctamente.</string>
     <string name="descripcionGrandeError">La descripción deber tener menos de 140 caracteres.</string>
     <string name="cambiarContraseña">Cambiar contraseña</string>
-    <string name="opcionesSeleccionarImagen">Sube una foto o imagen a tú perfil</string>
+    <string name="actualizandoImagenPerfil">Subiendo y actualizando su foto de pérfil</string>
+    <string name="exitoSubirImagenPerfil">Su foto se ha actualizado correctamente</string>
+    <string name="errorSubirImagenPerfil">Su foto se ha actualizado correctamente</string>
 
     <string name="escribiendo">Escribiendo..</string>
     <string name="buscarAmigos">Buscar amigos</string>
@@ -52,6 +55,20 @@
     <string name="desbloquear">Desbloquear</string>
     <string name="silenciar">Silenciar</string>
     <string name="eliminarAmigo">Eliminar Amigo</string>
+
+
+    <string name="unblockUser">Desbloquear Usuario</string>
+    <string name="confirmUnlock">Estas seguro de que quieres desbloquear a </string>
+    <string name="unblocked">Has desbloqueado a </string>
+
+    <string name="blockUser">Bloquear Usuario</string>
+    <string name="confirmBlock">Estas seguro de que quieres bloquear a </string>
+    <string name="blockedUser">Has bloqueado a </string>
+
+
+
+    <string name="Aceptar">Aceptar</string>
+    <string name="Cancelar">Cancelar</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->

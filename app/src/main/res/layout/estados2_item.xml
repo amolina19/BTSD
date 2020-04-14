@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="65dp"
+    android:layout_height="80dp"
+    android:padding="5dp"
+    android:id="@+id/estados_linearlayout_item"
+    android:orientation="vertical"
+    android:gravity="center_vertical">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_gravity="center_horizontal"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/imagen_estado"
+        android:src="@mipmap/ic_launcher"
+        />
+
+
+    <TextView
+        android:id="@+id/usuario"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginTop="2dp"
+        android:text="Usuario"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_gravity="center_horizontal"
+        android:textSize="8sp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
+
+</LinearLayout>

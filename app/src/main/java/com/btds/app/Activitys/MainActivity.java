@@ -1,15 +1,16 @@
 package com.btds.app.Activitys;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,13 +22,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.btds.app.Adaptadores.EstadosAdapter;
 import com.btds.app.Fragmentos.Amigos;
 import com.btds.app.Fragmentos.BuscarAmigos;
 import com.btds.app.Fragmentos.Chats;
-import com.btds.app.Fragmentos.Estados;
-import com.btds.app.Modelos.Constantes;
+import com.btds.app.Modelos.EstadosClass;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
 import com.btds.app.Utils.Fecha;
@@ -40,8 +43,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.vdx.designertoast.DesignerToast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -71,27 +76,21 @@ public class MainActivity extends BasicActivity {
         }
     }
 
-
+    LinearLayout linearLayout;
     CircleImageView imagen_perfil;
+    Button imageProfileButton;
     TextView usuario;
     Usuario usuarioObject;
     ViewPager viewPager;
     ViewPageAdapter viewPageAdapter;
     Fecha fecha;
     ProgressBar progressBar;
-    EditText editText_buscarAmigos;
-    Button añadirAmigosButton;
-    Constantes constantes;
-
-
 
     FirebaseUser firebaseUser;
     DatabaseReference referenceUserDataBase;
     DatabaseReference mainDatabasePath;
     DatabaseReference referenceStatus;
 
-
-    Bitmap bitmap;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -101,11 +100,10 @@ public class MainActivity extends BasicActivity {
 
         //new Constantes("81165","kH6Jv3mOn4htJ78","8sfBc3Rr-PaR4Wf","BWMGDip2NKWtdp3Hevc9",getApplicationContext());
 
+        linearLayout = findViewById(R.id.linearLayout_estados);
         fecha = new Fecha();
         //System.out.println(fecha.toString());
         //System.out.println(fecha.obtenerFechaTotal());
-
-        bitmap = null;
 
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
@@ -115,9 +113,21 @@ public class MainActivity extends BasicActivity {
         getSupportActionBar().setTitle("");
 
         imagen_perfil = findViewById(R.id.imagen_perfil);
+        imageProfileButton = findViewById(R.id.imagenProfileButton);
+        imageProfileButton.setBackgroundColor(Color.TRANSPARENT);
         usuario = findViewById(R.id.usuario);
         //editText_buscarAmigos = findViewById(R.id.buscar_amigos);
         //editText_buscarAmigos.setVisibility(View.GONE);
+
+        iniciarEstadosLayout();
+
+        imageProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentToProfile = new Intent(MainActivity.this,PerfilActivity.class);
+                startActivity(intentToProfile);
+            }
+        });
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         referenceUserDataBase = getInstance().getReference("Usuarios");
@@ -165,7 +175,7 @@ public class MainActivity extends BasicActivity {
         viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
         viewPageAdapter.añadirFragmento(new Chats(), "Chats");
         viewPageAdapter.añadirFragmento(new Amigos(), "Amigos");
-        viewPageAdapter.añadirFragmento(new Estados(), "Estados");
+        //viewPageAdapter.añadirFragmento(new Estados(), "Estados");
         viewPageAdapter.añadirFragmento(new BuscarAmigos(), "Buscar");
         viewPager.setAdapter(viewPageAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -183,8 +193,9 @@ public class MainActivity extends BasicActivity {
         Intent intent;
         switch (item.getItemId()) {
             case R.id.perfil:
-                intent = new Intent(this, PerfilActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                intent = new Intent(MainActivity.this, PerfilActivity.class);
+                //Me ha solucionado un error, Ejemplo abro la camara o galeria en una actividad en el PerfilActivity y al realizar la captura o seleccionar me devuelve a la MainActivity
+                //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 Funciones.setActividadEnUso(true);
                 startActivity(intent);
                 //Borrar o comentar el comando finish por que sino al volver para atras no realizara la accion ya que la actividad principal esta destruida.
@@ -196,7 +207,8 @@ public class MainActivity extends BasicActivity {
                 intent = new Intent(this, StartActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
-                Toast.makeText(this, R.string.cerrarSesionCorrectamente, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, R.string.cerrarSesionCorrectamente, Toast.LENGTH_SHORT).show();
+                DesignerToast.Success(MainActivity.this,getResources().getString(R.string.cerrarSesionCorrectamente), Gravity.BOTTOM, Toast.LENGTH_SHORT);
                 finish();
                 return true;
         }
@@ -237,39 +249,25 @@ public class MainActivity extends BasicActivity {
         }
     }
 
+    private void iniciarEstadosLayout(){
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_estados_main);
+        recyclerView.setLayoutManager(layoutManager);
+
+        List<EstadosClass> listaEstados = new ArrayList<>();
+        listaEstados.add(new EstadosClass("https://www.staffcreativa.pe/blog/wp-content/uploads/logos9.gif","lolm3"));
+        listaEstados.add(new EstadosClass("https://i.pinimg.com/originals/33/b8/69/33b869f90619e81763dbf1fccc896d8d.jpg","españita"));
+        listaEstados.add(new EstadosClass("https://d24jx5gocr6em0.cloudfront.net/wp-content/uploads/2020/04/03160041/negros-con-ataud-520x350.jpg","testUserName"));
+        listaEstados.add(new EstadosClass("https://i.pinimg.com/originals/33/b8/69/33b869f90619e81763dbf1fccc896d8d.jpg","españita"));
+        listaEstados.add(new EstadosClass("https://cdn.motor1.com/images/mgl/GwZbJ/s3/logo-story-volkswagen.jpg","testUserName"));
+        listaEstados.add(new EstadosClass("https://i.pinimg.com/originals/33/b8/69/33b869f90619e81763dbf1fccc896d8d.jpg","españita"));
+        listaEstados.add(new EstadosClass("https://cdn.motor1.com/images/mgl/GwZbJ/s3/logo-story-volkswagen.jpg","testUserName"));
+        EstadosAdapter adapter = new EstadosAdapter(this,listaEstados);
+        recyclerView.setAdapter(adapter);
+    }
+
 }
-    /*
-    private void SelectImage() {
-        //Intent takeImageIntent = ImagePicker.getPickImageIntent(this);
-        if (takeImageIntent.resolveActivity(this.getPackageManager()) != null) {
-            startActivityForResult(takeImageIntent, 5);
-        }
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-            //Bitmap bitmap = ImagePicker.getBitmapFromResult(this, resultCode, data);
-            //imagen_perfil.setImageBitmap(bitmap);
-            if (null != bitmap && resultCode == RESULT_OK) {
-
-                String imagenNAME = "test123";
-
-                //String savedTo = ImagePicker.writeImage(getApplicationContext(), bitmap, imagenNAME);
-                System.out.println(savedTo);
-                System.out.println("HA ENTRADO");
-                imagen_perfil.setImageBitmap(bitmap);
-
-            }else{
-                System.out.println("NO HA ENTRADO");
-            }
-
-
-
-    }
-
-
-     */
 
 
 

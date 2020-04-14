@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
     public static final int MENSAGE_TIPO_IZQUIERDA = 0;
     public static final int MENSAGE_TIPO_DERECHA = 1;
 
+    private Boolean firstEnter = false;
     private Context context;
     private List<Mensaje> listaMensajes;
 
@@ -57,6 +59,8 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull com.btds.app.Adaptadores.MensajesAdapter.ViewHolder holder, int posicion) {
 
+
+
         final Mensaje mensaje = listaMensajes.get(posicion);
         //mensaje.setLeido("true");
 
@@ -75,6 +79,16 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
             });
         }
 
+        if(!firstEnter){
+            holder.hora.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+            holder.show_message.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+            firstEnter = true;
+        }
+
+        //holder.visto.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+        //holder.estado.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+
+
         holder.show_message.setText(mensaje.getMensaje());
         holder.hora.setText(mensaje.getHora());
 
@@ -84,7 +98,8 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
             if(mensaje.getLeido().contentEquals("false")){
                 holder.visto.setVisibility(View.GONE);
             }else{
-
+                //holder.visto.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+                holder.visto.setVisibility(View.VISIBLE);
             }
         }
     }

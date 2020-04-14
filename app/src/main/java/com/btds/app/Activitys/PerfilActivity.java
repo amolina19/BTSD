@@ -1,6 +1,5 @@
 package com.btds.app.Activitys;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +18,9 @@ import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
 import com.btds.app.Utils.Funciones;
 import com.bumptech.glide.Glide;
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.features.ReturnMode;
+import com.esafirm.imagepicker.model.Image;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,18 +32,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.UUID;
+import java.io.File;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
 public class PerfilActivity extends BasicActivity {
 
 
-    ImageView imagen_perfil;
+    CircleImageView imagen_perfil;
     TextView usuario;
     EditText descripcion;
     Usuario usuarioObject;
@@ -131,39 +133,22 @@ public class PerfilActivity extends BasicActivity {
 
             }
         });
-
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //SelectImage();
-
-                /*
-                Toast.makeText(PerfilActivity.this, "HAS SELECCIONADO LA IMAGEN", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                */
+                ImagePicker.create(PerfilActivity.this).returnMode(ReturnMode.GALLERY_ONLY).single().start();
 
             }
         });
-
-
-
         cambiarContraseña.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
-
         guardarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                uploadImage();
 
                 if(descripcion.getText().length() > 80){
                     Toast.makeText(PerfilActivity.this, getResources().getString(R.string.descripcionGrandeError), Toast.LENGTH_LONG).show();
@@ -203,155 +188,73 @@ public class PerfilActivity extends BasicActivity {
 
     }
 
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
     }
 
-
-    /*
-    private void SelectImage() {
-        Intent takeImageIntent = ImagePicker.getPickImageIntent(this);
-        if (takeImageIntent.resolveActivity(this.getPackageManager()) != null) {
-            startActivityForResult(takeImageIntent, 5);
-        }
-    }
-    */
-
-
-    /*
-    // Select Image method
-    private void SelectImage()
-    {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-        photoPickerIntent.setType("image/*");
-        startActivityForResult(photoPickerIntent, 5);
-
-
-        Intent intent = new Intent();
-        intent.setAction(android.content.Intent.ACTION_VIEW);
-        intent.setType("image/*");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivityForResult(intent,PICK_IMAGE_REQUEST );
-
-
-    }
-     */
-
-
-    // Override onActivityResult method
-
-    /*
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            // or get a single image only
+            Image image = ImagePicker.getFirstImageOrNull(data);
+            System.out.println("IMAGEN PATH "+image.getPath());
+            Toast.makeText(this, getResources().getString(R.string.actualizandoImagenPerfil), Toast.LENGTH_SHORT).show();
+            subirImagen(image);
+
+        }
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == 5) {
-            Uri photoUri = data.getData();
-            if (photoUri != null) {
-                try {
-                    System.out.println("TEST imagen");
-                    System.out.println("RUTA IMAGEN: "+photoUri.getPath());
-                    currentImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
-                    imagen_perfil.setImageBitmap(currentImage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }else{
-                System.out.println("NO ESTA ENTRANDO");
-            }
-        }
-    }
-     */
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        /*
-        if(data !=null){
-            Bitmap bitmap = ImagePicker.getBitmapFromResult(this, resultCode, data);
-            if (null != bitmap && resultCode == 5) {
-
-                imagen_perfil.setImageBitmap(bitmap);
-
-            }
-        }
-
-         */
-
     }
 
+    public void subirImagen(Image image){
 
-    // UploadImage method
-    private void uploadImage() {
-        if (filePath != null) {
-
-            // Code for showing progressDialog while uploading
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-
-            // Defining the child of storageReference
-            StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
-
-            // adding listeners on upload
-            // or failure of image
-            ref.putFile(filePath)
-                    .addOnSuccessListener(
-                            new OnSuccessListener<UploadTask.TaskSnapshot>() {
-
-                                @Override
-                                public void onSuccess(
-                                        UploadTask.TaskSnapshot taskSnapshot) {
-
-                                    // Image uploaded successfully
-                                    // Dismiss dialog
-                                    progressDialog.dismiss();
-                                    Toast.makeText(PerfilActivity.this, "Image Uploaded!!", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-
-                            // Error, Image not uploaded
-                            progressDialog.dismiss();
-                            Toast.makeText(PerfilActivity.this, "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                                // Progress Listener for loading
-                                // percentage on the dialog box
-                                @Override
-                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                                    double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                                    progressDialog.setMessage("Uploaded " + (int) progress + "%");
-                                }
-                            });
-        }
-    }
-
-
-
-        /*
-        Imagen codigo storage Ref
-    private static final java.util.UUID UUID = null;
-
-    {
+        Uri file = Uri.fromFile(new File(image.getPath()));
 
         FirebaseStorage storage;
-        StorageReference storageReference = null;
+        StorageReference storageReference;
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
-        StorageReference ref = storageReference.child("Imagenes/"
-                                + UUID.randomUUID().toString());
+        StorageReference storageRef = storageReference.child("Imagenes/Perfil/"+usuarioObject.getId());
 
+
+        UploadTask uploadTask = storageRef.putFile(file);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                System.out.println("LA IMAGEN NO SE HA SUBIDO");
+                Toast.makeText(PerfilActivity.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        // getting image uri and converting into string
+                        Uri downloadUrl = uri;
+                        usuarioObject.setImagenURL(downloadUrl.toString());
+                        referenceUserDataBase.child(usuarioObject.getId()).setValue(usuarioObject).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    System.out.println("Se ha Actualizado la foto de perfil");
+                                    Toast.makeText(PerfilActivity.this, getResources().getString(R.string.exitoSubirImagenPerfil), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                });
+                System.out.println("La imagen se ha subido al perfil de "+usuarioObject.getUsuario());
+            }
+        });
     }
-    */
+
 
 }

@@ -3,6 +3,7 @@ package com.btds.app.Activitys;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -18,6 +19,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.vdx.designertoast.DesignerToast;
 
 public class LoginActivity extends BasicActivity {
 
@@ -59,6 +61,7 @@ public class LoginActivity extends BasicActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.login);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //DEPRECATED API 23
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorBlanco));
 
 
@@ -89,10 +92,12 @@ public class LoginActivity extends BasicActivity {
                                         Intent intentLogin = new Intent(LoginActivity.this, MainActivity.class);
                                         intentLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intentLogin);
-                                        Toast.makeText(LoginActivity.this, R.string.iniciarSesionCorrectamente, Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(LoginActivity.this, R.string.iniciarSesionCorrectamente, Toast.LENGTH_SHORT).show();
+                                        DesignerToast.Success(LoginActivity.this, getResources().getString(R.string.iniciarSesionCorrectamente), Gravity.BOTTOM, Toast.LENGTH_SHORT);
                                         finish();
                                     }else{
-                                        Toast.makeText(LoginActivity.this, R.string.autentificacionFallida, Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(LoginActivity.this, R.string.autentificacionFallida, Toast.LENGTH_SHORT).show();
+                                        DesignerToast.Error(LoginActivity.this, getResources().getString(R.string.autentificacionFallida), Gravity.BOTTOM, Toast.LENGTH_SHORT);
                                     }
                                 }
                             });

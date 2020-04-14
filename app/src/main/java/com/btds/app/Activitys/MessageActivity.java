@@ -2,9 +2,11 @@ package com.btds.app.Activitys;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +38,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.vdx.designertoast.DesignerToast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,6 +75,7 @@ public class MessageActivity extends BasicActivity {
     List<Mensaje> listaMensajes;
     HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados;
     RecyclerView recyclerView;
+    private String usuario_profile_default= "https://res.cloudinary.com/teepublic/image/private/s--6vDtUIZ---/t_Resized%20Artwork/c_fit,g_north_west,h_1054,w_1054/co_ffffff,e_outline:53/co_ffffff,e_outline:inner_fill:53/co_bbbbbb,e_outline:3:1000/c_mpad,g_center,h_1260,w_1260/b_rgb:eeeeee/c_limit,f_jpg,h_630,q_90,w_630/v1570281377/production/designs/6215195_0.jpg";
 
     private Context contexto;
 
@@ -149,7 +153,7 @@ public class MessageActivity extends BasicActivity {
                 usuarioChat = dataSnapshot.getValue(Usuario.class);
                 usuario.setText(usuarioChat.getUsuario());
 
-                if(listaUsuariosBloqueados.containsKey(usuarioChat.getId())){
+                if(Funciones.getListaUsuariosBloqueados().containsKey(usuarioChat.getId())){
                     estado.setText(R.string.bloqueado);
                 }else if(usuarioChat.getEstado().contentEquals("Desconectado")) {
 
@@ -169,10 +173,8 @@ public class MessageActivity extends BasicActivity {
                     estado.setText(usuarioChat.getEstado());
                 }
 
-
-
                 if(usuarioChat.getImagenURL().equals("default")){
-                    imagen_perfil.setImageResource(R.mipmap.ic_launcher);
+                    Glide.with(MessageActivity.this).load(usuario_profile_default).into(imagen_perfil);
                 }else{
                     if (!MessageActivity.this.isFinishing()) {
                         Glide.with(MessageActivity.this).load(usuarioChat.getImagenURL()).into(imagen_perfil);
@@ -347,26 +349,39 @@ public class MessageActivity extends BasicActivity {
                 return true;
             case R.id.bloquear:
 
-
-
-
                 if(listaUsuariosBloqueados.containsKey(usuarioChat.getId())){
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Desbloquear Usuario");
-                    builder.setMessage("Estas seguro de que quieres Desbloquear a "+usuarioChat.getUsuario());
-                    builder.setPositiveButton("Aceptar", null);
-                    builder.setNegativeButton("Cancelar",null);
-
+                    builder.setTitle(getResources().getString(R.string.unblockUser));
+                    builder.setMessage(getResources().getString(R.string.confirmUnlock)+" "+usuarioChat.getUsuario());
+                    builder.setNegativeButton(getResources().getString(R.string.Cancelar),null);
+                    builder.setPositiveButton(getResources().getString(R.string.Aceptar), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Funciones.desbloquearUsuario(usuarioChat);
+                            //Toast.makeText(contexto, "Se ha desbloqueado el usuario"+usuarioChat.getUsuario(), Toast.LENGTH_SHORT).show();
+                            DesignerToast.Success(MessageActivity.this,getResources().getString(R.string.unblocked)+" "+ usuarioChat.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
+                        }
+                    });
                     AlertDialog dialog = builder.create();
                     dialog.show();
 
+                    }else{
 
-                    Funciones.desbloquearUsuario(usuarioChat);
-                    Toast.makeText(contexto, "Se ha desbloqueado el usuario"+usuarioChat.getUsuario(), Toast.LENGTH_SHORT).show();
-                }else{
-                    Funciones.bloquearUsuario(usuarioChat);
-                    Toast.makeText(contexto, "Has bloqueado a "+usuarioChat.getUsuario(), Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle(getResources().getString(R.string.blockUser));
+                    builder.setMessage(getResources().getString(R.string.confirmBlock)+" "+usuarioChat.getUsuario());
+                    builder.setNegativeButton(getResources().getString(R.string.Cancelar),null);
+                    builder.setPositiveButton(getResources().getString(R.string.Aceptar), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Funciones.bloquearUsuario(usuarioChat);
+                            //Toast.makeText(contexto, "Has bloqueado a "+usuarioChat.getUsuario(), Toast.LENGTH_SHORT).show();
+                            DesignerToast.Warning(MessageActivity.this,getResources().getString(R.string.blockedUser)+" "+ usuarioChat.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
 
                 //listaUsuariosBloqueados.put(usuarioChat.getId(),usuarioChat);
