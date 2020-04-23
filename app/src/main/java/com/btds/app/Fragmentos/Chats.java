@@ -50,6 +50,10 @@ public class Chats extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject);
+        recyclerView.setAdapter(usuariosAdapter);
+
+
 
         fUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -87,6 +91,7 @@ public class Chats extends Fragment {
 
         ListaUsuariosObject = new ArrayList<>();
 
+
         databaseReference = FirebaseDatabase.getInstance().getReference("Usuarios");
 
         final HashMap<String,Usuario> hashMap = new HashMap<>();
@@ -115,7 +120,8 @@ public class Chats extends Fragment {
                         }
                     }
                 }
-                usuariosAdapter = new UsuariosAdapter(getContext(),ListaUsuariosObject);
+                usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject);
+                //usuariosAdapter.notifyDataSetChanged();
                 recyclerView.setAdapter(usuariosAdapter);
 
             }

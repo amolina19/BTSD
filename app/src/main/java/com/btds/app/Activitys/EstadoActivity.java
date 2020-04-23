@@ -46,6 +46,7 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
         listImagesUrl.add("https://www.muylinux.com/wp-content/uploads/2019/01/windows7.jpg");
         listImagesUrl.add("https://www.milcomos.com/arch/2014/01/ejecutar-aplicaciones-en-Windows-sin-instalarlas.jpg");
         listImagesUrl.add("https://d24jx5gocr6em0.cloudfront.net/wp-content/uploads/2020/04/03160041/negros-con-ataud-520x350.jpg");
+        listImagesUrl.add("https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/1200px-Flag_of_Spain.svg.png");
 
         circleImageView = findViewById(R.id.stories_imagen_perfil_usuario);
         storiesImageView = findViewById(R.id.stories_imageview);

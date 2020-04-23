@@ -36,7 +36,7 @@ import com.btds.app.R;
 import com.btds.app.Utils.Fecha;
 import com.btds.app.Utils.Funciones;
 import com.bumptech.glide.Glide;
-import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -85,6 +85,7 @@ public class MainActivity extends BasicActivity {
     ViewPageAdapter viewPageAdapter;
     Fecha fecha;
     ProgressBar progressBar;
+    BottomNavigationView bottomNav;
 
     FirebaseUser firebaseUser;
     DatabaseReference referenceUserDataBase;
@@ -105,8 +106,12 @@ public class MainActivity extends BasicActivity {
         //System.out.println(fecha.toString());
         //System.out.println(fecha.obtenerFechaTotal());
 
-        progressBar = findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.INVISIBLE);
+        //progressBar = findViewById(R.id.progressBar);
+        //progressBar.setVisibility(View.INVISIBLE);
+
+        bottomNav = findViewById(R.id.navigation_view_bottom_home);
+        bottomNav.setOnNavigationItemSelectedListener(navListener);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new Amigos()).commit();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -164,22 +169,49 @@ public class MainActivity extends BasicActivity {
                 }
             }
 
+
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
 
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
-        viewPager = findViewById(R.id.view_pager);
-        viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
-        viewPageAdapter.añadirFragmento(new Chats(), "Chats");
-        viewPageAdapter.añadirFragmento(new Amigos(), "Amigos");
+
+        //viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
+        //viewPageAdapter.añadirFragmento(new Chats(), "Chats");
+        //viewPageAdapter.añadirFragmento(new Amigos(), "Amigos");
         //viewPageAdapter.añadirFragmento(new Estados(), "Estados");
-        viewPageAdapter.añadirFragmento(new BuscarAmigos(), "Buscar");
-        viewPager.setAdapter(viewPageAdapter);
-        tabLayout.setupWithViewPager(viewPager);
+        //viewPageAdapter.añadirFragmento(new BuscarAmigos(), "Buscar");
+        //viewPager.setAdapter(viewPageAdapter);
+        //tabLayout.setupWithViewPager(viewPager);
     }
+
+
+    private BottomNavigationView.OnNavigationItemSelectedListener navListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Fragment selectedFragment = null;
+
+            switch (item.getItemId()){
+                case R.id.nav_chats:
+                    selectedFragment = new Chats();
+                    break;
+                case R.id.nav_amigos:
+                    selectedFragment = new Amigos();
+                    break;
+                case R.id.nav_buscar:
+                    selectedFragment = new BuscarAmigos();
+                    break;
+            }
+
+            if(selectedFragment != null){
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,selectedFragment).commit();
+
+            }
+            return true;
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -196,7 +228,7 @@ public class MainActivity extends BasicActivity {
                 intent = new Intent(MainActivity.this, PerfilActivity.class);
                 //Me ha solucionado un error, Ejemplo abro la camara o galeria en una actividad en el PerfilActivity y al realizar la captura o seleccionar me devuelve a la MainActivity
                 //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                Funciones.setActividadEnUso(true);
+                //Funciones.setActividadEnUso(true);
                 startActivity(intent);
                 //Borrar o comentar el comando finish por que sino al volver para atras no realizara la accion ya que la actividad principal esta destruida.
                 //finish();
@@ -255,7 +287,7 @@ public class MainActivity extends BasicActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         List<EstadosClass> listaEstados = new ArrayList<>();
-        listaEstados.add(new EstadosClass("https://www.staffcreativa.pe/blog/wp-content/uploads/logos9.gif","lolm3"));
+        listaEstados.add(new EstadosClass("https://www.staffcreativa.pe/blog/wp-content/uploads/logos9.gif","Tus Historias"));
         listaEstados.add(new EstadosClass("https://i.pinimg.com/originals/33/b8/69/33b869f90619e81763dbf1fccc896d8d.jpg","españita"));
         listaEstados.add(new EstadosClass("https://d24jx5gocr6em0.cloudfront.net/wp-content/uploads/2020/04/03160041/negros-con-ataud-520x350.jpg","testUserName"));
         listaEstados.add(new EstadosClass("https://i.pinimg.com/originals/33/b8/69/33b869f90619e81763dbf1fccc896d8d.jpg","españita"));

@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.btds.app.Activitys.EstadoActivity;
+import com.btds.app.Activitys.TusEstadosActivity;
 import com.btds.app.Modelos.EstadosClass;
 import com.btds.app.R;
 import com.bumptech.glide.Glide;
@@ -97,16 +99,29 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
                 Funciones.setActividadEnUso(true);
                 */
 
-                Intent intentEstado = new Intent(context, EstadoActivity.class);
-                intentEstado.putExtra("userID",estado.getUsuario());
-                context.startActivity(intentEstado);
+                final int position = holder.getAdapterPosition();
+
+                //ENTRAR A TU PROPIA HISTORA Y SUBIR CONTENIDO O BORRAR
+                if(position == 0){
+                    Toast.makeText(context, "FUNCIONA", Toast.LENGTH_SHORT).show();
+                    Intent tusEstados = new Intent(context, TusEstadosActivity.class);
+                    context.startActivity(tusEstados);
+                }else{
+                    Intent intentEstado = new Intent(context, EstadoActivity.class);
+                    intentEstado.putExtra("userID",estado.getUsuario());
+                    context.startActivity(intentEstado);
+                }
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return listaEstados.size();
+        if (listaEstados != null){
+            return listaEstados.size();
+        }else {
+            return 0;
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

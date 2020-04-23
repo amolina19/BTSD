@@ -112,6 +112,9 @@ public class MessageActivity extends BasicActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        mensajesAdapter = new MensajesAdapter(MessageActivity.this,listaMensajes);
+        recyclerView.setAdapter(mensajesAdapter);
+
         enviar_button = findViewById(R.id.enviar_mensaje_button);
         enviar_texto = findViewById(R.id.enviar_mensaje);
         //setOnFocusChangeListener(enviar_texto, "teclado");
@@ -341,9 +344,6 @@ public class MessageActivity extends BasicActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.llamar:
-
-                return true;
             case R.id.silenciar:
 
                 return true;

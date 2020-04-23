@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.btds.app.Adaptadores.EstadosAdapter;
 import com.btds.app.R;
 
 import jp.shts.android.storiesprogressview.StoriesProgressView;
@@ -17,6 +18,7 @@ import jp.shts.android.storiesprogressview.StoriesProgressView;
 public class Estados extends Fragment {
 
     private StoriesProgressView storiesProgressView;
+    private EstadosAdapter estadosAdapter;
     private Context context;
     private RecyclerView recyclerView;
 
@@ -28,6 +30,7 @@ public class Estados extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(estadosAdapter);
 
         return view;
     }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,11 +7,15 @@
     android:orientation="vertical"
     tools:context=".Activitys.MainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -20,7 +24,6 @@
             android:background="@color/colorPrimary"
             android:popupTheme="@style/menuStyle"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -32,17 +35,16 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:contentDescription="TODO"
-                    android:visibility="visible"
-                    />
+                    android:visibility="visible" />
+
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/imagen_perfil"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="-51dp"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    app:civ_border_width="1dp"
-                    app:civ_border_color="@color/colorPrimaryDark">
-                </de.hdodenhof.circleimageview.CircleImageView>
+                    android:layout_marginStart="-51dp"
+                    android:layout_marginTop="10dp"
+                    app:civ_border_color="@color/colorPrimaryDark"
+                    app:civ_border_width="1dp"></de.hdodenhof.circleimageview.CircleImageView>
 
                 <TextView
                     android:id="@+id/usuario"
@@ -51,72 +53,45 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginLeft="25dp"
                     android:textColor="#FFF"
-                    android:textStyle="bold"
-                    android:textSize="20dp">
-                </TextView>
-
+                    android:textSize="20dp"
+                    android:textStyle="bold"/>
             </LinearLayout>
-
-
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    
     <LinearLayout
         android:id="@+id/linearLayout_estados"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:orientation="horizontal"
-        android:background="@color/colorPrimary">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:background="@drawable/ic_launcher_foreground"
-            android:layout_height="50dp"
-            android:layout_width="50dp"
-            android:layout_marginTop="15dp"
-            app:civ_border_width="2dp"
-            app:civ_border_color="@color/colorVerde"
-            android:layout_marginStart="10dp"/>
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_estados_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
-            android:orientation="horizontal"
-            />
+            android:orientation="horizontal" />
 
     </LinearLayout>
 
-
     <!--https://stackoverflow.com/questions/55035102/error-java-lang-classnotfoundexception-when-inflating-tablayout-in-fragment-->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/colorPrimary"
-        app:tabSelectedTextColor="@color/colorBlanco"
-        app:tabIndicatorColor="@color/colorBlanco"
-        app:tabTextColor="@color/colorBlanco">
-    </com.google.android.material.tabs.TabLayout>
 
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:progress="5"
-        android:layout_centerHorizontal="true"/>
-
-
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </FrameLayout>
 
     <!--https://stackoverflow.com/questions/58186121/binary-xml-file-line-7-error-inflating-class-android-support-v4-view-viewpager-->
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/view_pager"
+    </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigation_view_bottom_home"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="-5dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-    </androidx.viewpager.widget.ViewPager>
-</LinearLayout>
+        android:layout_height="60dp"
+        app:menu="@menu/menu_home"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        />
+</RelativeLayout>

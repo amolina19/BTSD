@@ -179,9 +179,6 @@ public class PerfilActivity extends BasicActivity {
 
                         }
                     });
-
-
-
                 }
             }
         });
@@ -219,8 +216,6 @@ public class PerfilActivity extends BasicActivity {
         storageReference = storage.getReference();
 
         StorageReference storageRef = storageReference.child("Imagenes/Perfil/"+usuarioObject.getId());
-
-
         UploadTask uploadTask = storageRef.putFile(file);
 
         // Register observers to listen for when the download is done or if it fails
@@ -255,6 +250,4 @@ public class PerfilActivity extends BasicActivity {
             }
         });
     }
-
-
 }

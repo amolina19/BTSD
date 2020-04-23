@@ -16,7 +16,6 @@ import com.btds.app.Activitys.MessageActivity;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
 import com.btds.app.R;
-import com.btds.app.Utils.Funciones;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -86,7 +85,7 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Funciones.setActividadEnUso(true);
+                //Funciones.setActividadEnUso(true);
                 Intent intentChat = new Intent(context, MessageActivity.class);
                 intentChat.putExtra("userID",usuario.getId());
                 context.startActivity(intentChat);
@@ -96,7 +95,11 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return listaUsuarios.size();
+        if (listaUsuarios != null){
+            return listaUsuarios.size();
+        }else {
+            return 0;
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -116,7 +119,6 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
     }
 
     public int getItemViewType(int posicion) {
-
         return 0;
     }
 

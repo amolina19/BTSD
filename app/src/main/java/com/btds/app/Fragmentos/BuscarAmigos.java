@@ -68,6 +68,8 @@ public class BuscarAmigos extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_buscaramigos,container,false);
+        //Adaptador
+
 
         progressBar = view.findViewById(R.id.progressBar);
         buscarAmigosEditText = view.findViewById(R.id.buscar_amigos_editText);
@@ -75,6 +77,9 @@ public class BuscarAmigos extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios);
+        recyclerView.setAdapter(usuariosAdapter);
         firstSearch = true;
 
         TaskProgressBar taskProgressBar = new TaskProgressBar();
@@ -128,8 +133,10 @@ public class BuscarAmigos extends Fragment {
                         }
                     }
                     System.out.println("ARRAY "+listaUsuarios.size());
-                    usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios);
+                    usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios);
+
                     recyclerView.setAdapter(usuariosAdapter);
+                    //usuariosAdapter.notifyDataSetChanged();
                 }
 
                 @Override

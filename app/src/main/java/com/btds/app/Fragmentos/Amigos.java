@@ -48,17 +48,8 @@ public class Amigos extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        fab = view.findViewById(R.id.button_buscar_amigos);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              /*  Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
-
-
-            }
-        });
+        usuariosAdapter = new UsuariosAdapter(getActivity(),listaAmigos);
+        recyclerView.setAdapter(usuariosAdapter);
 
         //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //DatabaseReference referenceUserDataBase = FirebaseDatabase.getInstance().getReference("Usuarios");
@@ -106,6 +97,7 @@ public class Amigos extends Fragment {
                 }
                 System.out.println("ARRAY "+listaUsuarios.size());
                 usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios);
+                //usuariosAdapter.notifyDataSetChanged();
                 recyclerView.setAdapter(usuariosAdapter);
             }
 
@@ -165,9 +157,8 @@ public class Amigos extends Fragment {
                     }
 
                 }
-
-                usuariosAdapter = new UsuariosAdapter(getContext(),listaAmigos);
-                recyclerView.setAdapter(usuariosAdapter);
+                //usuariosAdapter = new UsuariosAdapter(getActivity(),listaAmigos);
+                //recyclerView.setAdapter(usuariosAdapter);
             }
 
             @Override

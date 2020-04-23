@@ -106,7 +106,11 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return listaMensajes.size();
+        if (listaMensajes != null){
+            return listaMensajes.size();
+        }else {
+            return 0;
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
