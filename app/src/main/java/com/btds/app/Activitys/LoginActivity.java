@@ -1,7 +1,6 @@
 package com.btds.app.Activitys;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -9,21 +8,23 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.btds.app.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.vdx.designertoast.DesignerToast;
+
+import java.util.Objects;
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 
 public class LoginActivity extends BasicActivity {
 
 
+    /*
     class TaskProgressBar extends AsyncTask<Void, Void, Void> {
 
 
@@ -42,6 +43,7 @@ public class LoginActivity extends BasicActivity {
             return null;
         }
     }
+    */
 
 
     MaterialEditText email,password;
@@ -49,7 +51,7 @@ public class LoginActivity extends BasicActivity {
     ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference reference;
+    //private DatabaseReference reference;
 
 
     @Override
@@ -59,10 +61,10 @@ public class LoginActivity extends BasicActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.login);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.login);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //DEPRECATED API 23
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorBlanco));
+        //DEPRECATED API 23 getResources.getColor()
+        toolbar.setTitleTextColor(this.getColor(R.color.colorBlanco));
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -72,36 +74,30 @@ public class LoginActivity extends BasicActivity {
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
-        button_iniciarSesion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String text_email = email.getText().toString();
-                String text_password = password.getText().toString();
-                progressBar.setVisibility(View.VISIBLE);
-                new TaskProgressBar().execute();
+        button_iniciarSesion.setOnClickListener(v -> {
+            String text_email = Objects.requireNonNull(email.getText()).toString();
+            String text_password = Objects.requireNonNull(password.getText()).toString();
+            progressBar.setVisibility(View.VISIBLE);
+            //new TaskProgressBar().execute();
 
-                if(text_email.isEmpty() || text_password.isEmpty()){
-                    Toast.makeText(LoginActivity.this, R.string.completar, Toast.LENGTH_SHORT).show();
-                }else{
+            if(text_email.isEmpty() || text_password.isEmpty()){
+                Toast.makeText(LoginActivity.this, R.string.completar, Toast.LENGTH_SHORT).show();
+            }else{
 
-                    mAuth.signInWithEmailAndPassword(text_email,text_password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if(task.isSuccessful()){
-                                        Intent intentLogin = new Intent(LoginActivity.this, MainActivity.class);
-                                        intentLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intentLogin);
-                                        //Toast.makeText(LoginActivity.this, R.string.iniciarSesionCorrectamente, Toast.LENGTH_SHORT).show();
-                                        DesignerToast.Success(LoginActivity.this, getResources().getString(R.string.iniciarSesionCorrectamente), Gravity.BOTTOM, Toast.LENGTH_SHORT);
-                                        finish();
-                                    }else{
-                                        //Toast.makeText(LoginActivity.this, R.string.autentificacionFallida, Toast.LENGTH_SHORT).show();
-                                        DesignerToast.Error(LoginActivity.this, getResources().getString(R.string.autentificacionFallida), Gravity.BOTTOM, Toast.LENGTH_SHORT);
-                                    }
-                                }
-                            });
-                }
+                mAuth.signInWithEmailAndPassword(text_email,text_password)
+                        .addOnCompleteListener(task -> {
+                            if(task.isSuccessful()){
+                                Intent intentLogin = new Intent(LoginActivity.this, MainActivity.class);
+                                intentLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intentLogin);
+                                //Toast.makeText(LoginActivity.this, R.string.iniciarSesionCorrectamente, Toast.LENGTH_SHORT).show();
+                                DesignerToast.Success(LoginActivity.this, getResources().getString(R.string.iniciarSesionCorrectamente), Gravity.BOTTOM, Toast.LENGTH_SHORT);
+                                finish();
+                            }else{
+                                //Toast.makeText(LoginActivity.this, R.string.autentificacionFallida, Toast.LENGTH_SHORT).show();
+                                DesignerToast.Error(LoginActivity.this, getResources().getString(R.string.autentificacionFallida), Gravity.BOTTOM, Toast.LENGTH_SHORT);
+                            }
+                        });
             }
         });
     }

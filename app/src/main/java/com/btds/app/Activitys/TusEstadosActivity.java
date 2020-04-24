@@ -16,6 +16,10 @@ import com.btds.app.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class TusEstadosActivity extends AppCompatActivity {
 
     private List<String> listaTusEstados;

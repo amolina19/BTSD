@@ -12,12 +12,17 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class EstadosUsuarioAdapter extends BaseAdapter {
 
 
-    Context context;
-    List<String> listaEstadosUsuario;
-    LayoutInflater inflter;
+    private Context context;
+    private List<String> listaEstadosUsuario;
+    private LayoutInflater inflter;
 
     public EstadosUsuarioAdapter(Context applicationContext, List<String> listaEstadosUsuario) {
         this.context = applicationContext;

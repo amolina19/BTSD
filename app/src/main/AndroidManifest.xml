@@ -34,7 +34,8 @@
         android:roundIcon="@drawable/ic_iconlogo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activitys.TusEstadosActivity"></activity>
+        <activity android:name=".Activitys.TusEstadosActivity"/>
+        <activity android:name=".Activitys.BasicActivity"/>
         <activity android:name=".Activitys.EstadoActivity" />
         <activity android:name=".Activitys.GaleryActivity" />
         <activity android:name=".Activitys.CallActivity" />

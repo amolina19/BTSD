@@ -1,15 +1,17 @@
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 package com.btds.app.Utils;
 
-import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -19,42 +21,33 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class Funciones {
     private static Usuario usuario;
-    private static Boolean actividadEnUso = false;
-    private static  Boolean backPressed = false;
     private static HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados;
-    static Fecha fecha;
-    private static DatabaseReference referenceUserDataBase;
+    private static Fecha fecha;
 
     public Funciones(){
 
     }
 
-    public static Boolean getActividadEnUso() {
-        return actividadEnUso;
-    }
 
-    public static void setActividadEnUso(Boolean actividadEnUso) {
-        Funciones.actividadEnUso = actividadEnUso;
-    }
-
-    public static Boolean getBackPressed() {
-        return backPressed;
-    }
-
-    public static void setBackPressed(Boolean backPressed) {
-        Funciones.backPressed = backPressed;
-    }
-
+    /**
+     * Función estática para actualizar la última conexión y el estado del usuario. Recorro la base de datos hasta encontrar la referencia de nuestro usuario y asignarselo a un objeto, asignamos los datos y actualizamos.
+     * Recorro la base de datos de todos lso objetos ya que no estoy creado ni borrando un valor, sino actualizandolo.
+     * @param estado Se le inserta un String, en este caso valores de strings en values/strings.xml
+     * @param firebaseUser El Objeto FirebaseUser para obtener el id del usuario local.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static void actualizarConexion(@NonNull final String estado, final FirebaseUser firebaseUser, final Context contexto) {
+    public static void actualizarConexion(@NonNull final String estado, final FirebaseUser firebaseUser) {
 
         fecha = new Fecha();
         usuario = new Usuario();
@@ -73,7 +66,7 @@ public class Funciones {
                             if (usuario.getId().equals(firebaseUser.getUid())) {
                                 usuario.setEstado(estado);
                                 usuario.setHora(fecha.obtenerHora()+":"+fecha.obtenerMinutos());
-                                usuario.setFecha(fecha.obtenerDia()+" "+fecha.obtenerMes()+" "+fecha.obtenerAño());
+                                usuario.setFecha(fecha.obtenerDia()+" "+fecha.obtenerMes()+" "+fecha.obtenerAnno());
                                 referenceUserDataBase.child(firebaseUser.getUid()).setValue(usuario);
                                 //System.out.println("CONEXION: "+estado);
                                 //System.out.println("RECURSO "+contexto.getResources().getString(R.string.offline));
@@ -92,23 +85,35 @@ public class Funciones {
 
     }
 
+    /**
+     * Se obtiene su últ conexión y cálcular cuantos días han transcurrido devolviendo un número entero.
+     * @param usuarioChat objeto Usuario del usuario que estamos chateando
+     * @return devuelve el número de dias en un int.
+     */
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static float obtenerDiasPasados(Usuario usuarioChat){
 
         fecha = new Fecha();
         String fechaUsuario = usuarioChat.getFecha();
 
-        int userChatDateDay =  Integer.valueOf(fechaUsuario.replace(" ","").substring(0,2));
-        int userChatDateMonth = Integer.valueOf(fechaUsuario.replace(" ","").substring(2,4));
-        int userChatDateYear = Integer.valueOf(fechaUsuario.replace(" ","").substring(4,8));
+        int userChatDateDay =  Integer.parseInt(fechaUsuario.replace(" ","").substring(0,2));
+        int userChatDateMonth = Integer.parseInt(fechaUsuario.replace(" ","").substring(2,4));
+        int userChatDateYear = Integer.parseInt(fechaUsuario.replace(" ","").substring(4,8));
 
         LocalDate dateBefore = LocalDate.of(userChatDateYear, userChatDateMonth, userChatDateDay);
-        LocalDate dateAfter = LocalDate.of(Integer.valueOf(fecha.obtenerAño()), Integer.valueOf(fecha.obtenerMes()), Integer.valueOf(fecha.obtenerDia()));
+        LocalDate dateAfter = LocalDate.of(Integer.parseInt(fecha.obtenerAnno()), Integer.parseInt(fecha.obtenerMes()), Integer.parseInt(fecha.obtenerDia()));
         long nDias = ChronoUnit.DAYS.between(dateBefore, dateAfter);
 
-        System.out.println("Dias transcurridos ult Conexion Usuario: "+nDias);
+        Log.d("Debugging Dias transcurridos","Dias transcurridos ult Conexion Usuario: "+nDias);
         return nDias;
     }
+
+    /**
+     *
+     * @param n Parámetro la función que le insertamos para que nos devuelva una cadena aleatoria de String con esa longitud.
+     * @return Devuelve la cadena aleatoria de String generada.
+     */
 
     public static String getAlphaNumericString(int n){
 
@@ -137,38 +142,53 @@ public class Funciones {
         return sb.toString();
     }
 
+    /**
+     * Parámetro donde se le introduce un objeto Usuario dentro de la función a través de cualquier actividad que se use para borrarlo de la lista de bloqueados del usuario.
+     * @param usuarioChat Objeto Usuario con el que estamos teniendo la conversación.
+     */
+
     public static void desbloquearUsuario(Usuario usuarioChat){
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference refernceBloquedUsers = getInstance().getReference("Bloqueados");
+        assert firebaseUser != null;
         refernceBloquedUsers.child(firebaseUser.getUid()+""+usuarioChat.getId()).removeValue();
 
         getListaUsuariosBloqueados().remove(usuarioChat.getId());
     }
+
+    /**
+     * Parámetro donde se le introduce un objeto Usuario dentro de la función a través de cualquier actividad que se use para añadirlo a la lista de bloqueados del usuario.
+     * Al bloquear el usuario se útiliza el ID del usuario que bloquea + ID del usuario bloqueado para que no exista duplicidad.
+     * @param usuarioChat objeto Usuario con el que estamos teniendo la conversación.
+     */
 
     public static void bloquearUsuario(Usuario usuarioChat){
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference refernceBloquedUsers = getInstance().getReference("Bloqueados");
         UsuarioBloqueado usuarioBloqueadoObject = new UsuarioBloqueado();
 
+        assert firebaseUser != null;
         usuarioBloqueadoObject.setKey(firebaseUser.getUid()+""+usuarioChat.getId());
         usuarioBloqueadoObject.setUsuarioAccionBloquear(firebaseUser.getUid());
         usuarioBloqueadoObject.setUsuarioBloqueado(usuarioChat.getId());
 
-        refernceBloquedUsers.child(usuarioBloqueadoObject.getKey()).setValue(usuarioBloqueadoObject).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    System.out.println("Se ha bloqueado al usuario");
-                }
+        refernceBloquedUsers.child(usuarioBloqueadoObject.getKey()).setValue(usuarioBloqueadoObject).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                Log.d("Debugging","Se ha bloqueado al usuario");
             }
         });
 
     }
 
-    public static HashMap<String,UsuarioBloqueado> obtenerUsuariosBloqueados(){
+    /**
+     * Devuelve un HashMap donde el String es el id del usuario y su objeto Usuario para que sean únicos. Cada vez que se introduce o elimine un registro devolverá una lista nueva.
+     * @return devuelve el HashMap con los valores recorridos y obtenidos de la base de datos.
+     */
+
+    public static HashMap<String,UsuarioBloqueado> obtenerUsuariosBloqueados(FirebaseUser firebaseUser){
 
         DatabaseReference refernceBloquedUsers = getInstance().getReference("Bloqueados");
-        listaUsuariosBloqueados = new HashMap<String, UsuarioBloqueado>();
+        listaUsuariosBloqueados = new HashMap<>();
 
         refernceBloquedUsers.addValueEventListener(new ValueEventListener() {
 
@@ -178,15 +198,19 @@ public class Funciones {
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                     UsuarioBloqueado usuarioBloqueado = snapshot.getValue(UsuarioBloqueado.class);
                     if(usuarioBloqueado != null){
-                        listaUsuariosBloqueados.put(usuarioBloqueado.getUsuarioBloqueado(),usuarioBloqueado);
+
+                        if(usuarioBloqueado.getUsuarioAccionBloquear().contentEquals(firebaseUser.getUid())){
+                            listaUsuariosBloqueados.put(usuarioBloqueado.getUsuarioBloqueado(),usuarioBloqueado);
+                        }
 
                         for(Map.Entry<String, UsuarioBloqueado> entry : listaUsuariosBloqueados.entrySet()) {
-                            System.out.println(entry.getKey());
+                            //System.out.println(entry.getKey());
                             UsuarioBloqueado value = entry.getValue();
-                            System.out.println(value.getUsuarioBloqueado());
+                            Log.d("DEBUG Funciones, VALOR USUARIO BLOQUEADO",value.getUsuarioBloqueado());
                         }
                     }
                 }
+                Log.d("DEBUG USUARIOS BLOQUEADOS", String.valueOf(listaUsuariosBloqueados.size()));
 
             }
 
@@ -199,13 +223,20 @@ public class Funciones {
         return listaUsuariosBloqueados;
     }
 
+    /**
+     *
+     * No esta sujeto a cambios en tiempo real sobre la base de datos, devuelve la que contiene en la memoria actual.
+     * @return Devuelve un HashMap, el String corresponde el id del usuario y su objeto Usuario para que no existan duplicidad.
+     */
+
     public static HashMap<String,UsuarioBloqueado> getListaUsuariosBloqueados(){
         return listaUsuariosBloqueados;
     }
 
 
-
-    public ArrayList<String> ObtenerListaUsuariosStringID(String firebaseID){
+    /*
+    @Deprecated
+    public ArrayList<String> ObtenerListaUsuariosStringID(){
        final  ArrayList<String> arrayList = new ArrayList<>();
 
        DatabaseReference referenceUserDataBase = getInstance().getReference("Usuarios");
@@ -230,6 +261,8 @@ public class Funciones {
 
         return arrayList;
     }
+
+     */
 
 
 

@@ -25,9 +25,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
-
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 public class Chats extends Fragment {
 
     private RecyclerView recyclerView;
@@ -35,8 +39,8 @@ public class Chats extends Fragment {
     private UsuariosAdapter usuariosAdapter;
     private List<Usuario> ListaUsuariosObject;
 
-    FirebaseUser fUser;
-    DatabaseReference databaseReference;
+    private FirebaseUser fUser;
+    private DatabaseReference databaseReference;
 
     private List<String> ListaUsuariosIdString;
 
@@ -45,7 +49,7 @@ public class Chats extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
-        ListaUsuariosIdString = new ArrayList<String>();
+        ListaUsuariosIdString = new ArrayList<>();
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -66,6 +70,7 @@ public class Chats extends Fragment {
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                     Mensaje mensaje = snapshot.getValue(Mensaje.class);
 
+                    assert mensaje != null;
                     if(mensaje.getEmisor().contentEquals(fUser.getUid())){
                         ListaUsuariosIdString.add(mensaje.getReceptor());
                     }
@@ -87,49 +92,57 @@ public class Chats extends Fragment {
         return  view;
     }
 
-    private void leerChats(){
+    private CompletableFuture<Void> leerChats(){
 
-        ListaUsuariosObject = new ArrayList<>();
+        try{
+
+            ListaUsuariosObject = new ArrayList<>();
 
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Usuarios");
+            databaseReference = FirebaseDatabase.getInstance().getReference("Usuarios");
 
-        final HashMap<String,Usuario> hashMap = new HashMap<>();
+            final HashMap<String,Usuario> hashMap = new HashMap<>();
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ListaUsuariosObject.clear();
-                hashMap.clear();
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    ListaUsuariosObject.clear();
+                    hashMap.clear();
 
-                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    Usuario usuario = snapshot.getValue(Usuario.class);
-                    for (String id : ListaUsuariosIdString) {
-                        if (usuario.getId().contentEquals(id)) {
-                            if (ListaUsuariosObject.size() != 0) {
-                                for (int i = 0;i<ListaUsuariosObject.size();i++) {
-                                    if (!hashMap.containsKey(usuario.getId()) && !usuario.getId().contentEquals(fUser.getUid())) {
-                                        ListaUsuariosObject.add(usuario);
-                                        hashMap.put(usuario.getId(),usuario);
+                    for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+                        Usuario usuario = snapshot.getValue(Usuario.class);
+                        for (String id : ListaUsuariosIdString) {
+                            assert usuario != null;
+                            if (usuario.getId().contentEquals(id)) {
+                                if (ListaUsuariosObject.size() != 0) {
+                                    for (int i = 0;i<ListaUsuariosObject.size();i++) {
+                                        if (!hashMap.containsKey(usuario.getId()) && !usuario.getId().contentEquals(fUser.getUid())) {
+                                            ListaUsuariosObject.add(usuario);
+                                            hashMap.put(usuario.getId(),usuario);
+                                        }
                                     }
+                                } else if(!usuario.getId().contentEquals(fUser.getUid())){
+                                    hashMap.put(usuario.getId(),usuario);
+                                    ListaUsuariosObject.add(usuario);
                                 }
-                            } else if(!usuario.getId().contentEquals(fUser.getUid())){
-                                hashMap.put(usuario.getId(),usuario);
-                                ListaUsuariosObject.add(usuario);
                             }
                         }
                     }
+                    usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject);
+                    //usuariosAdapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(usuariosAdapter);
+                    usuariosAdapter.notifyDataSetChanged();
+
                 }
-                usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject);
-                //usuariosAdapter.notifyDataSetChanged();
-                recyclerView.setAdapter(usuariosAdapter);
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+                }
+            });
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return completedFuture(null);
     }
 }

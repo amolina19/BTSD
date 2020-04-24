@@ -1,15 +1,13 @@
 package com.btds.app.Fragmentos;
 
-import android.annotation.SuppressLint;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,18 +28,24 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 public class BuscarAmigos extends Fragment {
 
 
     private RecyclerView recyclerView;
-    private ProgressBar progressBar;
     private EditText buscarAmigosEditText;
     private UsuariosAdapter usuariosAdapter;
     private List<Usuario> listaUsuarios;
 
     private boolean firstSearch;
 
+    /*
     class TaskProgressBar extends AsyncTask<Void, Void, Void> {
 
 
@@ -62,6 +66,8 @@ public class BuscarAmigos extends Fragment {
             return null;
         }
     }
+    */
+
 
 
     @Override
@@ -71,9 +77,9 @@ public class BuscarAmigos extends Fragment {
         //Adaptador
 
 
-        progressBar = view.findViewById(R.id.progressBar);
+        //ProgressBar progressBar = view.findViewById(R.id.progressBar);
         buscarAmigosEditText = view.findViewById(R.id.buscar_amigos_editText);
-        setOnFocusChangeListener(buscarAmigosEditText, "buscarAmigos");
+        setOnFocusChangeListener(buscarAmigosEditText);
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -82,8 +88,8 @@ public class BuscarAmigos extends Fragment {
         recyclerView.setAdapter(usuariosAdapter);
         firstSearch = true;
 
-        TaskProgressBar taskProgressBar = new TaskProgressBar();
-        taskProgressBar.execute();
+        //TaskProgressBar taskProgressBar = new TaskProgressBar();
+        //taskProgressBar.execute();
 
 
         //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -102,60 +108,70 @@ public class BuscarAmigos extends Fragment {
     }
 
 
+    /*
     public String limpiarCadenaBaseDatos(String valor){
 
         int position = valor.lastIndexOf("=");
         String valorFinal = valor.substring(position+1,valor.length()-1);
         return valorFinal;
     }
+     */
 
 
-    public void obtenerUsuarios(){
+    private CompletableFuture<Void> obtenerUsuarios(){
 
-        if(firstSearch){
-            firstSearch = false;
-            final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
+        try {
+
+            if(firstSearch){
+                firstSearch = false;
+                final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
 
 
 
-            references.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    listaUsuarios.clear();
-                    for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                        Usuario usuario = snapshot.getValue(Usuario.class);
-                        if(usuario !=null){
-                            if(!usuario.getId().equals(firebaseUser.getUid())){
-                                listaUsuarios.add(usuario);
+                references.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        listaUsuarios.clear();
+                        for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                            Usuario usuario = snapshot.getValue(Usuario.class);
+                            if(usuario !=null){
+                                assert firebaseUser != null;
+                                if(!usuario.getId().equals(firebaseUser.getUid())){
+                                    listaUsuarios.add(usuario);
 
+                                }
                             }
                         }
+                        Log.d("DEBUG Buscar Amigos", String.valueOf(listaUsuarios.size()));
+                        usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios);
+
+                        recyclerView.setAdapter(usuariosAdapter);
+                        usuariosAdapter.notifyDataSetChanged();
                     }
-                    System.out.println("ARRAY "+listaUsuarios.size());
-                    usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios);
 
-                    recyclerView.setAdapter(usuariosAdapter);
-                    //usuariosAdapter.notifyDataSetChanged();
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+                    }
+                });
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
+        return completedFuture(null);
     }
 
 
 
-    private void setOnFocusChangeListener(TextView textView, String name){
+    private CompletableFuture<Void> setOnFocusChangeListener(TextView textView){
 
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
+        try {
 
-        textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
+            final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            final DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
+
+            textView.setOnFocusChangeListener((v, hasFocus) -> {
                 if(hasFocus) {
                     //Toast.makeText(BuscarAmigos.this, "ESTAS EN EL TECLADO", Toast.LENGTH_SHORT).show();
                     buscarAmigosEditText.addTextChangedListener(new TextWatcher() {
@@ -172,10 +188,11 @@ public class BuscarAmigos extends Fragment {
 
                                         Usuario usuario = snapshot.getValue(Usuario.class);
                                         if(usuario !=null){
-                                            System.out.println("VALOR USUARIO "+usuario.getId());
+                                            Log.d("DEBUG Buscar Amigos","VALOR USUARIO "+usuario.getId());
 
+                                            assert firebaseUser != null;
                                             if(!usuario.getId().equals(firebaseUser.getUid())){
-                                                System.out.println("LISTA AMIGOS "+listaUsuarios.size());
+                                                Log.d("DEBUG Buscar Amigos","LISTA NUEVOS AMIGOS SIN AGREGAR "+listaUsuarios.size());
 
                                                 if(usuario.getUsuario().toLowerCase().contains(buscarAmigosEditText.getText().toString().toLowerCase())){
                                                     listaUsuarios.add(usuario);
@@ -202,9 +219,12 @@ public class BuscarAmigos extends Fragment {
 
                         public void onTextChanged(CharSequence s, int start, int before,
                                                   int count) {
+                            /*
                             if(!s.equals("") ) {
 
                             }
+
+                             */
                         }
 
                         @Override
@@ -219,8 +239,12 @@ public class BuscarAmigos extends Fragment {
                         }
                     });
                 }
-            }
-        });
+            });
+
+        } catch (Throwable t) {
+           t.printStackTrace();
+        }
+        return completedFuture(null);
     }
 
 

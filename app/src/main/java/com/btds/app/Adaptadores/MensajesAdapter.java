@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.btds.app.Modelos.Mensaje;
 import com.btds.app.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,17 +21,21 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
+
 public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHolder>  {
 
-    public static final int MENSAGE_TIPO_IZQUIERDA = 0;
-    public static final int MENSAGE_TIPO_DERECHA = 1;
+    //private static final int MENSAGE_TIPO_IZQUIERDA = 0;
+    private static final int MENSAGE_TIPO_DERECHA = 1;
 
     private Boolean firstEnter = false;
     private Context context;
     private List<Mensaje> listaMensajes;
 
-    FirebaseUser firebaseUser;
-    DatabaseReference referenceChats = FirebaseDatabase.getInstance().getReference("Chats");
+    private DatabaseReference referenceChats = FirebaseDatabase.getInstance().getReference("Chats");
 
 
     public MensajesAdapter(Context contexto, List<Mensaje> listaMensajes){
@@ -113,14 +115,14 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView show_message;
-        public TextView hora;
-        public TextView estado;
+        TextView show_message;
+        TextView hora;
+        TextView estado;
         ImageView visto;
 
-        public ViewHolder(View itemView){
+        ViewHolder(View itemView){
             super(itemView);
 
             show_message = itemView.findViewById(R.id.enseñar_mensaje);
@@ -134,13 +136,19 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
 
     @Override
     public int getItemViewType(int posicion) {
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        /*
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        assert firebaseUser != null;
         if(listaMensajes.get(posicion).getEmisor().equals(firebaseUser.getUid())){
             return MENSAGE_TIPO_DERECHA;
         }else{
             return MENSAGE_TIPO_IZQUIERDA;
         }
+
+         */
+        return 0;
     }
 }
 

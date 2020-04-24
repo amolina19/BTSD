@@ -1,13 +1,14 @@
 package com.btds.app.Modelos;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class EstadosClass {
 
     private String estadoURL;
     private String usuario;
     //private Usuario usuarioEstado;
-
-    public EstadosClass() {
-    }
 
     public EstadosClass(String estadoURL, String usuario) {
         this.estadoURL = estadoURL;

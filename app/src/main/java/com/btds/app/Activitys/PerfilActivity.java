@@ -1,11 +1,10 @@
 package com.btds.app.Activitys;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,10 +20,6 @@ import com.bumptech.glide.Glide;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.ReturnMode;
 import com.esafirm.imagepicker.model.Image;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,11 +31,16 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 public class PerfilActivity extends BasicActivity {
 
 
@@ -50,7 +50,7 @@ public class PerfilActivity extends BasicActivity {
     Usuario usuarioObject;
     Button imageButton;
     Button guardarButton;
-    Button cambiarContraseña;
+    Button cambiarPassword;
     Toolbar toolbar;
 
     FirebaseUser firebaseUser;
@@ -61,9 +61,9 @@ public class PerfilActivity extends BasicActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
 
-    private Uri filePath;
-    private Bitmap currentImage;
-    private final int PICK_IMAGE_REQUEST = 10;
+    //private Uri filePath;
+    //private Bitmap currentImage;
+    //private final int PICK_IMAGE_REQUEST = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,15 +76,10 @@ public class PerfilActivity extends BasicActivity {
         //INDISPENSABLE
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
 
         imagen_perfil = findViewById(R.id.imagen_perfil);
@@ -96,10 +91,10 @@ public class PerfilActivity extends BasicActivity {
         imageButton.setBackgroundColor(Color.TRANSPARENT);
 
         guardarButton = findViewById(R.id.guardarButton);
-        cambiarContraseña = findViewById(R.id.cambiarContraseña);
+        cambiarPassword = findViewById(R.id.cambiarContraseña);
 
 
-        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, getApplicationContext());
+        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
 
 
 
@@ -133,53 +128,40 @@ public class PerfilActivity extends BasicActivity {
 
             }
         });
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ImagePicker.create(PerfilActivity.this).returnMode(ReturnMode.GALLERY_ONLY).single().start();
-
-            }
+        imageButton.setOnClickListener(v -> ImagePicker.create(PerfilActivity.this).returnMode(ReturnMode.GALLERY_ONLY).single().start());
+        cambiarPassword.setOnClickListener(v -> {
+            //cambiar contraseña
+            System.out.println("PASSWORD CHANGE");
         });
-        cambiarContraseña.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        guardarButton.setOnClickListener(v -> {
 
-            }
-        });
-        guardarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(descripcion.getText().length() > 80){
-                    Toast.makeText(PerfilActivity.this, getResources().getString(R.string.descripcionGrandeError), Toast.LENGTH_LONG).show();
-                }else{
-                    referenceUserDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                usuarioObject = snapshot.getValue(Usuario.class);
-                                if (usuario != null) {
-                                    if (usuarioObject.getId().equals(firebaseUser.getUid())) {
-                                        usuarioObject.setDescripcion(descripcion.getText().toString());
-                                        referenceUserDataBase.child(firebaseUser.getUid()).setValue(usuarioObject).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful()){
-                                                Toast.makeText(PerfilActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_SHORT).show();
-                                            }
-                                            }
-                                        });
+            if(descripcion.getText().length() > 80){
+                Toast.makeText(PerfilActivity.this, getResources().getString(R.string.descripcionGrandeError), Toast.LENGTH_LONG).show();
+            }else{
+                referenceUserDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            usuarioObject = snapshot.getValue(Usuario.class);
+                            if (usuario != null) {
+                                assert usuarioObject != null;
+                                if (usuarioObject.getId().equals(firebaseUser.getUid())) {
+                                    usuarioObject.setDescripcion(descripcion.getText().toString());
+                                    referenceUserDataBase.child(firebaseUser.getUid()).setValue(usuarioObject).addOnCompleteListener(task -> {
+                                    if(task.isSuccessful()){
+                                        Toast.makeText(PerfilActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_SHORT).show();
                                     }
+                                    });
                                 }
                             }
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
-                }
+                    }
+                });
             }
         });
 
@@ -197,7 +179,7 @@ public class PerfilActivity extends BasicActivity {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             // or get a single image only
             Image image = ImagePicker.getFirstImageOrNull(data);
-            System.out.println("IMAGEN PATH "+image.getPath());
+            Log.d("DEBUG PerfilActivity","IMAGEN PATH "+image.getPath());
             Toast.makeText(this, getResources().getString(R.string.actualizandoImagenPerfil), Toast.LENGTH_SHORT).show();
             subirImagen(image);
 
@@ -219,35 +201,22 @@ public class PerfilActivity extends BasicActivity {
         UploadTask uploadTask = storageRef.putFile(file);
 
         // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                System.out.println("LA IMAGEN NO SE HA SUBIDO");
-                Toast.makeText(PerfilActivity.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        // getting image uri and converting into string
-                        Uri downloadUrl = uri;
-                        usuarioObject.setImagenURL(downloadUrl.toString());
-                        referenceUserDataBase.child(usuarioObject.getId()).setValue(usuarioObject).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    System.out.println("Se ha Actualizado la foto de perfil");
-                                    Toast.makeText(PerfilActivity.this, getResources().getString(R.string.exitoSubirImagenPerfil), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+        uploadTask.addOnFailureListener(exception -> {
+            // Handle unsuccessful uploads
+            Log.d("DEBUG PerfilActivity","LA IMAGEN NO SE HA SUBIDO");
+            Toast.makeText(PerfilActivity.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
+        }).addOnSuccessListener(taskSnapshot -> {
+            storageRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+                // getting image uri and converting into string
+                usuarioObject.setImagenURL(downloadUrl.toString());
+                referenceUserDataBase.child(usuarioObject.getId()).setValue(usuarioObject).addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        Log.d("DEBUG PerfilActivity","Se ha Actualizado la foto de perfil");
+                        Toast.makeText(PerfilActivity.this, getResources().getString(R.string.exitoSubirImagenPerfil), Toast.LENGTH_SHORT).show();
                     }
                 });
-                System.out.println("La imagen se ha subido al perfil de "+usuarioObject.getUsuario());
-            }
+            });
+            Log.d("DEBUG PerfilActivity","La imagen se ha subido al perfil de "+usuarioObject.getUsuario());
         });
     }
 }

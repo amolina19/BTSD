@@ -1,5 +1,10 @@
 package com.btds.app.Modelos;
 
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class UsuarioBloqueado {
 
     private String key;

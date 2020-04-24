@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
 import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
@@ -19,16 +18,17 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import jp.shts.android.storiesprogressview.StoriesProgressView;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class EstadoActivity extends BasicActivity implements StoriesProgressView.StoriesListener, View.OnTouchListener {
 
     private StoriesProgressView storiesProgressView;
     ImageView storiesImageView;
-    private boolean isTouch = false;
     private Context context;
     private int storiesCount = 0;
-    private Intent intent;
-    private Usuario usuarioEstado;
-    private String usuarioID;
+    //private Usuario usuarioEstado;
     CircleImageView circleImageView;
     List<String> listImagesUrl;
 
@@ -38,8 +38,8 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
         setContentView(R.layout.activity_estado);
 
         context = getApplicationContext();
-        intent = getIntent();
-        usuarioID = intent.getStringExtra("userID");
+        Intent intent = getIntent();
+        //String usuarioID = intent.getStringExtra("userID");
 
         listImagesUrl = new ArrayList<>();
         listImagesUrl.add("https://cde.laprensa.e3.pe/ima/0/0/2/3/7/237000.jpg");
@@ -99,7 +99,7 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouch(View v, @org.jetbrains.annotations.NotNull MotionEvent event) {
         int X = (int) event.getX();
         int Y = (int) event.getY();
         int eventaction = event.getAction();
@@ -107,7 +107,7 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
         switch (eventaction) {
             case MotionEvent.ACTION_DOWN:
                 Toast.makeText(this, "ACTION_DOWN AT COORDS "+"X: "+X+" Y: "+Y, Toast.LENGTH_SHORT).show();
-                isTouch = true;
+                //boolean isTouch = true;
                 storiesProgressView.pause();
                 break;
 

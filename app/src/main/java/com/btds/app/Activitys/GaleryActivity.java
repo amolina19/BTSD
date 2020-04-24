@@ -11,6 +11,10 @@ import android.widget.ImageView;
 
 import com.btds.app.R;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class GaleryActivity extends BasicActivity {
 
     private ImageView selectedImage;

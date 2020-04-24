@@ -21,13 +21,16 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import jp.shts.android.storiesprogressview.StoriesProgressView;
+
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 
 public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHolder>  {
 
 
-    public static int ESTADO_VISTO = 1;
-    public static int ESTADO_NO_VISTO = 0;
+    //public static int ESTADO_NO_VISTO = 0;
     private List<EstadosClass> listaEstados;
 
     private Context context;
@@ -41,14 +44,15 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
+        int ESTADO_VISTO = 1;
 
         if(viewType == ESTADO_VISTO){
             View view = LayoutInflater.from(context).inflate(R.layout.estados2_item,parent,false);
 
-            return new EstadosAdapter.ViewHolder(view);
+            return new ViewHolder(view);
         }else{
             View view = LayoutInflater.from(context).inflate(R.layout.estados_item,parent,false);
-            return new EstadosAdapter.ViewHolder(view);
+            return new ViewHolder(view);
         }
     }
 
@@ -91,26 +95,23 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
         */
 
         //Entra a la actividad
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.itemView.setOnClickListener(v -> {
 
-                /*
-                Funciones.setActividadEnUso(true);
-                */
+            /*
+            Funciones.setActividadEnUso(true);
+            */
 
-                final int position = holder.getAdapterPosition();
+            final int position = holder.getAdapterPosition();
 
-                //ENTRAR A TU PROPIA HISTORA Y SUBIR CONTENIDO O BORRAR
-                if(position == 0){
-                    Toast.makeText(context, "FUNCIONA", Toast.LENGTH_SHORT).show();
-                    Intent tusEstados = new Intent(context, TusEstadosActivity.class);
-                    context.startActivity(tusEstados);
-                }else{
-                    Intent intentEstado = new Intent(context, EstadoActivity.class);
-                    intentEstado.putExtra("userID",estado.getUsuario());
-                    context.startActivity(intentEstado);
-                }
+            //ENTRAR A TU PROPIA HISTORA Y SUBIR CONTENIDO O BORRAR
+            if(position == 0){
+                Toast.makeText(context, "FUNCIONA", Toast.LENGTH_SHORT).show();
+                Intent tusEstados = new Intent(context, TusEstadosActivity.class);
+                context.startActivity(tusEstados);
+            }else{
+                Intent intentEstado = new Intent(context, EstadoActivity.class);
+                intentEstado.putExtra("userID",estado.getUsuario());
+                context.startActivity(intentEstado);
             }
         });
     }
@@ -124,7 +125,7 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
 
         public TextView usuario;
         CircleImageView imagen_estado;
@@ -132,10 +133,10 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
         //public ImageView imagen_perfil;
 
 
-        public StoriesProgressView storiesProgressView;
+        //public StoriesProgressView storiesProgressView;
 
 
-        public ViewHolder(View itemView){
+        ViewHolder(View itemView){
             super(itemView);
 
             usuario = itemView.findViewById(R.id.usuario);

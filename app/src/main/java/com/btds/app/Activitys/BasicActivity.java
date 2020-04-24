@@ -1,6 +1,5 @@
 package com.btds.app.Activitys;
 
-import android.os.AsyncTask;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
@@ -11,18 +10,18 @@ import com.btds.app.Utils.Funciones;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 
 public class BasicActivity extends AppCompatActivity {
 
-    private int listaMensajesLeidosGlobal = 0;
-    private int listaMensajesNoLeidosGlobal = 0;
+    //private int listaMensajesLeidosGlobal = 0;
+    //private int listaMensajesNoLeidosGlobal = 0;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
+    /*
     class TaskConnectionChecker extends AsyncTask<Void, Void, Void> {
 
 
@@ -46,6 +45,7 @@ public class BasicActivity extends AppCompatActivity {
             }
         }
     }
+    */
 
 
     public FirebaseUser getFirebaseUser() {
@@ -60,7 +60,7 @@ public class BasicActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, getApplicationContext());
+        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
         //Funciones.setActividadEnUso(true);
     }
 
@@ -69,7 +69,7 @@ public class BasicActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, getApplicationContext());
+        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
         //Funciones.setActividadEnUso(true);
     }
 
@@ -78,7 +78,7 @@ public class BasicActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, getApplicationContext());
+        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
     }
 
 

@@ -12,9 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.btds.app.Adaptadores.UsuariosAdapter;
 import com.btds.app.Modelos.Usuario;
-import com.btds.app.Modelos.UsuarioBloqueado;
 import com.btds.app.R;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,8 +22,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 
 public class Amigos extends Fragment {
 
@@ -35,9 +36,6 @@ public class Amigos extends Fragment {
     private RecyclerView recyclerView;
     private UsuariosAdapter usuariosAdapter;
     private List<Usuario> listaUsuarios;
-    private List<Usuario> listaAmigos;
-    HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados;
-    FloatingActionButton fab;
 
 
     @Override
@@ -48,7 +46,7 @@ public class Amigos extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        usuariosAdapter = new UsuariosAdapter(getActivity(),listaAmigos);
+        usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios);
         recyclerView.setAdapter(usuariosAdapter);
 
         //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -70,15 +68,17 @@ public class Amigos extends Fragment {
     }
 
 
-    public String limpiarCadenaBaseDatos(String valor){
+    /*
+    private String limpiarCadenaBaseDatos(String valor){
 
         int position = valor.lastIndexOf("=");
-        String valorFinal = valor.substring(position+1,valor.length()-1);
-        return valorFinal;
+        return valor.substring(position+1,valor.length()-1);
     }
 
+     */
 
-    public void obtenerUsuarios(){
+
+    private void obtenerUsuarios(){
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
 
@@ -90,6 +90,7 @@ public class Amigos extends Fragment {
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Usuario usuario = snapshot.getValue(Usuario.class);
                     if(usuario !=null){
+                        assert firebaseUser != null;
                         if(!usuario.getId().equals(firebaseUser.getUid())){
                             listaUsuarios.add(usuario);
                         }
@@ -99,6 +100,7 @@ public class Amigos extends Fragment {
                 usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios);
                 //usuariosAdapter.notifyDataSetChanged();
                 recyclerView.setAdapter(usuariosAdapter);
+                usuariosAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -110,7 +112,7 @@ public class Amigos extends Fragment {
 
     }
 
-
+ /*
     private void obtenerAmigos() {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
@@ -167,4 +169,6 @@ public class Amigos extends Fragment {
             }
         });
     }
+
+  */
 }

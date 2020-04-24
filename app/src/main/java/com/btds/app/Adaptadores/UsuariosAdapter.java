@@ -16,23 +16,29 @@ import com.btds.app.Activitys.MessageActivity;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
 import com.btds.app.R;
+import com.btds.app.Utils.Funciones;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHolder>  {
 
-    public static final int USUARIO_NO_BLOQUEADO = 0;
-    public static final int USUARIO_BLOQUEADO = 1;
-    public String default_profile = "https://res.cloudinary.com/teepublic/image/private/s--6vDtUIZ---/t_Resized%20Artwork/c_fit,g_north_west,h_1054,w_1054/co_ffffff,e_outline:53/co_ffffff,e_outline:inner_fill:53/co_bbbbbb,e_outline:3:1000/c_mpad,g_center,h_1260,w_1260/b_rgb:eeeeee/c_limit,f_jpg,h_630,q_90,w_630/v1570281377/production/designs/6215195_0.jpg";
+    private static final int USUARIO_NO_BLOQUEADO = 0;
+    private static final int USUARIO_BLOQUEADO = 1;
 
-    private boolean firstSearch = true;
+    //private boolean firstSearch = true;
+    private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private Context context;
     private List<Usuario> listaUsuarios;
     private HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados;
-    private FirebaseUser firebaseUser;
+    //private FirebaseUser firebaseUser;
 
 
     public UsuariosAdapter(Context contexto, List<Usuario> listaUsuarios){
@@ -47,10 +53,10 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
 
         if(viewType == USUARIO_NO_BLOQUEADO){
             View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item,parent,false);
-            return new UsuariosAdapter.ViewHolder(view);
+            return new com.btds.app.Adaptadores.UsuariosAdapter.ViewHolder(view);
         }else{
             View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item_bloqueado,parent,false);
-            return new UsuariosAdapter.ViewHolder(view);
+            return new com.btds.app.Adaptadores.UsuariosAdapter.ViewHolder(view);
         }
 
     }
@@ -69,27 +75,30 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
 
         if(usuario.getImagenURL().equals("default")){
             //holder.imagen_perfil.setImageResource(R.mipmap.ic_launcher);
+            //private static final int USUARIO_BLOQUEADO = 1;
+            String default_profile = "https://res.cloudinary.com/teepublic/image/private/s--6vDtUIZ---/t_Resized%20Artwork/c_fit,g_north_west,h_1054,w_1054/co_ffffff,e_outline:53/co_ffffff,e_outline:inner_fill:53/co_bbbbbb,e_outline:3:1000/c_mpad,g_center,h_1260,w_1260/b_rgb:eeeeee/c_limit,f_jpg,h_630,q_90,w_630/v1570281377/production/designs/6215195_0.jpg";
             Glide.with(context).load(default_profile).into(holder.imagen_perfil);
         }else{
             Glide.with(context).load(usuario.getImagenURL()).into(holder.imagen_perfil);
         }
 
+
+
+        listaUsuariosBloqueados = Funciones.obtenerUsuariosBloqueados(firebaseUser);
         if(!listaUsuariosBloqueados.containsKey(usuario.getId())){
             holder.estado.setText(usuario.getEstado());
         }else{
-            holder.estado.setText("Bloqueado");
+            holder.estado.setText(context.getResources().getString(R.string.bloqueado));
         }
 
 
+
         //Entra a la actividad
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Funciones.setActividadEnUso(true);
-                Intent intentChat = new Intent(context, MessageActivity.class);
-                intentChat.putExtra("userID",usuario.getId());
-                context.startActivity(intentChat);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            //Funciones.setActividadEnUso(true);
+            Intent intentChat = new Intent(context, MessageActivity.class);
+            intentChat.putExtra("userID",usuario.getId());
+            context.startActivity(intentChat);
         });
     }
 
@@ -102,14 +111,14 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
 
         public TextView usuario;
         public TextView estado;
         public ImageView imagen_perfil;
 
 
-        public ViewHolder(View itemView){
+        ViewHolder(View itemView){
             super(itemView);
 
             usuario = itemView.findViewById(R.id.usuario);
@@ -119,7 +128,14 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
     }
 
     public int getItemViewType(int posicion) {
-        return 0;
+
+        if(Funciones.obtenerUsuariosBloqueados(firebaseUser).containsKey(listaUsuarios.get(posicion).getId())){
+            System.out.println("error encontrado");
+            return  USUARIO_BLOQUEADO;
+        }else{
+            System.out.println("error no encontrado");
+            return USUARIO_NO_BLOQUEADO;
+        }
     }
 
 }

@@ -1,5 +1,10 @@
 package com.btds.app.Modelos;
 
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class Mensaje {
 
     private String key;

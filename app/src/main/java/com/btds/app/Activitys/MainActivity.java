@@ -2,29 +2,22 @@ package com.btds.app.Activitys;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import com.btds.app.Adaptadores.EstadosAdapter;
 import com.btds.app.Fragmentos.Amigos;
@@ -47,16 +40,21 @@ import com.vdx.designertoast.DesignerToast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
-//
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 
 public class MainActivity extends BasicActivity {
 
 
+    /*
     class TaskProgressBar extends AsyncTask<Void, Void, Void> {
 
 
@@ -75,22 +73,20 @@ public class MainActivity extends BasicActivity {
             return null;
         }
     }
+    */
+
 
     LinearLayout linearLayout;
     CircleImageView imagen_perfil;
     Button imageProfileButton;
     TextView usuario;
     Usuario usuarioObject;
-    ViewPager viewPager;
-    ViewPageAdapter viewPageAdapter;
     Fecha fecha;
-    ProgressBar progressBar;
     BottomNavigationView bottomNav;
 
     FirebaseUser firebaseUser;
     DatabaseReference referenceUserDataBase;
     DatabaseReference mainDatabasePath;
-    DatabaseReference referenceStatus;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -115,7 +111,7 @@ public class MainActivity extends BasicActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
         imagen_perfil = findViewById(R.id.imagen_perfil);
         imageProfileButton = findViewById(R.id.imagenProfileButton);
@@ -126,12 +122,9 @@ public class MainActivity extends BasicActivity {
 
         iniciarEstadosLayout();
 
-        imageProfileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentToProfile = new Intent(MainActivity.this,PerfilActivity.class);
-                startActivity(intentToProfile);
-            }
+        imageProfileButton.setOnClickListener(v -> {
+            Intent intentToProfile = new Intent(MainActivity.this,PerfilActivity.class);
+            startActivity(intentToProfile);
         });
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -188,29 +181,26 @@ public class MainActivity extends BasicActivity {
     }
 
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment selectedFragment = null;
+    private BottomNavigationView.OnNavigationItemSelectedListener navListener = item -> {
+        Fragment selectedFragment = null;
 
-            switch (item.getItemId()){
-                case R.id.nav_chats:
-                    selectedFragment = new Chats();
-                    break;
-                case R.id.nav_amigos:
-                    selectedFragment = new Amigos();
-                    break;
-                case R.id.nav_buscar:
-                    selectedFragment = new BuscarAmigos();
-                    break;
-            }
-
-            if(selectedFragment != null){
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,selectedFragment).commit();
-
-            }
-            return true;
+        switch (item.getItemId()){
+            case R.id.nav_chats:
+                selectedFragment = new Chats();
+                break;
+            case R.id.nav_amigos:
+                selectedFragment = new Amigos();
+                break;
+            case R.id.nav_buscar:
+                selectedFragment = new BuscarAmigos();
+                break;
         }
+
+        if(selectedFragment != null){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,selectedFragment).commit();
+
+        }
+        return true;
     };
 
     @Override
@@ -234,7 +224,7 @@ public class MainActivity extends BasicActivity {
                 //finish();
                 return true;
             case R.id.salir:
-                Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser, getApplicationContext());
+                Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser);
                 FirebaseAuth.getInstance().signOut();
                 intent = new Intent(this, StartActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -247,6 +237,7 @@ public class MainActivity extends BasicActivity {
         return false;
     }
 
+    /*
     class ViewPageAdapter extends FragmentPagerAdapter {
 
         private ArrayList<Fragment> fragmentos;
@@ -281,6 +272,8 @@ public class MainActivity extends BasicActivity {
         }
     }
 
+
+     */
     private void iniciarEstadosLayout(){
         LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         RecyclerView recyclerView = findViewById(R.id.recycler_view_estados_main);

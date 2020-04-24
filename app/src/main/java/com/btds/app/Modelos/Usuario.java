@@ -1,5 +1,10 @@
 package com.btds.app.Modelos;
 
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class Usuario {
 
     private String id;
@@ -9,9 +14,6 @@ public class Usuario {
     private String hora;
     private String fecha;
     private String descripcion;
-    private String bloqueado;
-
-    private String escribiendo;
 
     public Usuario(){
     }
@@ -78,19 +80,4 @@ public class Usuario {
         this.descripcion = descripcion;
     }
 
-    public String getEscribiendo() {
-        return escribiendo;
-    }
-
-    public void setEscribiendo(String escribiendo) {
-        this.escribiendo = escribiendo;
-    }
-
-    public String getBloqueado() {
-        return bloqueado;
-    }
-
-    public void setBloqueado(String bloqueado) {
-        this.bloqueado = bloqueado;
-    }
 }

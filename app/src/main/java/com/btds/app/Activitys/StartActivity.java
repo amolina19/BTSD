@@ -2,20 +2,21 @@ package com.btds.app.Activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import com.btds.app.R;
-import com.btds.app.Utils.Funciones;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 
 public class StartActivity extends BasicActivity {
 
     Button login, registrarse;
 
     FirebaseUser firebaseUser;
-    Funciones funciones;
 
     @Override
     protected void onStart() {
@@ -41,18 +42,8 @@ public class StartActivity extends BasicActivity {
         login = findViewById(R.id.login);
         registrarse = findViewById(R.id.registrarse);
 
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(StartActivity.this,LoginActivity.class));
-            }
-        });
+        login.setOnClickListener(v -> startActivity(new Intent(StartActivity.this,LoginActivity.class)));
 
-        registrarse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(StartActivity.this,RegisterActivity.class));
-            }
-        });
+        registrarse.setOnClickListener(v -> startActivity(new Intent(StartActivity.this,RegisterActivity.class)));
     }
 }
