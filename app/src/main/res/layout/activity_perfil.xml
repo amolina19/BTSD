@@ -95,6 +95,23 @@
             android:textSize="20sp"
             android:id="@+id/usuarioCampoPerfil"/>
 
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorNegro"
+            android:text="@string/tuTelefono"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:id="@+id/usuarioTelefonoperfil"/>
+
         <Button
             android:id="@+id/cambiarContraseña"
             android:layout_marginTop="30dp"

@@ -151,20 +151,7 @@ public class MessageActivity extends BasicActivity {
                 }else if(usuarioChat.getEstado().contentEquals(getResources().getString(R.string.desconectado))) {
 
                     diasPasados = (int) Funciones.obtenerDiasPasados(usuarioChat);
-
-                    if (diasPasados == 0) {
-                        String text = getResources().getString(R.string.hoy) +" "+ usuarioChat.getHora();
-                        estado.setText(text);
-                    } else {
-                        if (diasPasados == 1 ) {
-                            String text = getResources().getString(R.string.ayer) +" "+usuarioChat.getHora();
-                            estado.setText(text);
-                        } else if (diasPasados > 1) {
-                            String fecha = usuarioChat.getFecha().replace(" ", "/");
-                            String text = getResources().getString(R.string.ultavez1parte)+" "+fecha+" "+ getResources().getString(R.string.ultavez2parte)+" "+ usuarioChat.getHora();
-                            estado.setText(text);
-                        }
-                    }
+                    estado.setText(Funciones.obtenerEstadoUsuario(contexto,diasPasados,usuarioChat));
                     //Si el usuario esta en línea se descarta el cálculo de su última conexión y el TextView sera En Línea.
                 }else {
                     estado.setText(usuarioChat.getEstado());
@@ -209,7 +196,7 @@ public class MessageActivity extends BasicActivity {
         Fecha fecha = new Fecha();
 
         Mensaje mensajeObject = new Mensaje();
-        reference = FirebaseDatabase.getInstance().getReference().child("Chats");
+        reference = Funciones.getChatsDatabaseReference();
 
         mensajeObject.setId(fecha.obtenerFechaTotal()+""+Funciones.getAlphaNumericString(8));
         mensajeObject.setEmisor(emisor);
@@ -237,7 +224,7 @@ public class MessageActivity extends BasicActivity {
 
         listaMensajes = new ArrayList<>();
 
-        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference = Funciones.getChatsDatabaseReference();
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -402,6 +389,7 @@ public class MessageActivity extends BasicActivity {
         super.onBackPressed();
         Intent backToChats = new Intent(MessageActivity.this,StartActivity.class);
         startActivity(backToChats);
+        finish();
     }
 
 }

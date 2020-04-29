@@ -31,7 +31,7 @@ import java.util.List;
 public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHolder>  {
 
     private static final int USUARIO_NO_BLOQUEADO = 0;
-    private static final int USUARIO_BLOQUEADO = 1;
+    //private static final int USUARIO_BLOQUEADO = 1;
 
     //private boolean firstSearch = true;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -83,14 +83,12 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
         }
 
 
-
         listaUsuariosBloqueados = Funciones.obtenerUsuariosBloqueados(firebaseUser);
         if(!listaUsuariosBloqueados.containsKey(usuario.getId())){
             holder.estado.setText(usuario.getEstado());
         }else{
             holder.estado.setText(context.getResources().getString(R.string.bloqueado));
         }
-
 
 
         //Entra a la actividad
@@ -129,6 +127,7 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
 
     public int getItemViewType(int posicion) {
 
+        /*
         if(Funciones.obtenerUsuariosBloqueados(firebaseUser).containsKey(listaUsuarios.get(posicion).getId())){
             System.out.println("error encontrado");
             return  USUARIO_BLOQUEADO;
@@ -136,6 +135,10 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
             System.out.println("error no encontrado");
             return USUARIO_NO_BLOQUEADO;
         }
+
+         */
+
+        return USUARIO_NO_BLOQUEADO;
     }
 
 }

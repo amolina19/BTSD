@@ -71,18 +71,19 @@ public class LoginActivity extends BasicActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         button_iniciarSesion = findViewById(R.id.button_iniciarSesion);
-        progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.INVISIBLE);
 
         button_iniciarSesion.setOnClickListener(v -> {
             String text_email = Objects.requireNonNull(email.getText()).toString();
             String text_password = Objects.requireNonNull(password.getText()).toString();
-            progressBar.setVisibility(View.VISIBLE);
+
             //new TaskProgressBar().execute();
 
             if(text_email.isEmpty() || text_password.isEmpty()){
                 Toast.makeText(LoginActivity.this, R.string.completar, Toast.LENGTH_SHORT).show();
             }else{
+                progressBar.setVisibility(View.VISIBLE);
 
                 mAuth.signInWithEmailAndPassword(text_email,text_password)
                         .addOnCompleteListener(task -> {

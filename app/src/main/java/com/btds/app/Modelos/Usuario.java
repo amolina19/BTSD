@@ -14,6 +14,8 @@ public class Usuario {
     private String hora;
     private String fecha;
     private String descripcion;
+    private String telefono;
+    private String twoAunthenticatorFactor;
 
     public Usuario(){
     }
@@ -80,4 +82,19 @@ public class Usuario {
         this.descripcion = descripcion;
     }
 
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getTwoAunthenticatorFactor() {
+        return twoAunthenticatorFactor;
+    }
+
+    public void setTwoAunthenticatorFactor(String twoAunthenticatorFactor) {
+        this.twoAunthenticatorFactor = twoAunthenticatorFactor;
+    }
 }

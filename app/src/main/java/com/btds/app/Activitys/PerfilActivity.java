@@ -20,13 +20,11 @@ import com.bumptech.glide.Glide;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.ReturnMode;
 import com.esafirm.imagepicker.model.Image;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -35,18 +33,16 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.google.firebase.database.FirebaseDatabase.getInstance;
-
 
 /**
  * @author Alejandro Molina Louchnikov
  */
 public class PerfilActivity extends BasicActivity {
 
-
     CircleImageView imagen_perfil;
     TextView usuario;
     EditText descripcion;
+    TextView nTelefono;
     Usuario usuarioObject;
     Button imageButton;
     Button guardarButton;
@@ -56,22 +52,12 @@ public class PerfilActivity extends BasicActivity {
     FirebaseUser firebaseUser;
     DatabaseReference referenceUserDataBase;
     DatabaseReference mainDatabasePath;
-
-
-    FirebaseStorage storage;
     StorageReference storageReference;
-
-    //private Uri filePath;
-    //private Bitmap currentImage;
-    //private final int PICK_IMAGE_REQUEST = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
-
-        //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, getApplicationContext());
-
 
         //INDISPENSABLE
         toolbar = findViewById(R.id.toolbar);
@@ -81,10 +67,10 @@ public class PerfilActivity extends BasicActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> finish());
 
-
         imagen_perfil = findViewById(R.id.imagen_perfil);
         usuario = findViewById(R.id.usuarioCampoPerfil);
         descripcion = findViewById(R.id.descripcionCampoPerfil);
+        nTelefono = findViewById(R.id.usuarioTelefonoperfil);
 
         imageButton = findViewById(R.id.imagenButton);
         //Superpongo un boton encima de la imagen del perfil, al ser pulsao salta a la  actividad para insertar una nueva imagen
@@ -94,16 +80,16 @@ public class PerfilActivity extends BasicActivity {
         cambiarPassword = findViewById(R.id.cambiarContraseña);
 
 
+
+
+
+        firebaseUser = Funciones.getFirebaseUser();
         Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
+        referenceUserDataBase = Funciones.getUsersDatabaseReference();
+        mainDatabasePath = Funciones.getDatabaseReference();
 
-
-
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        referenceUserDataBase = getInstance().getReference("Usuarios");
-        mainDatabasePath = getInstance().getReference();
-
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
+        //storage = FirebaseStorage.getInstance();
+        storageReference = Funciones.getFirebaseStorageReference();
 
         referenceUserDataBase.child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -120,6 +106,7 @@ public class PerfilActivity extends BasicActivity {
                     }
 
                     descripcion.setText(usuarioObject.getDescripcion());
+                    nTelefono.setText(usuarioObject.getTelefono());
                 }
             }
 
@@ -191,14 +178,14 @@ public class PerfilActivity extends BasicActivity {
 
         Uri file = Uri.fromFile(new File(image.getPath()));
 
-        FirebaseStorage storage;
-        StorageReference storageReference;
+        //FirebaseStorage storage;
+        //StorageReference storageReference;
 
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
+        //storage = FirebaseStorage.getInstance();
+        storageReference = Funciones.getFirebaseStorageReference();
 
-        StorageReference storageRef = storageReference.child("Imagenes/Perfil/"+usuarioObject.getId());
-        UploadTask uploadTask = storageRef.putFile(file);
+        StorageReference storageUserProfileRef = storageReference.child("Imagenes/Perfil/"+usuarioObject.getId());
+        UploadTask uploadTask = storageUserProfileRef.putFile(file);
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(exception -> {
@@ -206,7 +193,7 @@ public class PerfilActivity extends BasicActivity {
             Log.d("DEBUG PerfilActivity","LA IMAGEN NO SE HA SUBIDO");
             Toast.makeText(PerfilActivity.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
         }).addOnSuccessListener(taskSnapshot -> {
-            storageRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+            storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
                 // getting image uri and converting into string
                 usuarioObject.setImagenURL(downloadUrl.toString());
                 referenceUserDataBase.child(usuarioObject.getId()).setValue(usuarioObject).addOnCompleteListener(task -> {

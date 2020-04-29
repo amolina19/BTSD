@@ -1,9 +1,9 @@
-/**
- * @author Alejandro Molina Louchnikov
- */
+
 
 package com.btds.app.Utils;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.util.Log;
 
@@ -12,12 +12,17 @@ import androidx.annotation.RequiresApi;
 
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
+import com.btds.app.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.hbb20.CountryCodePicker;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -30,11 +35,13 @@ import static com.google.firebase.database.FirebaseDatabase.getInstance;
  * @author Alejandro Molina Louchnikov
  */
 
+
 public class Funciones {
     private static Usuario usuario;
     private static HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados;
     private static Fecha fecha;
 
+    private static Usuario usuarioOjectReturn;
     public Funciones(){
 
     }
@@ -149,7 +156,7 @@ public class Funciones {
 
     public static void desbloquearUsuario(Usuario usuarioChat){
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference refernceBloquedUsers = getInstance().getReference("Bloqueados");
+        DatabaseReference refernceBloquedUsers = Funciones.getBlockUsersListDatabaseReference();
         assert firebaseUser != null;
         refernceBloquedUsers.child(firebaseUser.getUid()+""+usuarioChat.getId()).removeValue();
 
@@ -163,8 +170,8 @@ public class Funciones {
      */
 
     public static void bloquearUsuario(Usuario usuarioChat){
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference refernceBloquedUsers = getInstance().getReference("Bloqueados");
+        FirebaseUser firebaseUser = Funciones.getFirebaseUser();
+        DatabaseReference refernceBloquedUsers = Funciones.getBlockUsersListDatabaseReference();
         UsuarioBloqueado usuarioBloqueadoObject = new UsuarioBloqueado();
 
         assert firebaseUser != null;
@@ -187,7 +194,7 @@ public class Funciones {
 
     public static HashMap<String,UsuarioBloqueado> obtenerUsuariosBloqueados(FirebaseUser firebaseUser){
 
-        DatabaseReference refernceBloquedUsers = getInstance().getReference("Bloqueados");
+        DatabaseReference refernceBloquedUsers = Funciones.getBlockUsersListDatabaseReference();
         listaUsuariosBloqueados = new HashMap<>();
 
         refernceBloquedUsers.addValueEventListener(new ValueEventListener() {
@@ -198,16 +205,18 @@ public class Funciones {
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                     UsuarioBloqueado usuarioBloqueado = snapshot.getValue(UsuarioBloqueado.class);
                     if(usuarioBloqueado != null){
+                        if(firebaseUser != null){
+                            if(usuarioBloqueado.getUsuarioAccionBloquear().contentEquals(firebaseUser.getUid())){
+                                listaUsuariosBloqueados.put(usuarioBloqueado.getUsuarioBloqueado(),usuarioBloqueado);
+                            }
 
-                        if(usuarioBloqueado.getUsuarioAccionBloquear().contentEquals(firebaseUser.getUid())){
-                            listaUsuariosBloqueados.put(usuarioBloqueado.getUsuarioBloqueado(),usuarioBloqueado);
+                            for(Map.Entry<String, UsuarioBloqueado> entry : listaUsuariosBloqueados.entrySet()) {
+                                //System.out.println(entry.getKey());
+                                UsuarioBloqueado value = entry.getValue();
+                                Log.d("DEBUG Funciones, VALOR USUARIO BLOQUEADO",value.getUsuarioBloqueado());
+                            }
                         }
 
-                        for(Map.Entry<String, UsuarioBloqueado> entry : listaUsuariosBloqueados.entrySet()) {
-                            //System.out.println(entry.getKey());
-                            UsuarioBloqueado value = entry.getValue();
-                            Log.d("DEBUG Funciones, VALOR USUARIO BLOQUEADO",value.getUsuarioBloqueado());
-                        }
                     }
                 }
                 Log.d("DEBUG USUARIOS BLOQUEADOS", String.valueOf(listaUsuariosBloqueados.size()));
@@ -232,6 +241,184 @@ public class Funciones {
     public static HashMap<String,UsuarioBloqueado> getListaUsuariosBloqueados(){
         return listaUsuariosBloqueados;
     }
+
+    public static String obtenerEstadoUsuario(Context contexto, int diasPasados,Usuario usuarioChat){
+        String text = null;
+        if (diasPasados == 0) {
+            text = contexto.getResources().getString(R.string.hoy) +" "+ usuarioChat.getHora();
+        } else {
+            if (diasPasados == 1 ) {
+                text = contexto.getResources().getString(R.string.ayer) +" "+usuarioChat.getHora();
+            } else if (diasPasados > 1) {
+                String fecha = usuarioChat.getFecha().replace(" ", "/");
+                text = contexto.getResources().getString(R.string.ultavez1parte)+" "+fecha+" "+ contexto.getResources().getString(R.string.ultavez2parte)+" "+ usuarioChat.getHora();
+            }
+        }
+
+        if(text == null){
+            return contexto.getResources().getString(R.string.errorAlCargar);
+        }else{
+            return text;
+        }
+
+    }
+
+
+    public static String getSystemLanguage(){
+        return Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage();
+    }
+
+    public static CountryCodePicker.Language obtainLanguageContryPicker(){
+
+        CountryCodePicker.Language language;
+
+        String idioma = getSystemLanguage();
+
+        switch (idioma){
+            case "ar":
+                language = CountryCodePicker.Language.ARABIC;
+                break;
+            case "es":
+                language = CountryCodePicker.Language.SPANISH;
+                break;
+            case "fr":
+                language = CountryCodePicker.Language.FRENCH;
+                break;
+            case "cn":
+                language = CountryCodePicker.Language.CHINESE;
+                break;
+            case "pt":
+                language = CountryCodePicker.Language.PORTUGUESE;
+                break;
+            case "de":
+                language = CountryCodePicker.Language.GERMAN;
+                break;
+            case "ru":
+                language = CountryCodePicker.Language.RUSSIAN;
+                break;
+            case "jp":
+                language = CountryCodePicker.Language.JAPANESE;
+                break;
+            default:
+                language = CountryCodePicker.Language.ENGLISH;
+                break;
+        }
+        return language;
+    }
+
+    public static int getCountryCode(){
+        int countryCode;
+
+        switch (Funciones.getSystemLanguage()){
+            case "es":
+                countryCode = +34;
+                break;
+            case "fr":
+                countryCode = +33;
+                break;
+            case "us":
+                countryCode = +1;
+                break;
+            case "uk":
+                countryCode = +44;
+                break;
+            case "cn":
+                countryCode = +86;
+                break;
+            case "pt":
+                countryCode = +351;
+                break;
+            case "jp":
+                countryCode = +81;
+                break;
+            case "de":
+                countryCode = +49;
+                break;
+            case "ru":
+                countryCode = +7;
+                break;
+            default:
+                countryCode = -1;
+                break;
+        }
+        return countryCode;
+    }
+
+    public static void mostrarDatosUsuario(Usuario usuario){
+
+        if(usuario.getId()!=null){
+            Log.d("Funcion MostrarDatosUsuario, UID",usuario.getId());
+        }
+        if(usuario.getUsuario()!=null){
+            Log.d("Funcion MostrarDatosUsuario, Usuario",usuario.getUsuario());
+        }
+        if(usuario.getDescripcion()!=null){
+            Log.d("Funcion MostrarDatosUsuario, Descripcion",usuario.getDescripcion());
+        }
+        if(usuario.getEstado()!=null){
+            Log.d("Funcion MostrarDatosUsuario, Estado",usuario.getEstado());
+        }
+        if(usuario.getFecha()!=null){
+            Log.d("Funcion MostrarDatosUsuario, Fecha",usuario.getFecha());
+        }
+        if(usuario.getHora()!=null){
+            Log.d("Funcion MostrarDatosUsuario, Hora",usuario.getHora());
+        }
+        if(usuario.getImagenURL()!=null){
+            Log.d("Funcion MostrarDatosUsuario, IMAGEN URL",usuario.getImagenURL());
+        }
+        if(usuario.getTelefono()!=null){
+            Log.d("Funcion MostrarDatosUsuario, Telefono",usuario.getTelefono());
+        }
+    }
+
+
+    //Metodos para recoger instancias de Firebase.
+    public static FirebaseAuth getAuthenticationInstance(){
+        return FirebaseAuth.getInstance();
+    }
+
+    public static FirebaseUser getFirebaseUser(){
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    public static DatabaseReference getDatabaseReference(){
+        return getInstance().getReference();
+    }
+
+    public static DatabaseReference getUsersDatabaseReference(){
+        return getInstance().getReference("Usuarios");
+    }
+
+    public static DatabaseReference getBlockUsersListDatabaseReference(){
+        return getInstance().getReference("Bloqueados");
+    }
+
+    public static DatabaseReference getFriendsPetitionListDatabaseReference(){
+        return getInstance().getReference("PeticionesAmigos");
+    }
+
+    public static DatabaseReference getFriendsListDatabaseReference(){
+        return getInstance().getReference("ListaAmigos");
+    }
+
+    public static DatabaseReference getChatsDatabaseReference(){
+        return getInstance().getReference("Chats");
+    }
+
+    public static FirebaseStorage getFirebaseStorage(){
+        return FirebaseStorage.getInstance();
+    }
+
+    public static StorageReference getFirebaseStorageReference(){
+        return getFirebaseStorage().getReference();
+    }
+
+    public static PhoneAuthProvider getPhoneAuthProvider(){
+        return PhoneAuthProvider.getInstance();
+    }
+
+
 
 
     /*
@@ -263,7 +450,4 @@ public class Funciones {
     }
 
      */
-
-
-
 }

@@ -30,13 +30,9 @@ import java.util.List;
 
 public class Amigos extends Fragment {
 
-
-
-
     private RecyclerView recyclerView;
     private UsuariosAdapter usuariosAdapter;
     private List<Usuario> listaUsuarios;
-
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -67,15 +63,6 @@ public class Amigos extends Fragment {
         return view;
     }
 
-
-    /*
-    private String limpiarCadenaBaseDatos(String valor){
-
-        int position = valor.lastIndexOf("=");
-        return valor.substring(position+1,valor.length()-1);
-    }
-
-     */
 
 
     private void obtenerUsuarios(){

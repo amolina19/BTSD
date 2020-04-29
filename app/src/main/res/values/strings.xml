@@ -8,6 +8,12 @@
 
     <string name="registrarse">Registrarse</string>
     <string name="crearCuenta">Crear una nueva cuenta</string>
+    <string name="preguntarNtelefono">¿Puedo preguntar su número de teléfono?</string>
+    <string name="introducirTelefono">Introduce tu teléfono</string>
+    <string name="continuar">Continuar</string>
+    <string name="EsperarRecibirCodigo">Espera el código que se te ha enviado. Tardará unos segundos...</string>
+    <string name="IntroduceCodigoVerficiacion">Introduce el código de verificación</string>
+    <string name="Enviar">Enviar</string>
 
     <string name="logearse">Inicia sesión en tu cuenta</string>
     <string name="login">Iniciar Sesión</string>
@@ -73,5 +79,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="usuario">Usuario</string>
+    <string name="todo">TODO</string>
+    <string name="error">ERROR</string>
+    <string name="errorAlCargar">Error al cargar.</string>
+    <string name="introduceTlefonoValido">Introduce un número de telefono válido</string>
+    <string name="introduceElCodigoVerf">Introduce el código</string>
+    <string name="tuTelefono">Tú Teléfono</string>
+    <string name="telefono">teléfono</string>
 
 </resources>

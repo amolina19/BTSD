@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
 import com.btds.app.Utils.Fecha;
+import com.btds.app.Utils.Funciones;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -87,12 +88,12 @@ public class RegisterActivity extends BasicActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         button_registrar = findViewById(R.id.button_registrar);
-        progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.INVISIBLE);
 
 
         //Instancio el autentificador
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = Funciones.getAuthenticationInstance();
 
         button_registrar.setOnClickListener(v -> {
 
@@ -144,6 +145,8 @@ public class RegisterActivity extends BasicActivity {
                         usuarioRegistrandose.setHora(fecha.obtenerHora()+":"+fecha.obtenerMinutos());
                         usuarioRegistrandose.setFecha(fecha.obtenerDia()+" "+fecha.obtenerMes()+" "+fecha.obtenerAnno());
                         usuarioRegistrandose.setEstado("En Linea");
+                        usuarioRegistrandose.setTelefono("");
+                        usuarioRegistrandose.setTwoAunthenticatorFactor("false");
                         Toast.makeText(RegisterActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
 
 

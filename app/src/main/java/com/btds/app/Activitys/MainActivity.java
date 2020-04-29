@@ -44,8 +44,6 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.google.firebase.database.FirebaseDatabase.getInstance;
-
 /**
  * @author Alejandro Molina Louchnikov
  */
@@ -127,15 +125,15 @@ public class MainActivity extends BasicActivity {
             startActivity(intentToProfile);
         });
 
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        referenceUserDataBase = getInstance().getReference("Usuarios");
-        mainDatabasePath = getInstance().getReference();
+        firebaseUser = Funciones.getFirebaseUser();
+        referenceUserDataBase = Funciones.getUsersDatabaseReference();
+        mainDatabasePath = Funciones.getDatabaseReference();
 
 
         //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, getApplicationContext());
 
 
-        referenceUserDataBase.child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
+        referenceUserDataBase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usuarioObject = dataSnapshot.getValue(Usuario.class);
@@ -151,10 +149,18 @@ public class MainActivity extends BasicActivity {
                         if (!MainActivity.this.isFinishing()) {
                             Glide.with(getApplicationContext()).load(usuarioObject.getImagenURL()).into(imagen_perfil);
                         }
-
                     }
+
+                    Funciones.mostrarDatosUsuario(usuarioObject);
+
+                    if(usuarioObject.getTelefono().contentEquals("")){
+                        Intent intentCheckPhone = new Intent(MainActivity.this,PhoneCheckActivity.class);
+                        startActivity(intentCheckPhone);
+                        finish();
+                    }
+
                 } else {
-                    FirebaseAuth.getInstance().signOut();
+                    Funciones.getAuthenticationInstance().signOut();
                     Toast.makeText(MainActivity.this, R.string.errorSesion, Toast.LENGTH_SHORT).show();
                     Intent backToLogin = new Intent(MainActivity.this, StartActivity.class);
                     startActivity(backToLogin);
@@ -169,6 +175,12 @@ public class MainActivity extends BasicActivity {
 
             }
         });
+
+
+
+
+
+
 
 
         //viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
