@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,7 +17,7 @@ import com.btds.app.Activitys.MessageActivity;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
 import com.btds.app.R;
-import com.btds.app.Utils.Funciones;
+import com.btds.app.Utils.Constantes;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,16 +35,16 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
     //private static final int USUARIO_BLOQUEADO = 1;
 
     //private boolean firstSearch = true;
-    private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private Context context;
     private List<Usuario> listaUsuarios;
     private HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados;
     //private FirebaseUser firebaseUser;
 
 
-    public UsuariosAdapter(Context contexto, List<Usuario> listaUsuarios){
+    public UsuariosAdapter(Context contexto, List<Usuario> listaUsuarios, HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados){
         this.listaUsuarios = listaUsuarios;
-        listaUsuariosBloqueados = new HashMap<>();
+        this.listaUsuariosBloqueados = listaUsuariosBloqueados;
         this.context = contexto;
     }
 
@@ -52,10 +53,10 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         if(viewType == USUARIO_NO_BLOQUEADO){
-            View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item,parent,false);
+            View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item_tests,parent,false);
             return new com.btds.app.Adaptadores.UsuariosAdapter.ViewHolder(view);
         }else{
-            View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item_bloqueado,parent,false);
+            View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item_blocked,parent,false);
             return new com.btds.app.Adaptadores.UsuariosAdapter.ViewHolder(view);
         }
 
@@ -76,18 +77,25 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
         if(usuario.getImagenURL().equals("default")){
             //holder.imagen_perfil.setImageResource(R.mipmap.ic_launcher);
             //private static final int USUARIO_BLOQUEADO = 1;
-            String default_profile = "https://res.cloudinary.com/teepublic/image/private/s--6vDtUIZ---/t_Resized%20Artwork/c_fit,g_north_west,h_1054,w_1054/co_ffffff,e_outline:53/co_ffffff,e_outline:inner_fill:53/co_bbbbbb,e_outline:3:1000/c_mpad,g_center,h_1260,w_1260/b_rgb:eeeeee/c_limit,f_jpg,h_630,q_90,w_630/v1570281377/production/designs/6215195_0.jpg";
+            String default_profile = Constantes.default_image_profile;
             Glide.with(context).load(default_profile).into(holder.imagen_perfil);
         }else{
             Glide.with(context).load(usuario.getImagenURL()).into(holder.imagen_perfil);
         }
 
+        if(firebaseUser != null && !listaUsuariosBloqueados.containsKey(firebaseUser.getUid()+usuario.getId())){
 
-        listaUsuariosBloqueados = Funciones.obtenerUsuariosBloqueados(firebaseUser);
-        if(!listaUsuariosBloqueados.containsKey(usuario.getId())){
-            holder.estado.setText(usuario.getEstado());
+            if(usuario.getEstado().contentEquals(context.getResources().getString(R.string.online))){
+                holder.estado.setText(R.string.online);
+                holder.estado.setBackgroundColor(context.getColor(R.color.spring_green));
+            }else{
+                holder.estado.setText(R.string.offline);
+                holder.estado.setBackgroundColor(context.getColor(R.color.red));
+            }
+
         }else{
-            holder.estado.setText(context.getResources().getString(R.string.bloqueado));
+            holder.estado.setText(R.string.bloqueado);
+            holder.estado.setBackgroundColor(context.getColor(R.color.colorPrimary));
         }
 
 
@@ -112,8 +120,8 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
         public TextView usuario;
-        public TextView estado;
         public ImageView imagen_perfil;
+        public Button estado;
 
 
         ViewHolder(View itemView){

@@ -2,21 +2,23 @@ package com.btds.app.Adaptadores;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.btds.app.Activitys.EstadoActivity;
 import com.btds.app.Activitys.TusEstadosActivity;
-import com.btds.app.Modelos.EstadosClass;
+import com.btds.app.Modelos.Estados;
 import com.btds.app.R;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -31,11 +33,12 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
 
 
     //public static int ESTADO_NO_VISTO = 0;
-    private List<EstadosClass> listaEstados;
-
+    private List<Estados> listaEstados;
     private Context context;
+    //private HashMap<String,Usuario> usuariosEstados;
+    final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-    public EstadosAdapter(Context contexto, List<EstadosClass> listaEstados){
+    public EstadosAdapter(Context contexto, List<Estados> listaEstados){
         this.context = contexto;
         this.listaEstados = listaEstados;
     }
@@ -62,15 +65,18 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
         holder.imagen_estado.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
         holder.usuario.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
 
-        final EstadosClass estado = listaEstados.get(posicion);
+        final Estados estado = listaEstados.get(posicion);
         //holder.usuario.setText(estado.getUsuarioEstado().getUsuario());
-        holder.usuario.setText(estado.getUsuario());
 
-        if(estado.getestadoURL().equals("default")){
+        //usuariosEstados.put(usuarioObject.getId(),usuarioObject);
+
+        holder.usuario.setText(estado.getUsuario().getUsuario());
+
+        if(estado.getEstadoURL().equals("default")){
             holder.imagen_estado.setImageResource(R.mipmap.ic_launcher);
         }else{
             //Glide.with(context).load(listaEstados.get(0).getestadoURL()).into(holder.imagen_estado);
-            Glide.with(context).load(estado.getestadoURL()).into(holder.imagen_estado);
+            Glide.with(context).load(estado.getEstadoURL()).into(holder.imagen_estado);
         }
 
         /*
@@ -105,12 +111,15 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
 
             //ENTRAR A TU PROPIA HISTORA Y SUBIR CONTENIDO O BORRAR
             if(position == 0){
-                Toast.makeText(context, "FUNCIONA", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "FUNCIONA", Toast.LENGTH_SHORT).show();
+                Log.d("DEBUG EstadosAdapter","Has entrado en tus estados");
                 Intent tusEstados = new Intent(context, TusEstadosActivity.class);
+                //tusEstados.addFlags(FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(tusEstados);
             }else{
                 Intent intentEstado = new Intent(context, EstadoActivity.class);
-                intentEstado.putExtra("userID",estado.getUsuario());
+                intentEstado.putExtra("estadoUsuarioIDFirebase",estado.getUsuario().getId());
+                //intentEstado.addFlags(FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intentEstado);
             }
         });

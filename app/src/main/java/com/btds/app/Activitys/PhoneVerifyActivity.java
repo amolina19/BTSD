@@ -18,6 +18,8 @@ import com.btds.app.R;
 import com.btds.app.Utils.Funciones;
 import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
@@ -38,11 +40,13 @@ public class PhoneVerifyActivity extends AppCompatActivity {
     private EditText editText;
     private String nTelefono;
     private DatabaseReference databaseUserReference;
+    final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_verify);
+        Log.d("DEBUG ","PhoneVerifiyActivity Created");
         progressBar = findViewById(R.id.progressbar);
 
         editText = findViewById(R.id.editTextCode);
@@ -74,8 +78,9 @@ public class PhoneVerifyActivity extends AppCompatActivity {
         editText.setText(credencial.getSmsCode());
         Log.d("DEBUG SMS CODE", Objects.requireNonNull(credencial.getSmsCode()));
 
-        databaseUserReference = Funciones.getUsersDatabaseReference().child(Funciones.getFirebaseUser().getUid());
-        Log.d("DEBUG PHONE VERIFY USER FIREBASE ID ",Funciones.getFirebaseUser().getUid());
+        assert firebaseUser != null;
+        databaseUserReference = Funciones.getUsersDatabaseReference().child(firebaseUser.getUid());
+        Log.d("DEBUG PHONE VERIFY USER FIREBASE ID ",firebaseUser.getUid());
 
         databaseUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -100,9 +105,9 @@ public class PhoneVerifyActivity extends AppCompatActivity {
 
         Intent mainActivity = new Intent(PhoneVerifyActivity.this,MainActivity.class);
         startActivity(mainActivity);
+        PhoneCheckActivity.getInstanceCheckPhone().finish();
         finish();
     }
-
 
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBack = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {

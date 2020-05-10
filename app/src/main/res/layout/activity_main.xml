@@ -8,9 +8,11 @@
     tools:context=".Activitys.MainActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayoutMainActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_above="@+id/navigation_view_bottom_home">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/bar_layout"
@@ -21,7 +23,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="@drawable/activity_drawable_naranja_acrylic"
             android:popupTheme="@style/menuStyle"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
@@ -63,14 +65,14 @@
         android:id="@+id/linearLayout_estados"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/activity_drawable_naranja_acrylic"
         android:orientation="horizontal">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_estados_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="5dp"
             android:orientation="horizontal" />
 
     </LinearLayout>
@@ -80,8 +82,10 @@
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
         </FrameLayout>
+
+
 
     <!--https://stackoverflow.com/questions/58186121/binary-xml-file-line-7-error-inflating-class-android-support-v4-view-viewpager-->
     </LinearLayout>

@@ -80,6 +80,7 @@ public class MessageActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
+        Log.d("DEBUG ","MessageActivity Created");
         //Funciones.setActividadEnUso(true);
         //Funciones.setBackPressed(false);
         contexto = getApplicationContext();
@@ -94,7 +95,7 @@ public class MessageActivity extends BasicActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         recyclerView = findViewById(R.id.recycler_view_mensaje);
         recyclerView.setHasFixedSize(true);
@@ -156,7 +157,7 @@ public class MessageActivity extends BasicActivity {
                 }else {
                     estado.setText(usuarioChat.getEstado());
                 }
-                    //Si su perfil contiene en su atributo de ImagenURL default se cargará una imagen de pérfil.
+                //Si su perfil contiene en su atributo de ImagenURL default se cargará una imagen de pérfil.
                 if(usuarioChat.getImagenURL().equals("default")){
                     Glide.with(MessageActivity.this).load(usuario_profile_default).into(imagen_perfil);
                 }else{
@@ -234,8 +235,7 @@ public class MessageActivity extends BasicActivity {
                     final Mensaje mensaje = snapshot.getValue(Mensaje.class);
 
                     assert mensaje != null;
-                    if(mensaje.getReceptor().equals(id) && mensaje.getEmisor().equals(userID)
-                        || mensaje.getReceptor().equals(userID) && mensaje.getEmisor().equals(id)){
+                    if(mensaje.getReceptor().equals(id) && mensaje.getEmisor().equals(userID) || mensaje.getReceptor().equals(userID) && mensaje.getEmisor().equals(id)){
                         //mensaje.setLeido("true");
 
                         if(!mensaje.getEmisor().contentEquals(id)) {
@@ -336,7 +336,7 @@ public class MessageActivity extends BasicActivity {
                 //Se desactivara las notifcaciones del usuario en cuestión.
                 return true;
 
-                //El id no cambia, ya que esto está definido en el layout de menu/context_menu_amigo de manera estática
+            //El id no cambia, ya que esto está definido en el layout de menu/context_menu_amigo de manera estática
             case R.id.bloquear:
 
                 //Si el usuario está bloqueado, en el menú inflado aparecerá el String desbloquear donde nos mostrará un diálogo de confirmación por parte del usuario.
@@ -357,7 +357,7 @@ public class MessageActivity extends BasicActivity {
                     AlertDialog dialog = builder.create();
                     dialog.show();
 
-                    }else{
+                }else{
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(getResources().getString(R.string.blockUser));
                     builder.setMessage(getResources().getString(R.string.confirmBlock)+" "+usuarioChat.getUsuario());
@@ -376,7 +376,7 @@ public class MessageActivity extends BasicActivity {
 
                 return true;
             case R.id.eliminar:
-                    //Eliminar a un usuario de nuestra lista de amigos.
+                //Eliminar a un usuario de nuestra lista de amigos.
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -387,7 +387,7 @@ public class MessageActivity extends BasicActivity {
     public void onBackPressed() {
         //Funciones.setBackPressed();
         super.onBackPressed();
-        Intent backToChats = new Intent(MessageActivity.this,StartActivity.class);
+        Intent backToChats = new Intent(MessageActivity.this,MainActivity.class);
         startActivity(backToChats);
         finish();
     }

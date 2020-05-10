@@ -2,6 +2,7 @@ package com.btds.app.Activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import com.btds.app.R;
@@ -22,7 +23,7 @@ public class StartActivity extends BasicActivity {
     protected void onStart() {
         super.onStart();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
+        Log.d("DEBUG ","OnStartActivity Created");
         //Comprobar si hay un usuario logeado
         if(firebaseUser != null){
             Intent intentStart = new Intent(StartActivity.this,MainActivity.class);

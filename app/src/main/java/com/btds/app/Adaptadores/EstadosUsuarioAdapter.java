@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.btds.app.Modelos.Estados;
 import com.btds.app.R;
 import com.squareup.picasso.Picasso;
 
@@ -19,17 +20,17 @@ import java.util.List;
 
 public class EstadosUsuarioAdapter extends BaseAdapter {
 
-
     private Context context;
-    private List<String> listaEstadosUsuario;
+    private List<Estados> listaEstadosUsuario;
     private LayoutInflater inflter;
 
-    public EstadosUsuarioAdapter(Context applicationContext, List<String> listaEstadosUsuario) {
-        this.context = applicationContext;
+    public EstadosUsuarioAdapter(Context context, List<Estados> listaEstadosUsuario) {
+        this.context = context;
         this.listaEstadosUsuario = listaEstadosUsuario;
         System.out.println("TAMAÑO IMANGES DENTRO ADAPTADOR: " +listaEstadosUsuario.size());
-        inflter = (LayoutInflater.from(applicationContext));
+        inflter = (LayoutInflater.from(context));
     }
+
 
 
     @Override
@@ -53,9 +54,9 @@ public class EstadosUsuarioAdapter extends BaseAdapter {
         view = inflter.inflate(R.layout.estados_usuario_items, null); // inflate the layout
         ImageView estadosUsuario = view.findViewById(R.id.estados_usuario_icon); // get the reference of ImageView
         if(estadosUsuario !=null){
-            System.out.println(listaEstadosUsuario.get(position));
-            Picasso.with(context).load(String.valueOf(listaEstadosUsuario.get(position))).into(estadosUsuario);
-            System.out.println(listaEstadosUsuario.get(position));
+            //System.out.println(listaEstadosUsuario.get(position));
+            Picasso.with(context).load(String.valueOf(listaEstadosUsuario.get(position).estadoURL)).into(estadosUsuario);
+            //System.out.println(listaEstadosUsuario.get(position));
             //estadosUsuario.setImageResource(logos[i]); // set logo images
         }
 

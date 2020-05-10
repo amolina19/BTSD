@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activitys.EstadoActivity"
-    android:background="@color/colorPrimaryDark"
+    android:background="@drawable/activity_drawable_estados_acrylic"
     android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/stories_imageview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
     <jp.shts.android.storiesprogressview.StoriesProgressView
         android:id="@+id/stories"
@@ -16,7 +22,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp">
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/stories_imagen_perfil_usuario"
@@ -29,7 +36,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <TextView
                 android:id="@+id/stories_nombre_usuario"
@@ -37,7 +45,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_width="200dp"
                 android:layout_height="18dp"
-                android:text="crespovidagrimey750"
+                android:text="user"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 />
@@ -49,16 +57,11 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
                 android:textColor="@color/white"
-                android:text="Ayer 23:47"
+                android:text="Today 00:00"
                 />
         </LinearLayout>
     </LinearLayout>
 
-    <ImageView
-        android:layout_marginTop="-56dp"
-        android:id="@+id/stories_imageview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
 
-</LinearLayout>
+
+</FrameLayout>

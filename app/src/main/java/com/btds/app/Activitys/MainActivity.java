@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,9 +24,10 @@ import com.btds.app.Adaptadores.EstadosAdapter;
 import com.btds.app.Fragmentos.Amigos;
 import com.btds.app.Fragmentos.BuscarAmigos;
 import com.btds.app.Fragmentos.Chats;
-import com.btds.app.Modelos.EstadosClass;
+import com.btds.app.Modelos.Estados;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
+import com.btds.app.Utils.Constantes;
 import com.btds.app.Utils.Fecha;
 import com.btds.app.Utils.Funciones;
 import com.bumptech.glide.Glide;
@@ -39,6 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.vdx.designertoast.DesignerToast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,29 +54,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends BasicActivity {
 
-
-    /*
-    class TaskProgressBar extends AsyncTask<Void, Void, Void> {
-
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
-            for (int i = 0; i < 100; i++) {
-                try {
-                    Thread.sleep(15);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                progressBar.setProgress(i);
-            }
-            return null;
-        }
-    }
-    */
-
-
     LinearLayout linearLayout;
     CircleImageView imagen_perfil;
     Button imageProfileButton;
@@ -81,6 +61,8 @@ public class MainActivity extends BasicActivity {
     Usuario usuarioObject;
     Fecha fecha;
     BottomNavigationView bottomNav;
+    List<Estados> listaEstados;
+    LinearLayout linearLayoutMainActivity;
 
     FirebaseUser firebaseUser;
     DatabaseReference referenceUserDataBase;
@@ -92,20 +74,28 @@ public class MainActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d("DEBUG ","MainActivity Created");
 
         //new Constantes("81165","kH6Jv3mOn4htJ78","8sfBc3Rr-PaR4Wf","BWMGDip2NKWtdp3Hevc9",getApplicationContext());
 
+        bottomNav = findViewById(R.id.navigation_view_bottom_home);
+        bottomNav.setOnNavigationItemSelectedListener(navListener);
+        bottomNav.setSelectedItemId(R.id.nav_amigos);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new Amigos()).commit();
+
+        linearLayoutMainActivity = findViewById(R.id.linearLayoutMainActivity);
+
         linearLayout = findViewById(R.id.linearLayout_estados);
         fecha = new Fecha();
+        Log.d("DEBUG FECHA",java.time.LocalDateTime.now().toString());
+        Log.d("DEBUG MainActivity ","Creacion de la actividad "+fecha.toString());
         //System.out.println(fecha.toString());
         //System.out.println(fecha.obtenerFechaTotal());
 
         //progressBar = findViewById(R.id.progressBar);
         //progressBar.setVisibility(View.INVISIBLE);
 
-        bottomNav = findViewById(R.id.navigation_view_bottom_home);
-        bottomNav.setOnNavigationItemSelectedListener(navListener);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new Amigos()).commit();
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -118,7 +108,7 @@ public class MainActivity extends BasicActivity {
         //editText_buscarAmigos = findViewById(R.id.buscar_amigos);
         //editText_buscarAmigos.setVisibility(View.GONE);
 
-        iniciarEstadosLayout();
+        //Log.d("DEBUG MainActivity","##Lista estados "+listaEstados.size());
 
         imageProfileButton.setOnClickListener(v -> {
             Intent intentToProfile = new Intent(MainActivity.this,PerfilActivity.class);
@@ -159,6 +149,7 @@ public class MainActivity extends BasicActivity {
                         finish();
                     }
 
+
                 } else {
                     Funciones.getAuthenticationInstance().signOut();
                     Toast.makeText(MainActivity.this, R.string.errorSesion, Toast.LENGTH_SHORT).show();
@@ -166,6 +157,49 @@ public class MainActivity extends BasicActivity {
                     startActivity(backToLogin);
                     finish();
                 }
+
+                LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this,LinearLayoutManager.HORIZONTAL,false);
+                RecyclerView recyclerView = findViewById(R.id.recycler_view_estados_main);
+                recyclerView.setLayoutManager(layoutManager);
+
+
+                listaEstados = new ArrayList<>();
+                HashMap<String,Usuario> usuariosConEstados = new HashMap<>();
+
+                Funciones.getEstadosDatabaseReference().addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        listaEstados.clear();
+                        usuariosConEstados.clear();
+
+                        listaEstados.add(new Estados(Constantes.default_history_image,usuarioObject,new Fecha()));
+                        for(DataSnapshot data:dataSnapshot.getChildren()){
+                            //Log.d("DEBUG MainActivity obtenerEstados","ESTADO ITERADO");
+                            Estados estado = data.getValue(Estados.class);
+                            assert estado != null;
+                            //Log.d("DEBUG MainActivity INFORMACION ESTADO",estado.toString());
+
+                            if(!estado.usuario.getUsuario().contentEquals(usuarioObject.getUsuario())) {
+                                if(!usuariosConEstados.containsKey(estado.getUsuario().getId())){
+                                    usuariosConEstados.put(estado.usuario.getId(),estado.getUsuario());
+                                    listaEstados.add(estado);
+                                }
+
+                            }
+                        }
+
+
+                        Log.d("DEBUG MainActivity","Lista de estados "+listaEstados.size());
+                        EstadosAdapter estadosAdapter = new EstadosAdapter(MainActivity.this,listaEstados);
+                        recyclerView.setAdapter(estadosAdapter);
+                        estadosAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
 
@@ -175,11 +209,6 @@ public class MainActivity extends BasicActivity {
 
             }
         });
-
-
-
-
-
 
 
 
@@ -210,7 +239,6 @@ public class MainActivity extends BasicActivity {
 
         if(selectedFragment != null){
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,selectedFragment).commit();
-
         }
         return true;
     };
@@ -227,7 +255,7 @@ public class MainActivity extends BasicActivity {
         Intent intent;
         switch (item.getItemId()) {
             case R.id.perfil:
-                intent = new Intent(MainActivity.this, PerfilActivity.class);
+                intent = new Intent(this, PerfilActivity.class);
                 //Me ha solucionado un error, Ejemplo abro la camara o galeria en una actividad en el PerfilActivity y al realizar la captura o seleccionar me devuelve a la MainActivity
                 //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 //Funciones.setActividadEnUso(true);
@@ -237,74 +265,32 @@ public class MainActivity extends BasicActivity {
                 return true;
             case R.id.salir:
                 Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser);
-                FirebaseAuth.getInstance().signOut();
                 intent = new Intent(this, StartActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
                 //Toast.makeText(this, R.string.cerrarSesionCorrectamente, Toast.LENGTH_SHORT).show();
                 DesignerToast.Success(MainActivity.this,getResources().getString(R.string.cerrarSesionCorrectamente), Gravity.BOTTOM, Toast.LENGTH_SHORT);
                 finish();
+                FirebaseAuth.getInstance().signOut();
                 return true;
         }
         return false;
     }
 
-    /*
-    class ViewPageAdapter extends FragmentPagerAdapter {
 
-        private ArrayList<Fragment> fragmentos;
-        private ArrayList<String> titulos;
-
-        ViewPageAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
-            this.fragmentos = new ArrayList<Fragment>();
-            this.titulos = new ArrayList<String>();
-        }
-
-        @NonNull
-        @Override
-        public Fragment getItem(int posicion) {
-            return this.fragmentos.get(posicion);
-        }
-
-        @Override
-        public int getCount() {
-            return this.fragmentos.size();
-        }
-
-        public void añadirFragmento(Fragment fragmento, String titulo) {
-            this.fragmentos.add(fragmento);
-            this.titulos.add(titulo);
-        }
-
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int posicion) {
-            return this.titulos.get(posicion);
-        }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
-
-     */
-    private void iniciarEstadosLayout(){
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-        RecyclerView recyclerView = findViewById(R.id.recycler_view_estados_main);
-        recyclerView.setLayoutManager(layoutManager);
-
-        List<EstadosClass> listaEstados = new ArrayList<>();
-        listaEstados.add(new EstadosClass("https://www.staffcreativa.pe/blog/wp-content/uploads/logos9.gif","Tus Historias"));
-        listaEstados.add(new EstadosClass("https://i.pinimg.com/originals/33/b8/69/33b869f90619e81763dbf1fccc896d8d.jpg","españita"));
-        listaEstados.add(new EstadosClass("https://d24jx5gocr6em0.cloudfront.net/wp-content/uploads/2020/04/03160041/negros-con-ataud-520x350.jpg","testUserName"));
-        listaEstados.add(new EstadosClass("https://i.pinimg.com/originals/33/b8/69/33b869f90619e81763dbf1fccc896d8d.jpg","españita"));
-        listaEstados.add(new EstadosClass("https://cdn.motor1.com/images/mgl/GwZbJ/s3/logo-story-volkswagen.jpg","testUserName"));
-        listaEstados.add(new EstadosClass("https://i.pinimg.com/originals/33/b8/69/33b869f90619e81763dbf1fccc896d8d.jpg","españita"));
-        listaEstados.add(new EstadosClass("https://cdn.motor1.com/images/mgl/GwZbJ/s3/logo-story-volkswagen.jpg","testUserName"));
-        EstadosAdapter adapter = new EstadosAdapter(this,listaEstados);
-        recyclerView.setAdapter(adapter);
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
     }
 
 }
-
 
 
 

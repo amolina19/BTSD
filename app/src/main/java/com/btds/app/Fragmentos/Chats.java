@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.btds.app.Adaptadores.UsuariosAdapter;
 import com.btds.app.Modelos.Mensaje;
 import com.btds.app.Modelos.Usuario;
+import com.btds.app.Modelos.UsuarioBloqueado;
 import com.btds.app.R;
+import com.btds.app.Utils.Funciones;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,11 +37,12 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 public class Chats extends Fragment {
 
     private RecyclerView recyclerView;
+    private HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados = new HashMap<>();
 
     private UsuariosAdapter usuariosAdapter;
     private List<Usuario> ListaUsuariosObject;
 
-    private FirebaseUser fUser;
+    final private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private DatabaseReference databaseReference;
 
     private List<String> ListaUsuariosIdString;
@@ -54,12 +57,12 @@ public class Chats extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject);
+        usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject,listaUsuariosBloqueados);
         recyclerView.setAdapter(usuariosAdapter);
 
 
 
-        fUser = FirebaseAuth.getInstance().getCurrentUser();
+
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -71,11 +74,11 @@ public class Chats extends Fragment {
                     Mensaje mensaje = snapshot.getValue(Mensaje.class);
 
                     assert mensaje != null;
-                    if(mensaje.getEmisor().contentEquals(fUser.getUid())){
+                    if(mensaje.getEmisor().contentEquals(firebaseUser.getUid())){
                         ListaUsuariosIdString.add(mensaje.getReceptor());
                     }
 
-                    if(mensaje.getReceptor().contentEquals(fUser.getUid())){
+                    if(mensaje.getReceptor().contentEquals(firebaseUser.getUid())){
                         ListaUsuariosIdString.add(mensaje.getEmisor());
                     }
                 }
@@ -97,8 +100,6 @@ public class Chats extends Fragment {
         try{
 
             ListaUsuariosObject = new ArrayList<>();
-
-
             databaseReference = FirebaseDatabase.getInstance().getReference("Usuarios");
 
             final HashMap<String,Usuario> hashMap = new HashMap<>();
@@ -116,19 +117,37 @@ public class Chats extends Fragment {
                             if (usuario.getId().contentEquals(id)) {
                                 if (ListaUsuariosObject.size() != 0) {
                                     for (int i = 0;i<ListaUsuariosObject.size();i++) {
-                                        if (!hashMap.containsKey(usuario.getId()) && !usuario.getId().contentEquals(fUser.getUid())) {
+                                        if (!hashMap.containsKey(usuario.getId()) && !usuario.getId().contentEquals(firebaseUser.getUid())) {
                                             ListaUsuariosObject.add(usuario);
                                             hashMap.put(usuario.getId(),usuario);
                                         }
                                     }
-                                } else if(!usuario.getId().contentEquals(fUser.getUid())){
+                                } else if(!usuario.getId().contentEquals(firebaseUser.getUid())){
                                     hashMap.put(usuario.getId(),usuario);
                                     ListaUsuariosObject.add(usuario);
                                 }
                             }
                         }
                     }
-                    usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject);
+
+                    Funciones.getBlockUsersListDatabaseReference().addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            listaUsuariosBloqueados.clear();
+                            for (DataSnapshot data:dataSnapshot.getChildren()){
+                                UsuarioBloqueado usuarioBloqueado = data.getValue(UsuarioBloqueado.class);
+                                if(usuarioBloqueado.getUsuarioAccionBloquear().contentEquals(firebaseUser.getUid())){
+                                    listaUsuariosBloqueados.put(data.getKey(),usuarioBloqueado);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject,listaUsuariosBloqueados);
                     //usuariosAdapter.notifyDataSetChanged();
                     recyclerView.setAdapter(usuariosAdapter);
                     usuariosAdapter.notifyDataSetChanged();

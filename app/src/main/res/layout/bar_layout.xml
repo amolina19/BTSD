@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:id="@+id/toolbar"
-    android:background="@color/colorPrimaryDark"
+    android:background="@drawable/activity_drawable_azul_acrylic"
     android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
     >
 

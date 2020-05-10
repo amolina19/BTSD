@@ -1,20 +1,39 @@
 package com.btds.app.Activitys;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
-import android.view.View;
-import android.widget.AdapterView;
+import android.view.MenuItem;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.btds.app.Adaptadores.EstadosUsuarioAdapter;
+import com.btds.app.Modelos.Estados;
+import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
+import com.btds.app.Utils.Fecha;
+import com.btds.app.Utils.Funciones;
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.features.ReturnMode;
+import com.esafirm.imagepicker.model.Image;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Alejandro Molina Louchnikov
@@ -22,43 +41,72 @@ import java.util.List;
 
 public class TusEstadosActivity extends AppCompatActivity {
 
-    private List<String> listaTusEstados;
+    private List<Estados> listaTusEstados;
     GridView gridViewEstados;
     Toolbar toolbar;
+    Usuario usuarioObject;
+    final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tus_estados);
+        Log.d("DEBUG ","TusEstadosActivity Created");
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Tus Estados");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Tus Estados");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+
+        assert firebaseUser != null;
+        Funciones.getActualUserDatabaseReference(firebaseUser).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                finish();
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usuarioObject = dataSnapshot.getValue(Usuario.class);
+                assert usuarioObject != null;
+                //Funciones.mostrarDatosUsuario(usuarioObject);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
 
-        listaTusEstados = cargarPrueba();
-        System.out.println("TAMAÑO LISTA IMAGENES "+listaTusEstados.size());
+        listaTusEstados = new ArrayList<>();
+        Funciones.getEstadosDatabaseReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaTusEstados.clear();
+                for(DataSnapshot data:dataSnapshot.getChildren()){
+                    Estados estado = data.getValue(Estados.class);
+                    assert estado != null;
+                    if(estado.getUsuario().getId().contentEquals(firebaseUser.getUid())){
+                        listaTusEstados.add(estado);
+                    }
+                }
+
+                EstadosUsuarioAdapter estadosUsuarioAdapter = new EstadosUsuarioAdapter(TusEstadosActivity.this,listaTusEstados);
+                gridViewEstados.setAdapter(estadosUsuarioAdapter);
+                estadosUsuarioAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        //System.out.println("TAMAÑO LISTA IMAGENES "+listaTusEstados.size());
 
         gridViewEstados = findViewById(R.id.gridview_tus_estados);
         gridViewEstados.setVerticalSpacing(1);
         gridViewEstados.setHorizontalSpacing(1);
 
-        EstadosUsuarioAdapter estadosUsuarioAdapter = new EstadosUsuarioAdapter(getApplicationContext(),listaTusEstados);
-        gridViewEstados.setAdapter(estadosUsuarioAdapter);
-
-        gridViewEstados.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(TusEstadosActivity.this, "HAS SELECCIONADO LA POSICION "+position, Toast.LENGTH_SHORT).show();
-            }
-        });
+        gridViewEstados.setOnItemClickListener((parent, view, position, id) -> Toast.makeText(TusEstadosActivity.this, "HAS SELECCIONADO LA POSICION "+position, Toast.LENGTH_SHORT).show());
     }
 
 
@@ -69,6 +117,17 @@ public class TusEstadosActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.añadir_estado_item_menu_toolbar) {
+            ImagePicker.create(TusEstadosActivity.this).returnMode(ReturnMode.GALLERY_ONLY).single().start();
+            return true;
+        }
+        return false;
+    }
+
+    /*
     private List<String> cargarPrueba(){
 
         List<String> listImagesUrl = new ArrayList<>();
@@ -76,4 +135,82 @@ public class TusEstadosActivity extends AppCompatActivity {
         listImagesUrl.add("https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/1200px-Flag_of_Spain.svg.png");
         return listImagesUrl;
     }
+
+     */
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            // or get a single image only
+            Image image = ImagePicker.getFirstImageOrNull(data);
+            Log.d("DEBUG TusEstadosActivity","IMAGEN PATH "+image.getPath());
+            //Toast.makeText(this, getResources().getString(R.string.actualizandoImagenPerfil), Toast.LENGTH_SHORT).show();
+            subirImagen(image);
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void subirImagen(Image image){
+
+        Uri file = Uri.fromFile(new File(image.getPath()));
+
+        //FirebaseStorage storage;
+        StorageReference storageReference;
+
+        //storage = FirebaseStorage.getInstance();
+        storageReference = Funciones.getFirebaseStorageReference();
+
+        //StorageReference storageUserProfileRef = storageReference.child("Imagenes/Perfil/"+usuarioObject.getId());
+
+        String URLstring = Funciones.getAlphaNumericString(16);
+        Log.d("DEBUG TusEstadosActivity","URL "+ URLstring);
+        StorageReference storageUserProfileRef = storageReference.child("Estados/"+usuarioObject.getId()+"/"+URLstring);
+        UploadTask uploadTask = storageUserProfileRef.putFile(file);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(exception -> {
+            // Handle unsuccessful uploads
+            Log.d("DEBUG PerfilActivity","El Estado no se ha subido");
+            //Toast.makeText(TusEstadosActivity.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
+        }).addOnSuccessListener(taskSnapshot -> {
+            storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+                // getting image uri and converting into string
+                //usuarioObject.setImagenURL(downloadUrl.toString());
+                //Fecha fecha = new Fecha();
+                Estados estado = new Estados(downloadUrl.toString(),usuarioObject,new Fecha());
+                Log.d("DEBUG TusEstadosActivity ","FECHA SUBIDA "+estado.fecha.toString());
+
+                assert firebaseUser != null;
+                Funciones.getEstadosDatabaseReference().child(new Fecha().obtenerFechaTotal()+""+Funciones.getAlphaNumericString(8)).setValue(estado).addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        Log.d("DEBUG TusEstadosActivity","Referencia Estado Registrado en la base de datos");
+                    }
+                });
+
+                /*
+                referenceUserDataBase.child(usuarioObject.getId()).setValue(usuarioObject).addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        Log.d("DEBUG PerfilActivity","Se ha Actualizado la foto de perfil");
+                        Toast.makeText(TusEstadosActivity.this, getResources().getString(R.string.exitoSubirImagenPerfil), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                 */
+            });
+            Log.d("DEBUG TusEstadosActivity","El estado se ha subido "+usuarioObject.getUsuario());
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Funciones.setBackPressed();
+        super.onBackPressed();
+        Intent backToMainActivity = new Intent(TusEstadosActivity.this,MainActivity.class);
+        startActivity(backToMainActivity);
+        finish();
+    }
+
 }

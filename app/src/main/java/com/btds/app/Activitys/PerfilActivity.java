@@ -1,10 +1,12 @@
 package com.btds.app.Activitys;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,6 +22,8 @@ import com.bumptech.glide.Glide;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.ReturnMode;
 import com.esafirm.imagepicker.model.Image;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.vdx.designertoast.DesignerToast;
 
 import java.io.File;
 import java.util.Objects;
@@ -43,13 +48,15 @@ public class PerfilActivity extends BasicActivity {
     TextView usuario;
     EditText descripcion;
     TextView nTelefono;
+    TextView verificado;
+    SwitchMaterial T2Aoption;
     Usuario usuarioObject;
     Button imageButton;
     Button guardarButton;
     Button cambiarPassword;
     Toolbar toolbar;
 
-    FirebaseUser firebaseUser;
+    final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     DatabaseReference referenceUserDataBase;
     DatabaseReference mainDatabasePath;
     StorageReference storageReference;
@@ -58,6 +65,7 @@ public class PerfilActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
+        Log.d("DEBUG ","PerfilActivity Created");
 
         //INDISPENSABLE
         toolbar = findViewById(R.id.toolbar);
@@ -65,12 +73,15 @@ public class PerfilActivity extends BasicActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         imagen_perfil = findViewById(R.id.imagen_perfil);
         usuario = findViewById(R.id.usuarioCampoPerfil);
         descripcion = findViewById(R.id.descripcionCampoPerfil);
         nTelefono = findViewById(R.id.usuarioTelefonoperfil);
+        verificado = findViewById(R.id.usuarioVerificado);
+
+        T2Aoption = findViewById(R.id.perfilT2Aoption);
 
         imageButton = findViewById(R.id.imagenButton);
         //Superpongo un boton encima de la imagen del perfil, al ser pulsao salta a la  actividad para insertar una nueva imagen
@@ -80,10 +91,6 @@ public class PerfilActivity extends BasicActivity {
         cambiarPassword = findViewById(R.id.cambiarContraseña);
 
 
-
-
-
-        firebaseUser = Funciones.getFirebaseUser();
         Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
         referenceUserDataBase = Funciones.getUsersDatabaseReference();
         mainDatabasePath = Funciones.getDatabaseReference();
@@ -91,6 +98,7 @@ public class PerfilActivity extends BasicActivity {
         //storage = FirebaseStorage.getInstance();
         storageReference = Funciones.getFirebaseStorageReference();
 
+        assert firebaseUser != null;
         referenceUserDataBase.child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -106,7 +114,23 @@ public class PerfilActivity extends BasicActivity {
                     }
 
                     descripcion.setText(usuarioObject.getDescripcion());
-                    nTelefono.setText(usuarioObject.getTelefono());
+
+                    if(usuarioObject.getTelefono().isEmpty()){
+                        nTelefono.setText(getResources().getString(R.string.noVerificado));
+                        verificado.setText(getResources().getString(R.string.noVerificado));
+                        T2Aoption.setActivated(false);
+                    }else{
+                        nTelefono.setText(usuarioObject.getTelefono());
+                        T2Aoption.setActivated(true);
+                        verificado.setGravity(Gravity.NO_GRAVITY);
+                        if(usuarioObject.getTwoAunthenticatorFactor()){
+                            verificado.setText(getResources().getString(R.string.VerificadoConT2A));
+                            T2Aoption.setChecked(true);
+                        }else{
+                            verificado.setText(getResources().getString(R.string.VerificadoSinT2A));
+                            T2Aoption.setChecked(false);
+                        }
+                    }
                 }
             }
 
@@ -119,6 +143,39 @@ public class PerfilActivity extends BasicActivity {
         cambiarPassword.setOnClickListener(v -> {
             //cambiar contraseña
             System.out.println("PASSWORD CHANGE");
+        });
+
+        T2Aoption.setOnClickListener(v -> {
+
+            if(T2Aoption.isChecked()){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("AUTENTICADOR T2A");
+                builder.setMessage("Deseas activar el T2A");
+                builder.setNegativeButton(getResources().getString(R.string.Cancelar),(dialog, which) -> {
+                    T2Aoption.setChecked(true);
+                });
+                builder.setPositiveButton(getResources().getString(R.string.Aceptar), (dialog, which) -> {
+                    DesignerToast.Success(PerfilActivity.this,"HAS ACTIVADO EL AUTENTICADOR EN 2 FACTORES", Gravity.CENTER, Toast.LENGTH_SHORT);
+
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }else{
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("AUTENTICADOR T2A");
+                builder.setMessage("Deseas desactivar el T2A");
+                builder.setNegativeButton(getResources().getString(R.string.Cancelar),(dialog, which) -> {
+                    T2Aoption.setChecked(false);
+                });
+                builder.setPositiveButton(getResources().getString(R.string.Aceptar), (dialog, which) -> {
+
+                    DesignerToast.Success(PerfilActivity.this,"HAS DESACTIVADO EL AUTENTICADOR EN 2 FACTORES", Gravity.CENTER, Toast.LENGTH_SHORT);
+
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
         });
         guardarButton.setOnClickListener(v -> {
 
@@ -205,5 +262,14 @@ public class PerfilActivity extends BasicActivity {
             });
             Log.d("DEBUG PerfilActivity","La imagen se ha subido al perfil de "+usuarioObject.getUsuario());
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Funciones.setBackPressed();
+        super.onBackPressed();
+        Intent backToMainActivity = new Intent(PerfilActivity.this,MainActivity.class);
+        startActivity(backToMainActivity);
+        finish();
     }
 }

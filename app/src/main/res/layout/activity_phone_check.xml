@@ -11,7 +11,7 @@
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/activity_drawable_naranja_acrylic"
         android:orientation="horizontal">
 
         <ImageView
@@ -75,6 +75,38 @@
             android:text="@string/continuar"
             android:textAllCaps="false"
             android:textColor="#cdd8f1" />
+
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginStart="20dp"
+                android:id="@+id/textView_informacion"
+                android:text="@string/OmitirMasTarde"
+                android:layout_width="200dp"
+                android:textStyle="bold"
+                android:layout_height="match_parent"/>
+
+            <Button
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/buttonOmitir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@color/colorPrimaryDark"
+                android:text="@string/omitir"
+                android:textAllCaps="false"
+                android:textColor="#cdd8f1" />
+
+        </RelativeLayout>
     </LinearLayout>
 
 

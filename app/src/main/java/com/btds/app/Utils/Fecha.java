@@ -10,13 +10,13 @@ import androidx.annotation.RequiresApi;
  */
 public class Fecha {
 
-    private String milisegundos;
-    private String segundos;
-    private String minutos;
-    private String hora;
-    private String dia;
-    private String mes;
-    private String anno;
+    public String milisegundos;
+    public String segundos;
+    public String minutos;
+    public String hora;
+    public String dia;
+    public String mes;
+    public String anno;
 
     /**
      * Constructor sin parámetros, al instanciarse llamada los métodos para que devuelvan la fecha individual y se los asigna a los atributos.
@@ -39,7 +39,10 @@ public class Fecha {
      */
 
     private String obtenerMilisegundos(){
-        this.milisegundos = java.time.LocalDateTime.now().toString().substring(20,23);
+
+        String fecha = java.time.LocalDateTime.now().toString();
+        int longitudPunto = fecha.lastIndexOf(".");
+        this.milisegundos = java.time.LocalDateTime.now().toString().substring(longitudPunto+1,fecha.length());
         return milisegundos;
     }
 

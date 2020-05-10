@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:text="@string/registrarse"
             android:id="@+id/button_registrar"
-            android:background="@drawable/border_rectangle"
+            android:background="@drawable/activity_drawable_azul_acrylic"
             android:layout_marginTop="20dp"
             android:textColor="#FFFFFF"/>
 

@@ -1,9 +1,11 @@
 package com.btds.app.Activitys;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 public class PhoneCheckActivity extends AppCompatActivity {
 
     private EditText editTextMobile;
+    private static Activity activityCheckPhone;
+    private TextView textView_informacion;
     CountryCodePicker codeCountryPicker;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     //String systemLanguage;
@@ -28,7 +32,11 @@ public class PhoneCheckActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_check);
+        Log.d("DEBUG ","PhoneCheckActivity Created");
+        activityCheckPhone = this;
         codeCountryPicker = findViewById(R.id.codeCountryPicker);
+        textView_informacion = findViewById(R.id.textView_informacion);
+        textView_informacion.setError(getResources().getString(R.string.OmitirMasTarde));
 
         //systemLanguage = Funciones.getSystemLanguage();
         Log.d("DEBUG IDIOMA SISTEMA", Funciones.getSystemLanguage());
@@ -67,6 +75,10 @@ public class PhoneCheckActivity extends AppCompatActivity {
 
 
         });
+    }
+
+    public static Activity getInstanceCheckPhone(){
+        return activityCheckPhone;
     }
 
     private void enviarVerificacionTelefono(String phoneNum){

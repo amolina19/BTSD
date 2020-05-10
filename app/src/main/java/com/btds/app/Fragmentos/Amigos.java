@@ -1,6 +1,7 @@
 package com.btds.app.Fragmentos;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +13,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.btds.app.Adaptadores.UsuariosAdapter;
 import com.btds.app.Modelos.Usuario;
+import com.btds.app.Modelos.UsuarioBloqueado;
 import com.btds.app.R;
+import com.btds.app.Utils.Funciones;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,6 +35,8 @@ public class Amigos extends Fragment {
     private RecyclerView recyclerView;
     private UsuariosAdapter usuariosAdapter;
     private List<Usuario> listaUsuarios;
+    private final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados = new HashMap<>();
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -42,7 +46,9 @@ public class Amigos extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios);
+
+
+        usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios,listaUsuariosBloqueados);
         recyclerView.setAdapter(usuariosAdapter);
 
         //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -66,28 +72,48 @@ public class Amigos extends Fragment {
 
 
     private void obtenerUsuarios(){
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
+        //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
 
 
-        references.addValueEventListener(new ValueEventListener() {
+        Funciones.getBlockUsersListDatabaseReference().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listaUsuarios.clear();
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    Usuario usuario = snapshot.getValue(Usuario.class);
-                    if(usuario !=null){
-                        assert firebaseUser != null;
-                        if(!usuario.getId().equals(firebaseUser.getUid())){
-                            listaUsuarios.add(usuario);
-                        }
+                listaUsuariosBloqueados.clear();
+                for (DataSnapshot data:dataSnapshot.getChildren()){
+                    UsuarioBloqueado usuarioBloqueado = data.getValue(UsuarioBloqueado.class);
+                    if(usuarioBloqueado.getUsuarioAccionBloquear().contentEquals(firebaseUser.getUid())){
+                        listaUsuariosBloqueados.put(data.getKey(),usuarioBloqueado);
                     }
                 }
-                System.out.println("ARRAY "+listaUsuarios.size());
-                usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios);
-                //usuariosAdapter.notifyDataSetChanged();
-                recyclerView.setAdapter(usuariosAdapter);
-                usuariosAdapter.notifyDataSetChanged();
+
+                Funciones.getUsersDatabaseReference().addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        listaUsuarios.clear();
+                        for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                            Usuario usuario = snapshot.getValue(Usuario.class);
+                            if(usuario !=null){
+                                assert firebaseUser != null;
+                                if(!usuario.getId().equals(firebaseUser.getUid())){
+                                    listaUsuarios.add(usuario);
+                                }
+                            }
+                        }
+                        //System.out.println("ARRAY "+listaUsuarios.size());
+                        Log.d("DEBUG Fragment Amigos","Lista de Amigos "+listaUsuarios.size() );
+                        Log.d("DEBUG Fragment Amigos","Lista de Amigos Bloqueados "+listaUsuariosBloqueados.size());
+                        usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios,listaUsuariosBloqueados);
+                        //usuariosAdapter.notifyDataSetChanged();
+                        recyclerView.setAdapter(usuariosAdapter);
+                        usuariosAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
@@ -95,7 +121,6 @@ public class Amigos extends Fragment {
 
             }
         });
-
 
     }
 

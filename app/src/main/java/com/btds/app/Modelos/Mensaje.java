@@ -12,6 +12,9 @@ public class Mensaje {
     private String emisor;
     private String receptor;
     private String mensaje;
+    private String anno;
+    private String mes;
+    private String dia;
     private String hora;
     private String fecha;
     private String leido;
@@ -22,11 +25,14 @@ public class Mensaje {
     public Mensaje(){
     }
 
-    public Mensaje(String id, String emisor, String receptor, String mensaje, String hora, String fecha,String leido) {
+    public Mensaje(String id, String emisor, String receptor, String mensaje, String anno, String mes, String dia, String hora, String fecha,String leido) {
         this.id = id;
         this.emisor = emisor;
         this.receptor = receptor;
         this.mensaje = mensaje;
+        this.anno = anno;
+        this.mes = mes;
+        this.dia = dia;
         this.hora = hora;
         this.fecha = fecha;
         this.leido = leido;
@@ -70,6 +76,30 @@ public class Mensaje {
 
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
+    }
+
+    public String getAnno() {
+        return anno;
+    }
+
+    public void setAnno(String anno) {
+        this.anno = anno;
+    }
+
+    public String getMes() {
+        return mes;
+    }
+
+    public void setMes(String mes) {
+        this.mes = mes;
+    }
+
+    public String getDia() {
+        return dia;
+    }
+
+    public void setDia(String dia) {
+        this.dia = dia;
     }
 
     public String getHora() {

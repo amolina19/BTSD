@@ -68,7 +68,7 @@ public class BasicActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
         //Funciones.setActividadEnUso(true);
     }
@@ -76,20 +76,18 @@ public class BasicActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //super.onBackPressed();
+        //firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
+        //finish(); AQUI DA MUCHOS ERRORES
     }
 
 
-    /*
+
     @Override
     protected void onStop() {
         super.onStop();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(Funciones.getActividadEnUso() == false){
-            Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser, getApplicationContext());
-        }
+        //finish();
 
     }
 
@@ -97,13 +95,8 @@ public class BasicActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(Funciones.getActividadEnUso() == false){
-            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            Funciones.actualizarConexion(getResources().getString(R.string.offline), firebaseUser, getApplicationContext());
-        }
-
+        finish();
     }
-    */
 
 
 

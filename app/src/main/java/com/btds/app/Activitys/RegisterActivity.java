@@ -3,6 +3,7 @@ package com.btds.app.Activitys;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -31,30 +32,6 @@ import java.util.Objects;
 
 public class RegisterActivity extends BasicActivity {
 
-
-    /*
-    class TaskProgressBar extends AsyncTask<Void, Void, Void> {
-
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
-            for (int i = 0; i < 100; i++) {
-                try {
-                    Thread.sleep(15);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                progressBar.setProgress(i);
-            }
-            return null;
-        }
-    }
-    */
-
-
-
     String userID;
     MaterialEditText username, email, password;
     Button button_registrar;
@@ -72,6 +49,7 @@ public class RegisterActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        Log.d("DEBUG ","RegisterActivity Created");
 
 
         reference = FirebaseDatabase.getInstance().getReference();
@@ -89,7 +67,7 @@ public class RegisterActivity extends BasicActivity {
         password = findViewById(R.id.password);
         button_registrar = findViewById(R.id.button_registrar);
         progressBar = findViewById(R.id.progressbar);
-        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.GONE);
 
 
         //Instancio el autentificador
@@ -146,7 +124,7 @@ public class RegisterActivity extends BasicActivity {
                         usuarioRegistrandose.setFecha(fecha.obtenerDia()+" "+fecha.obtenerMes()+" "+fecha.obtenerAnno());
                         usuarioRegistrandose.setEstado("En Linea");
                         usuarioRegistrandose.setTelefono("");
-                        usuarioRegistrandose.setTwoAunthenticatorFactor("false");
+                        usuarioRegistrandose.setTwoAunthenticatorFactor(false);
                         Toast.makeText(RegisterActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
 
 
@@ -159,12 +137,22 @@ public class RegisterActivity extends BasicActivity {
                                 intentRegister.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intentRegister);
                                 finish();
+                            }else{
+                                progressBar.setVisibility(View.GONE);
                             }
                         });
                     }
                 });
     }
 
-}
+    @Override
+    public void onBackPressed() {
+        //Funciones.setBackPressed();
+        super.onBackPressed();
+        Intent backToChats = new Intent(RegisterActivity.this,StartActivity.class);
+        startActivity(backToChats);
+        finish();
+    }
 
+}
 

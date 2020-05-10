@@ -15,7 +15,7 @@ public class Usuario {
     private String fecha;
     private String descripcion;
     private String telefono;
-    private String twoAunthenticatorFactor;
+    private Boolean twoAunthenticatorFactor;
 
     public Usuario(){
     }
@@ -90,11 +90,11 @@ public class Usuario {
         this.telefono = telefono;
     }
 
-    public String getTwoAunthenticatorFactor() {
+    public Boolean getTwoAunthenticatorFactor() {
         return twoAunthenticatorFactor;
     }
 
-    public void setTwoAunthenticatorFactor(String twoAunthenticatorFactor) {
+    public void setTwoAunthenticatorFactor(Boolean twoAunthenticatorFactor) {
         this.twoAunthenticatorFactor = twoAunthenticatorFactor;
     }
 }

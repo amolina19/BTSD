@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">BTSD</string>
-    <string name="version">Version Dev Alpha 1.5</string>
+    <string name="version">Version Dev Alpha 1.7</string>
     <string name="Autor">Alejandro Molina Louchnikov</string>
 
     <string name="email">Email</string>
@@ -57,6 +57,9 @@
     <string name="buscarAmigos">Buscar amigos</string>
 
     <string name="llamar">Llamar</string>
+    <string name="añadir">Añadir</string>
+    <string name="agregarAmigo">Agregar</string>
+    <string name="enviarPeticionAmistad">Enviar petición</string>
     <string name="bloquear">Bloquear</string>
     <string name="desbloquear">Desbloquear</string>
     <string name="silenciar">Silenciar</string>
@@ -71,9 +74,17 @@
     <string name="confirmBlock">Estas seguro de que quieres bloquear a </string>
     <string name="blockedUser">Has bloqueado a </string>
 
+    <string name="enviarPeticion">Enviar petición</string>
+    <string name="cancelarPeticion">Cancelar petición</string>
+
 
     <string name="Aceptar">Aceptar</string>
     <string name="Cancelar">Cancelar</string>
+
+    <string name="hora">hora</string>
+    <string name="h">h</string>
+    <string name="minuto">minuto</string>
+    <string name="m">m</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -81,10 +92,17 @@
     <string name="usuario">Usuario</string>
     <string name="todo">TODO</string>
     <string name="error">ERROR</string>
-    <string name="errorAlCargar">Error al cargar.</string>
+    <string name="errorAlCargar">Error al actualizar.</string>
     <string name="introduceTlefonoValido">Introduce un número de telefono válido</string>
     <string name="introduceElCodigoVerf">Introduce el código</string>
     <string name="tuTelefono">Tú Teléfono</string>
     <string name="telefono">teléfono</string>
+    <string name="omitir">Omitir</string>
+    <string name="masTarde">Más tarde</string>
+    <string name="OmitirMasTarde">Si omites el proceso de verificación, puedes volver a verificar tu número de teléfono en Ajustes > Pérfil > Verificar número de teléfono.</string>
+    <string name="noVerificado">No verificado.</string>
+    <string name="Verificado">Verificado</string>
+    <string name="VerificadoSinT2A">Teléfono verificado, sin auntenticación en 2 pasos.</string>
+    <string name="VerificadoConT2A">Teléfono verificado, con auntenticación en 2 pasos.</string>
 
 </resources>

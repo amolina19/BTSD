@@ -2,6 +2,7 @@ package com.btds.app.Activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -23,29 +24,6 @@ import java.util.Objects;
 
 public class LoginActivity extends BasicActivity {
 
-
-    /*
-    class TaskProgressBar extends AsyncTask<Void, Void, Void> {
-
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
-            for(int i=0;i<100;i++){
-                try {
-                    Thread.sleep(15);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                progressBar.setProgress(i);
-            }
-            return null;
-        }
-    }
-    */
-
-
     MaterialEditText email,password;
     Button button_iniciarSesion;
     ProgressBar progressBar;
@@ -58,6 +36,7 @@ public class LoginActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Log.d("DEBUG ","LoginActivity Created");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,7 +51,7 @@ public class LoginActivity extends BasicActivity {
         password = findViewById(R.id.password);
         button_iniciarSesion = findViewById(R.id.button_iniciarSesion);
         progressBar = findViewById(R.id.progressbar);
-        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.GONE);
 
         button_iniciarSesion.setOnClickListener(v -> {
             String text_email = Objects.requireNonNull(email.getText()).toString();
@@ -90,6 +69,7 @@ public class LoginActivity extends BasicActivity {
                             if(task.isSuccessful()){
                                 Intent intentLogin = new Intent(LoginActivity.this, MainActivity.class);
                                 intentLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intentLogin.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intentLogin);
                                 //Toast.makeText(LoginActivity.this, R.string.iniciarSesionCorrectamente, Toast.LENGTH_SHORT).show();
                                 DesignerToast.Success(LoginActivity.this, getResources().getString(R.string.iniciarSesionCorrectamente), Gravity.BOTTOM, Toast.LENGTH_SHORT);
@@ -97,9 +77,19 @@ public class LoginActivity extends BasicActivity {
                             }else{
                                 //Toast.makeText(LoginActivity.this, R.string.autentificacionFallida, Toast.LENGTH_SHORT).show();
                                 DesignerToast.Error(LoginActivity.this, getResources().getString(R.string.autentificacionFallida), Gravity.BOTTOM, Toast.LENGTH_SHORT);
+                                progressBar.setVisibility(View.GONE);
                             }
                         });
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Funciones.setBackPressed();
+        super.onBackPressed();
+        Intent backToChats = new Intent(LoginActivity.this,StartActivity.class);
+        startActivity(backToChats);
+        finish();
     }
 }

@@ -16,7 +16,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/activity_drawable_naranja_acrylic"
         android:popupTheme="@style/menuStyle"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
@@ -62,13 +62,12 @@
             android:visibility="visible"
             />
 
-        <TextView
+        <ImageView
             android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@color/colorNegro"
-            android:text="@string/descripcion"
-            android:textSize="20sp"/>
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="left"
+            android:background="@mipmap/logo_descripcion_azul"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -78,46 +77,81 @@
             android:textColor="@color/colorPrimaryDark"
             android:maxLength="80"/>
 
-        <TextView
-            android:layout_marginTop="10dp"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@color/colorNegro"
-            android:text="@string/nombreUsuario"
-            android:textSize="20sp"
-            />
+            android:layout_marginTop="20dp"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+            
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@mipmap/logo_usuario_sin_foto"/>
 
-        <TextView
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20sp"
-            android:id="@+id/usuarioCampoPerfil"/>
+            <TextView
+                android:layout_marginStart="20dp"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                android:id="@+id/usuarioCampoPerfil"/>
+        </LinearLayout>
 
-        <TextView
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@color/colorNegro"
-            android:text="@string/tuTelefono"
-            android:textSize="20sp"
-            />
 
-        <TextView
-            android:layout_marginTop="10dp"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20sp"
-            android:id="@+id/usuarioTelefonoperfil"/>
+            android:layout_marginTop="20dp"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@mipmap/logo_telefono_azul"/>
+
+            <TextView
+                android:layout_marginStart="20dp"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                android:id="@+id/usuarioTelefonoperfil"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@mipmap/logo_verificado_azul"/>
+
+            <TextView
+                android:layout_marginStart="20dp"
+                android:gravity="center_vertical"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                android:id="@+id/usuarioVerificado"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/perfilT2Aoption"
+                android:layout_width="60dp"
+                android:layout_height="20dp"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/cambiarContraseña"
             android:layout_marginTop="30dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/border_rectangle"
+            android:background="@drawable/activity_drawable_azul_acrylic"
             android:textColor="@color/colorBlanco"
             android:text="@string/cambiarContraseña"
             />
@@ -127,7 +161,7 @@
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/border_rectangle"
+            android:background="@drawable/activity_drawable_azul_acrylic"
         android:textColor="@color/colorBlanco"
         android:text="@string/guardar"
         />

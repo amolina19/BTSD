@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.btds.app.Modelos.Mensaje;
 import com.btds.app.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,7 +30,7 @@ import java.util.List;
 
 public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHolder>  {
 
-    //private static final int MENSAGE_TIPO_IZQUIERDA = 0;
+    private static final int MENSAGE_TIPO_IZQUIERDA = 0;
     private static final int MENSAGE_TIPO_DERECHA = 1;
 
     private Boolean firstEnter = false;
@@ -137,7 +139,7 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
     @Override
     public int getItemViewType(int posicion) {
 
-        /*
+
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         assert firebaseUser != null;
@@ -147,8 +149,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
             return MENSAGE_TIPO_IZQUIERDA;
         }
 
-         */
-        return 0;
     }
 }
 

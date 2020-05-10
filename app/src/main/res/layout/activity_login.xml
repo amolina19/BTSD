@@ -65,7 +65,7 @@
             android:layout_width="320dp"
             android:text="@string/iniciarSesion"
             android:id="@+id/button_iniciarSesion"
-            android:background="@drawable/border_rectangle"
+            android:background="@drawable/activity_drawable_azul_acrylic"
             android:layout_marginTop="20dp"
             android:textColor="#FFFFFF"/>
 

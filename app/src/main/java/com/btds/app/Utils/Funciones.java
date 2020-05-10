@@ -10,6 +10,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.btds.app.Modelos.Estados;
+import com.btds.app.Modelos.PeticionAmistadUsuario;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
 import com.btds.app.R;
@@ -25,8 +27,11 @@ import com.google.firebase.storage.StorageReference;
 import com.hbb20.CountryCodePicker;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
@@ -91,6 +96,7 @@ public class Funciones {
         });
 
     }
+
 
     /**
      * Se obtiene su últ conexión y cálcular cuantos días han transcurrido devolviendo un número entero.
@@ -242,6 +248,7 @@ public class Funciones {
         return listaUsuariosBloqueados;
     }
 
+
     public static String obtenerEstadoUsuario(Context contexto, int diasPasados,Usuario usuarioChat){
         String text = null;
         if (diasPasados == 0) {
@@ -260,7 +267,82 @@ public class Funciones {
         }else{
             return text;
         }
+    }
 
+    public static int obtenerMinutosSubida(Estados estado){
+
+        Log.d("DEBUG obtenerHorasSubida ","Fecha SUBIDA "+estado.getFecha().toString());
+        String userEstadoDateMinute = estado.fecha.minutos;
+        String userEstadoDateHour = estado.fecha.hora;
+        String userEstadoDateDay =  estado.fecha.dia;
+        String userEstadoDateMonth = estado.fecha.mes;
+        String userEstadoDateYear = estado.fecha.anno;
+
+        Log.d("DEBUG FECHA ESTADO OBJECT"," "+estado.getFecha().toString());
+
+        fecha = new Fecha();
+        LocalDateTime dateBefore = LocalDateTime.of(Integer.valueOf(userEstadoDateYear),Integer.valueOf(userEstadoDateMonth),Integer.valueOf(userEstadoDateDay),Integer.valueOf(userEstadoDateHour),Integer.valueOf(userEstadoDateMinute));
+        LocalDateTime dateAfter = LocalDateTime.of(Integer.parseInt(fecha.obtenerAnno()),Integer.parseInt(fecha.obtenerMes()),Integer.parseInt(fecha.obtenerDia()),Integer.parseInt(fecha.obtenerHora()),Integer.parseInt(fecha.obtenerMinutos()));
+        long minutos = ChronoUnit.MINUTES.between(dateBefore, dateAfter);
+        int minutosTranscurridos = (int) minutos;
+        Log.d("Debugging Minutos transcurridos", String.valueOf(+minutos));
+
+        return minutosTranscurridos;
+    }
+
+    public static HashMap<String,Usuario> usuariosConEstados(){
+
+        HashMap<String,Usuario> usuariosConEstados = new HashMap<>();
+
+        Funciones.getEstadosDatabaseReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot data:dataSnapshot.getChildren()){
+                    //Log.d("DEBUG FUNCIONES obtenerEstados","ESTADO ITERADO");
+                    Estados estado = data.getValue(Estados.class);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return  usuariosConEstados;
+    }
+
+    public static List<Estados> obtenerEstados(){
+        ArrayList<Estados> listaEstados = new ArrayList<>();
+
+        Funciones.getEstadosDatabaseReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaEstados.clear();
+                for(DataSnapshot data:dataSnapshot.getChildren()){
+                    Log.d("DEBUG FUNCIONES obtenerEstados","ESTADO ITERADO");
+                    Estados estado = data.getValue(Estados.class);
+                    listaEstados.add(estado);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return listaEstados;
+    }
+
+    public static HashMap<String,PeticionAmistadUsuario> obtenerPeticionesAmistadEnviadas(FirebaseUser firebaseUser){
+
+        HashMap<String, PeticionAmistadUsuario> peticionesEnviadas = new HashMap<>();
+
+
+
+        return peticionesEnviadas;
     }
 
 
@@ -390,6 +472,10 @@ public class Funciones {
         return getInstance().getReference("Usuarios");
     }
 
+    public static DatabaseReference getActualUserDatabaseReference(FirebaseUser firebaseUser){
+        return getInstance().getReference("Usuarios").child(firebaseUser.getUid());
+    }
+
     public static DatabaseReference getBlockUsersListDatabaseReference(){
         return getInstance().getReference("Bloqueados");
     }
@@ -406,12 +492,28 @@ public class Funciones {
         return getInstance().getReference("Chats");
     }
 
+    public static DatabaseReference getEstadosDatabaseReference(){
+        return getInstance().getReference("Estados");
+    }
+
+    public static DatabaseReference getEstadosUserDatabaseReference(FirebaseUser firebaseUser){
+        return getInstance().getReference("Estados").child(firebaseUser.getUid());
+    }
+
     public static FirebaseStorage getFirebaseStorage(){
         return FirebaseStorage.getInstance();
     }
 
     public static StorageReference getFirebaseStorageReference(){
         return getFirebaseStorage().getReference();
+    }
+
+    public static StorageReference getUserEstadosFirebaseStorageReference(FirebaseUser firebaseUser){
+        return getFirebaseStorage().getReference().child("Estados").child(firebaseUser.getUid());
+    }
+
+    public static DatabaseReference getPeticionesAmistadReference(){
+        return getInstance().getReference().child("PeticionesAmistad");
     }
 
     public static PhoneAuthProvider getPhoneAuthProvider(){
