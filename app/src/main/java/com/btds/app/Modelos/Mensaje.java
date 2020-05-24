@@ -1,6 +1,8 @@
 package com.btds.app.Modelos;
 
 
+import com.btds.app.Utils.Fecha;
+
 /**
  * @author Alejandro Molina Louchnikov
  */
@@ -12,12 +14,10 @@ public class Mensaje {
     private String emisor;
     private String receptor;
     private String mensaje;
-    private String anno;
-    private String mes;
-    private String dia;
-    private String hora;
-    private String fecha;
-    private String leido;
+    private boolean leido;
+    private Tipo tipoMensaje;
+    public Fecha fecha;
+    private LatLng ubicacion;
 
 
     //Class com.btds.app.Modelos.Mensaje does not define a no-argument constructor
@@ -25,17 +25,26 @@ public class Mensaje {
     public Mensaje(){
     }
 
-    public Mensaje(String id, String emisor, String receptor, String mensaje, String anno, String mes, String dia, String hora, String fecha,String leido) {
+    //Imagenes y Texto, En el mensaje ira la URL de la imagen para ser cargada o el texto dependiendo del Tipo de mensaje
+    public Mensaje(String id, String emisor, String receptor, String mensaje,Tipo tipoMensaje, boolean leido,Fecha fecha) {
         this.id = id;
         this.emisor = emisor;
         this.receptor = receptor;
         this.mensaje = mensaje;
-        this.anno = anno;
-        this.mes = mes;
-        this.dia = dia;
-        this.hora = hora;
-        this.fecha = fecha;
         this.leido = leido;
+        this.tipoMensaje = tipoMensaje;
+        this.fecha = fecha;
+    }
+
+    //Ubicacion
+    public Mensaje(String id, String emisor, String receptor, LatLng ubicacion, boolean leido,Fecha fecha) {
+        this.id = id;
+        this.emisor = emisor;
+        this.receptor = receptor;
+        this.ubicacion = ubicacion;
+        this.leido = leido;
+        this.tipoMensaje = Tipo.LOCALIZACION;
+        this.fecha = fecha;
     }
 
     public String getKey() {
@@ -78,51 +87,42 @@ public class Mensaje {
         this.mensaje = mensaje;
     }
 
-    public String getAnno() {
-        return anno;
+    public Tipo getTipoMensaje() {
+        return tipoMensaje;
     }
 
-    public void setAnno(String anno) {
-        this.anno = anno;
+    public void setTipoMensaje(Tipo tipoMensaje) {
+        this.tipoMensaje = tipoMensaje;
     }
 
-    public String getMes() {
-        return mes;
-    }
-
-    public void setMes(String mes) {
-        this.mes = mes;
-    }
-
-    public String getDia() {
-        return dia;
-    }
-
-    public void setDia(String dia) {
-        this.dia = dia;
-    }
-
-    public String getHora() {
-        return hora;
-    }
-
-    public void setHora(String hora) {
-        this.hora = hora;
-    }
-
-    public String getFecha() {
+    public Fecha getFecha() {
         return fecha;
     }
 
-    public void setFecha(String fecha) {
+    public void setFecha(Fecha fecha) {
         this.fecha = fecha;
     }
 
-    public String getLeido() {
+    public boolean getLeido() {
         return leido;
     }
 
-    public void setLeido(String leido) {
+    public void setLeido(boolean leido) {
         this.leido = leido;
+    }
+
+    public LatLng getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(LatLng ubicacion) {
+        this.ubicacion = ubicacion;
+    }
+
+    public enum Tipo{
+        TEXTO,
+        AUDIO,
+        FOTO,
+        LOCALIZACION
     }
 }

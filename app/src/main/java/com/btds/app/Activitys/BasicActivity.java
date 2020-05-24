@@ -59,8 +59,15 @@ public class BasicActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
+
+        if(firebaseUser != null){
+            //Funciones.habilitarPersistencia();
+            Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
+
+
+
+        }
+
         //Funciones.setActividadEnUso(true);
     }
 
@@ -69,34 +76,26 @@ public class BasicActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
+        if(firebaseUser != null){
+            Funciones.actualizarConexion(getApplicationContext().getResources().getString(R.string.online),firebaseUser);
+        }
         //Funciones.setActividadEnUso(true);
     }
 
 
+    /*
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
         //firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
+        if(firebaseUser != null){
+            Funciones.actualizarConexion(getApplicationContext().getResources().getString(R.string.offline),firebaseUser);
+        }
         //finish(); AQUI DA MUCHOS ERRORES
     }
 
+     */
 
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        //finish();
-
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        finish();
-    }
 
 
 

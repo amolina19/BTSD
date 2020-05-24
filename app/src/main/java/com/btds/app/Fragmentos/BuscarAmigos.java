@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import in.shrinathbhosale.preffy.Preffy;
+
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 /**
@@ -85,6 +87,9 @@ public class BuscarAmigos extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Preffy preffy = Preffy.getInstance(getContext());
+        preffy.putString("FragmentHome", "BuscarAmigos");
 
         //peticionAmistadUsuarios = Funciones.obtenerPeticionesAmistadEnviadas(firebaseUser);
 

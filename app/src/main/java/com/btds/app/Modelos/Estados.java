@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 public class Estados implements Comparable<Estados>{
 
+    public String key;
     public String estadoURL;
     public Usuario usuario;
     public Fecha fecha;
@@ -19,17 +20,20 @@ public class Estados implements Comparable<Estados>{
     public Estados(){
     }
 
-    public Estados(String estadoURL, Usuario usuario) {
-        this.estadoURL = estadoURL;
-        this.usuario = usuario;
-    }
-
-    public Estados(String estadoURL, Usuario usuario, Fecha fecha) {
+    public Estados(String key,String estadoURL, Usuario usuario, Fecha fecha) {
+        this.key = key;
         this.estadoURL = estadoURL;
         this.usuario = usuario;
         this.fecha = fecha;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public String getEstadoURL() {
         return this.estadoURL;

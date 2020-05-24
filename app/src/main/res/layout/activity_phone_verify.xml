@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/default_color"
     tools:context=".Activitys.PhoneVerifyActivity">
 
     <RelativeLayout
@@ -26,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_below="@id/relativeLayout"
-        android:layout_marginTop="-50dp"
+        android:background="@drawable/activity_drawable_naranja_acrylic_phone"
         />
 
     <RelativeLayout
@@ -74,7 +75,7 @@
             android:layout_below="@id/editTextCode"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
-            android:background="@drawable/activity_drawable_naranja_acrylic"
+            android:background="@drawable/activity_drawable_azul_acrylic"
             android:text="@string/Enviar"
             android:textAllCaps="false"
             android:textColor="#cdd8f1" />

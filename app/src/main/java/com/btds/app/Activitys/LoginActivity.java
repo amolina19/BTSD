@@ -87,9 +87,10 @@ public class LoginActivity extends BasicActivity {
     @Override
     public void onBackPressed() {
         //Funciones.setBackPressed();
-        super.onBackPressed();
+        //super.onBackPressed();
         Intent backToChats = new Intent(LoginActivity.this,StartActivity.class);
         startActivity(backToChats);
         finish();
     }
+
 }

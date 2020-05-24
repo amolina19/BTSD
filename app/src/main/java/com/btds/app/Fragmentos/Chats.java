@@ -6,11 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.btds.app.Adaptadores.UsuariosAdapter;
+import com.btds.app.Adaptadores.ChatsAdapter;
+import com.btds.app.Modelos.ListaMensajesChat;
 import com.btds.app.Modelos.Mensaje;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
@@ -25,9 +28,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
+
+import in.shrinathbhosale.preffy.Preffy;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
@@ -38,14 +44,18 @@ public class Chats extends Fragment {
 
     private RecyclerView recyclerView;
     private HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados = new HashMap<>();
+    private HashMap<String,Usuario > usuarioHashMap = new HashMap<>();
 
-    private UsuariosAdapter usuariosAdapter;
+
+    private ChatsAdapter chatsAdapter;
     private List<Usuario> ListaUsuariosObject;
 
     final private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-    private DatabaseReference databaseReference;
+    private DatabaseReference usersDatabaseReference;
 
     private List<String> ListaUsuariosIdString;
+    private List<ListaMensajesChat> listaMensajesChats = new ArrayList<>();
+    private List<Mensaje> ListaMensajes = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,15 +67,22 @@ public class Chats extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject,listaUsuariosBloqueados);
-        recyclerView.setAdapter(usuariosAdapter);
+
+        Preffy preffy = Preffy.getInstance(getContext());
+        preffy.putString("FragmentHome", "Chats");
+
+        //Genera las Lineas en el Recycler View
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(getActivity(), R.drawable.divider_recycler_view)));
+        recyclerView.addItemDecoration(itemDecorator);
+
+        listaMensajesChats = Funciones.ordernarChat(ListaUsuariosObject,ListaMensajes);
+        chatsAdapter = new ChatsAdapter(getActivity(),listaMensajesChats);
+        recyclerView.setAdapter(chatsAdapter);
 
 
-
-
-
-        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        usersDatabaseReference = FirebaseDatabase.getInstance().getReference("Chats");
+        usersDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ListaUsuariosIdString.clear();
@@ -74,15 +91,18 @@ public class Chats extends Fragment {
                     Mensaje mensaje = snapshot.getValue(Mensaje.class);
 
                     assert mensaje != null;
+                    assert firebaseUser != null;
                     if(mensaje.getEmisor().contentEquals(firebaseUser.getUid())){
                         ListaUsuariosIdString.add(mensaje.getReceptor());
+                        ListaMensajes.add(mensaje);
                     }
 
                     if(mensaje.getReceptor().contentEquals(firebaseUser.getUid())){
                         ListaUsuariosIdString.add(mensaje.getEmisor());
+                        ListaMensajes.add(mensaje);
                     }
                 }
-
+                Collections.reverse(ListaMensajes);
                 leerChats();
             }
 
@@ -95,16 +115,16 @@ public class Chats extends Fragment {
         return  view;
     }
 
-    private CompletableFuture<Void> leerChats(){
+    private void leerChats(){
 
         try{
 
             ListaUsuariosObject = new ArrayList<>();
-            databaseReference = FirebaseDatabase.getInstance().getReference("Usuarios");
+            usersDatabaseReference = Funciones.getUsersDatabaseReference();
 
             final HashMap<String,Usuario> hashMap = new HashMap<>();
 
-            databaseReference.addValueEventListener(new ValueEventListener() {
+            usersDatabaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     ListaUsuariosObject.clear();
@@ -117,14 +137,18 @@ public class Chats extends Fragment {
                             if (usuario.getId().contentEquals(id)) {
                                 if (ListaUsuariosObject.size() != 0) {
                                     for (int i = 0;i<ListaUsuariosObject.size();i++) {
+                                        assert firebaseUser != null;
                                         if (!hashMap.containsKey(usuario.getId()) && !usuario.getId().contentEquals(firebaseUser.getUid())) {
                                             ListaUsuariosObject.add(usuario);
                                             hashMap.put(usuario.getId(),usuario);
                                         }
                                     }
-                                } else if(!usuario.getId().contentEquals(firebaseUser.getUid())){
-                                    hashMap.put(usuario.getId(),usuario);
-                                    ListaUsuariosObject.add(usuario);
+                                } else {
+                                    assert firebaseUser != null;
+                                    if(!usuario.getId().contentEquals(firebaseUser.getUid())){
+                                        hashMap.put(usuario.getId(),usuario);
+                                        ListaUsuariosObject.add(usuario);
+                                    }
                                 }
                             }
                         }
@@ -136,6 +160,8 @@ public class Chats extends Fragment {
                             listaUsuariosBloqueados.clear();
                             for (DataSnapshot data:dataSnapshot.getChildren()){
                                 UsuarioBloqueado usuarioBloqueado = data.getValue(UsuarioBloqueado.class);
+                                assert usuarioBloqueado != null;
+                                assert firebaseUser != null;
                                 if(usuarioBloqueado.getUsuarioAccionBloquear().contentEquals(firebaseUser.getUid())){
                                     listaUsuariosBloqueados.put(data.getKey(),usuarioBloqueado);
                                 }
@@ -147,10 +173,12 @@ public class Chats extends Fragment {
 
                         }
                     });
-                    usuariosAdapter = new UsuariosAdapter(getActivity(),ListaUsuariosObject,listaUsuariosBloqueados);
+                    listaMensajesChats = Funciones.ordernarChat(ListaUsuariosObject,ListaMensajes);
+                    Collections.sort(listaMensajesChats);
+                    chatsAdapter = new ChatsAdapter(getActivity(),listaMensajesChats);
                     //usuariosAdapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(usuariosAdapter);
-                    usuariosAdapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(chatsAdapter);
+                    chatsAdapter.notifyDataSetChanged();
 
                 }
 
@@ -162,6 +190,6 @@ public class Chats extends Fragment {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        return completedFuture(null);
+        completedFuture(null);
     }
 }

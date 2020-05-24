@@ -72,12 +72,21 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
 
         holder.usuario.setText(estado.getUsuario().getUsuario());
 
-        if(estado.getEstadoURL().equals("default")){
-            holder.imagen_estado.setImageResource(R.mipmap.ic_launcher);
+        if(posicion == 0){
+            holder.usuario.setText(context.getResources().getString(R.string.tusHistorias));
+            holder.imagen_estado.setImageResource(R.drawable.add_historia_personal);
+            holder.imagen_estado.setBorderWidth(0);
+            holder.imagen_estado.setBorderOverlay(false);
+            holder.imagen_estado.setCircleBackgroundColorResource(R.color.white);
         }else{
-            //Glide.with(context).load(listaEstados.get(0).getestadoURL()).into(holder.imagen_estado);
+            holder.usuario.setText(estado.getUsuario().getUsuario());
             Glide.with(context).load(estado.getEstadoURL()).into(holder.imagen_estado);
         }
+
+
+
+            //Glide.with(context).load(listaEstados.get(0).getestadoURL()).into(holder.imagen_estado);
+
 
         /*
         if(!listaUsuariosBloqueados.containsKey(usuario.getId())){

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/imagen_error_chat"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="@string/errorCargarImagen"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="125dp"
+        android:textStyle="bold"
+        android:gravity="end"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:minWidth="300dp"
+        android:maxWidth="300dp"
+        android:layout_marginEnd="-30dp"
+        android:id="@+id/enseñar_mensaje_foto"
+        android:textColor="@color/colorBlanco"
+        android:layout_alignParentEnd="true"
+        />
+
+    <TextView
+        android:id="@+id/hora"
+        android:layout_width="wrap_content"
+        android:layout_height="12dp"
+        android:layout_marginStart="-24dp"
+        android:layout_toRightOf="@id/enseñar_mensaje_foto"
+        android:text="@string/text"
+        android:layout_below="@id/enseñar_mensaje_foto"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/colorNegro"
+        android:textSize="8sp" />
+
+    <ImageView
+        android:id="@+id/leido"
+        android:layout_width="12dp"
+        android:layout_height="10dp"
+        android:background="@drawable/ic_visto_gris"
+        android:layout_below="@id/enseñar_mensaje_foto"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="27dp"
+        android:layout_toLeftOf="@id/hora" />
+
+</RelativeLayout>

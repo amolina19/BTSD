@@ -2,6 +2,7 @@ package com.btds.app.Activitys;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +28,6 @@ import com.btds.app.Fragmentos.Chats;
 import com.btds.app.Modelos.Estados;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
-import com.btds.app.Utils.Constantes;
 import com.btds.app.Utils.Fecha;
 import com.btds.app.Utils.Funciones;
 import com.bumptech.glide.Glide;
@@ -38,6 +38,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.sinch.android.rtc.PushPair;
+import com.sinch.android.rtc.SinchClient;
+import com.sinch.android.rtc.SinchError;
+import com.sinch.android.rtc.calling.Call;
+import com.sinch.android.rtc.calling.CallClient;
+import com.sinch.android.rtc.calling.CallClientListener;
+import com.sinch.android.rtc.calling.CallListener;
 import com.vdx.designertoast.DesignerToast;
 
 import java.util.ArrayList;
@@ -46,6 +53,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import in.shrinathbhosale.preffy.Preffy;
 
 /**
  * @author Alejandro Molina Louchnikov
@@ -63,10 +71,13 @@ public class MainActivity extends BasicActivity {
     BottomNavigationView bottomNav;
     List<Estados> listaEstados;
     LinearLayout linearLayoutMainActivity;
+    private SinchClient sinchClient;
+    private Call call;
 
-    FirebaseUser firebaseUser;
+    final private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     DatabaseReference referenceUserDataBase;
     DatabaseReference mainDatabasePath;
+    private Boolean intentTime = false;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -74,14 +85,30 @@ public class MainActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d("DEBUG ","MainActivity Created");
 
+        if(firebaseUser == null){
+            Intent backToStartActivity = new Intent(MainActivity.this,StartActivity.class);
+            startActivity(backToStartActivity);
+            finish();
+        }
+        Log.d("DEBUG ","MainActivity Created");
         //new Constantes("81165","kH6Jv3mOn4htJ78","8sfBc3Rr-PaR4Wf","BWMGDip2NKWtdp3Hevc9",getApplicationContext());
 
         bottomNav = findViewById(R.id.navigation_view_bottom_home);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
         bottomNav.setSelectedItemId(R.id.nav_amigos);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new Amigos()).commit();
+        Preffy preffy = Preffy.getInstance(this);
+
+        if(preffy.getString("FragmentHome").contentEquals("Amigos")){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new Amigos()).commit();
+        }else if(preffy.getString("FragmentHome").contentEquals("Chats")){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new Chats()).commit();
+        }else if(preffy.getString("FragmentHome").contentEquals("BuscarAmigos")){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new BuscarAmigos()).commit();
+        }else{
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new Amigos()).commit();
+        }
+
 
         linearLayoutMainActivity = findViewById(R.id.linearLayoutMainActivity);
 
@@ -108,14 +135,20 @@ public class MainActivity extends BasicActivity {
         //editText_buscarAmigos = findViewById(R.id.buscar_amigos);
         //editText_buscarAmigos.setVisibility(View.GONE);
 
+        if(!MainActivity.this.isFinishing()){
+            assert firebaseUser != null;
+            sinchClient = Funciones.startSinchClient(MainActivity.this,firebaseUser);
+        }
+
+
         //Log.d("DEBUG MainActivity","##Lista estados "+listaEstados.size());
 
         imageProfileButton.setOnClickListener(v -> {
             Intent intentToProfile = new Intent(MainActivity.this,PerfilActivity.class);
+            intentTime = true;
             startActivity(intentToProfile);
         });
 
-        firebaseUser = Funciones.getFirebaseUser();
         referenceUserDataBase = Funciones.getUsersDatabaseReference();
         mainDatabasePath = Funciones.getDatabaseReference();
 
@@ -123,6 +156,7 @@ public class MainActivity extends BasicActivity {
         //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, getApplicationContext());
 
 
+        assert firebaseUser != null;
         referenceUserDataBase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -132,7 +166,8 @@ public class MainActivity extends BasicActivity {
                     usuario.setText(usuarioObject.getUsuario());
 
                     if (usuarioObject.getImagenURL().equals("default")) {
-                        imagen_perfil.setImageResource(R.mipmap.ic_launcher);
+                        //String URLdefault = Constantes.default_image_profile;
+                        Glide.with(getApplicationContext()).load(R.drawable.default_user_picture).into(imagen_perfil);
                     } else {
                         //https://stackoverflow.com/questions/39093730/you-cannot-start-a-load-for-a-destroyed-activity-in-relativelayout-image-using-g
                         //getApplicationContext() FOR FIX
@@ -143,7 +178,7 @@ public class MainActivity extends BasicActivity {
 
                     Funciones.mostrarDatosUsuario(usuarioObject);
 
-                    if(usuarioObject.getTelefono().contentEquals("")){
+                    if(usuarioObject.getTwoAunthenticatorFactor() == null || preffy.getBoolean("T2A")){
                         Intent intentCheckPhone = new Intent(MainActivity.this,PhoneCheckActivity.class);
                         startActivity(intentCheckPhone);
                         finish();
@@ -162,7 +197,6 @@ public class MainActivity extends BasicActivity {
                 RecyclerView recyclerView = findViewById(R.id.recycler_view_estados_main);
                 recyclerView.setLayoutManager(layoutManager);
 
-
                 listaEstados = new ArrayList<>();
                 HashMap<String,Usuario> usuariosConEstados = new HashMap<>();
 
@@ -172,7 +206,7 @@ public class MainActivity extends BasicActivity {
                         listaEstados.clear();
                         usuariosConEstados.clear();
 
-                        listaEstados.add(new Estados(Constantes.default_history_image,usuarioObject,new Fecha()));
+                        listaEstados.add(new Estados("default","default",usuarioObject,new Fecha()));
                         for(DataSnapshot data:dataSnapshot.getChildren()){
                             //Log.d("DEBUG MainActivity obtenerEstados","ESTADO ITERADO");
                             Estados estado = data.getValue(Estados.class);
@@ -256,6 +290,7 @@ public class MainActivity extends BasicActivity {
         switch (item.getItemId()) {
             case R.id.perfil:
                 intent = new Intent(this, PerfilActivity.class);
+                intentTime = true;
                 //Me ha solucionado un error, Ejemplo abro la camara o galeria en una actividad en el PerfilActivity y al realizar la captura o seleccionar me devuelve a la MainActivity
                 //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 //Funciones.setActividadEnUso(true);
@@ -281,15 +316,66 @@ public class MainActivity extends BasicActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        //onPause();
+        //finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(firebaseUser != null && !intentTime){
+            Funciones.actualizarConexion(getApplicationContext().getResources().getString(R.string.offline),firebaseUser);
+        }
         finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
+        if(firebaseUser != null && !intentTime){
+            Funciones.actualizarConexion(getApplicationContext().getResources().getString(R.string.offline),firebaseUser);
+        }
         finish();
+
     }
 
+    private class SinchCallListener implements CallListener{
+
+        @Override
+        public void onCallProgressing(Call call) {
+            //RINGING
+        }
+
+        @Override
+        public void onCallEstablished(Call call) {
+            setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+            //CONECTADO
+        }
+
+        @Override
+        public void onCallEnded(Call call) {
+            call = null;
+            SinchError sinchError = call.getDetails().getError();
+            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+        }
+
+        @Override
+        public void onShouldSendPushNotification(Call call, List<PushPair> list) {
+
+        }
+    }
+
+    private class SinchCallClientListener implements CallClientListener {
+
+        @Override
+        public void onIncomingCall(CallClient callClient, Call incomingCall) {
+            call = incomingCall;
+            call.answer();
+            call.addCallListener(new SinchCallListener());
+            //COLGAR
+        }
+    }
 }
 
 

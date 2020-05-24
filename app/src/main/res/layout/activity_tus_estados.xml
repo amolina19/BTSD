@@ -10,7 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/activity_drawable_naranja_acrylic"
+        android:background="@drawable/activity_drawable_naranja_acrylic_all"
         android:popupTheme="@style/menuStyle"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 

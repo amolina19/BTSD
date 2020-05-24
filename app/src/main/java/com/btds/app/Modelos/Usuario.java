@@ -16,6 +16,7 @@ public class Usuario {
     private String descripcion;
     private String telefono;
     private Boolean twoAunthenticatorFactor;
+    private Boolean phoneVerificationOmited;
 
     public Usuario(){
     }
@@ -96,5 +97,13 @@ public class Usuario {
 
     public void setTwoAunthenticatorFactor(Boolean twoAunthenticatorFactor) {
         this.twoAunthenticatorFactor = twoAunthenticatorFactor;
+    }
+
+    public Boolean getPhoneVerificationOmited() {
+        return phoneVerificationOmited;
+    }
+
+    public void setPhoneVerificationOmited(Boolean phoneVerificationOmited) {
+        this.phoneVerificationOmited = phoneVerificationOmited;
     }
 }

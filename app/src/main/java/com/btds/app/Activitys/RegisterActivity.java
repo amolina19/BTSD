@@ -51,7 +51,6 @@ public class RegisterActivity extends BasicActivity {
         setContentView(R.layout.activity_register);
         Log.d("DEBUG ","RegisterActivity Created");
 
-
         reference = FirebaseDatabase.getInstance().getReference();
         //Toolbar
 
@@ -107,16 +106,6 @@ public class RegisterActivity extends BasicActivity {
                         //Donde se generan los campos en la base de datos
                         usuarioRegistrandose = new Usuario();
 
-                        /*
-                        HashMap<String,String> hashMap = new HashMap<>();
-                        hashMap.put("id",userID);
-                        hashMap.put("usuario",username);
-                        hashMap.put("imagenURL","default");
-                        hashMap.put("hora",saveCurrentTime);
-                        hashMap.put("fecha",saveCurrentDate);
-                        hashMap.put("estado","En Linea");
-                        */
-
                         usuarioRegistrandose.setId(userID);
                         usuarioRegistrandose.setUsuario(username);
                         usuarioRegistrandose.setImagenURL("default");
@@ -124,7 +113,7 @@ public class RegisterActivity extends BasicActivity {
                         usuarioRegistrandose.setFecha(fecha.obtenerDia()+" "+fecha.obtenerMes()+" "+fecha.obtenerAnno());
                         usuarioRegistrandose.setEstado("En Linea");
                         usuarioRegistrandose.setTelefono("");
-                        usuarioRegistrandose.setTwoAunthenticatorFactor(false);
+                        //usuarioRegistrandose.setTwoAunthenticatorFactor(false);
                         Toast.makeText(RegisterActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
 
 

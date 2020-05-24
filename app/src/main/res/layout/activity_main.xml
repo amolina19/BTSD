@@ -23,7 +23,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/activity_drawable_naranja_acrylic"
+            android:background="@drawable/activity_drawable_naranja_acrylic_all"
             android:popupTheme="@style/menuStyle"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
@@ -57,25 +57,18 @@
                     android:textColor="#FFF"
                     android:textSize="20dp"
                     android:textStyle="bold"/>
+
             </LinearLayout>
+
         </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout_estados"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@drawable/activity_drawable_naranja_acrylic"
-        android:orientation="horizontal">
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_estados_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
+            android:background="@drawable/activity_drawable_naranja_acrylic"
             android:orientation="horizontal" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-    </LinearLayout>
 
     <!--https://stackoverflow.com/questions/55035102/error-java-lang-classnotfoundexception-when-inflating-tablayout-in-fragment-->
 

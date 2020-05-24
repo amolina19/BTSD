@@ -88,6 +88,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
                 Usuario usuario = dataSnapshot.getValue(Usuario.class);
                 if(usuario !=null){
                     usuario.setTelefono(nTelefono);
+                    usuario.setTwoAunthenticatorFactor(true);
                     Funciones.mostrarDatosUsuario(usuario);
                     databaseUserReference.setValue(usuario).addOnCompleteListener(task -> {
                         if(task.isSuccessful()){
@@ -120,11 +121,11 @@ public class PhoneVerifyActivity extends AppCompatActivity {
 
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            String codigoSMSrecivido = phoneAuthCredential.getSmsCode();
-            assert codigoSMSrecivido != null;
-            Log.d("DEBUG PHONE VERIFY SMS CODE RECIBIDO",codigoSMSrecivido);
+            String codigoSMSrecibido = phoneAuthCredential.getSmsCode();
+            assert codigoSMSrecibido != null;
+            Log.d("DEBUG SMS RECIBIDO",codigoSMSrecibido);
             progressBar.setVisibility(View.VISIBLE);
-            verificarCodigo(codigoSMSrecivido);
+            verificarCodigo(codigoSMSrecibido);
         }
 
         @Override
@@ -133,4 +134,5 @@ public class PhoneVerifyActivity extends AppCompatActivity {
             Toast.makeText(PhoneVerifyActivity.this, e.getMessage(),Toast.LENGTH_LONG).show();
         }
     };
+
 }

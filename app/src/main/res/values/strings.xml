@@ -1,50 +1,80 @@
 <resources>
+    <!-- APP Strings -->
     <string name="app_name">BTSD</string>
-    <string name="version">Version Dev Alpha 1.7</string>
+    <string name="version">Version Dev Alpha 1.8</string>
     <string name="Autor">Alejandro Molina Louchnikov</string>
 
+    <!-- Login Activity Strings -->
     <string name="email">Email</string>
     <string name="contraseña">Contraseña</string>
-
-    <string name="registrarse">Registrarse</string>
-    <string name="crearCuenta">Crear una nueva cuenta</string>
-    <string name="preguntarNtelefono">¿Puedo preguntar su número de teléfono?</string>
-    <string name="introducirTelefono">Introduce tu teléfono</string>
-    <string name="continuar">Continuar</string>
-    <string name="EsperarRecibirCodigo">Espera el código que se te ha enviado. Tardará unos segundos...</string>
-    <string name="IntroduceCodigoVerficiacion">Introduce el código de verificación</string>
-    <string name="Enviar">Enviar</string>
-
     <string name="logearse">Inicia sesión en tu cuenta</string>
     <string name="login">Iniciar Sesión</string>
     <string name="iniciarSesion">Iniciar Sesion</string>
     <string name="desconectar">Desconectar</string>
+    <string name="cerrarSesion">Cerrar sesión</string>
     <string name="desconectado">Desconectado</string>
     <string name="cerrarSesionCorrectamente">Acabas de cerrar sesión</string>
     <string name="iniciarSesionCorrectamente">Acabas de iniciar sesión</string>
     <string name="cuentaCreada">Cuenta creada correctamente</string>
-
-    <string name="completar">Es necesario completar los campos</string>
-    <string name="contraseñaPequeña">La contraseña debe ser al menos de 8 caracteres</string>
     <string name="autentificacionFallida">Autentificacion fallida</string>
     <string name="errorSesion">Error de sesión</string>
     <string name="online">En Linea</string>
     <string name="offline">Desconectado</string>
+
+    <!-- Register Activity Strings-->
+    <string name="registrarse">Registrarse</string>
+    <string name="crearCuenta">Crear una nueva cuenta</string>
+    <string name="completar">Es necesario completar los campos</string>
+    <string name="contraseñaPequeña">La contraseña debe ser al menos de 8 caracteres</string>
+
+    <!-- Phone Code Activity Strings-->
+    <string name="preguntarNtelefono">¿Puedo preguntar su número de teléfono?</string>
+    <string name="introducirTelefono">Introduce tu teléfono</string>
+    <string name="continuar">Continuar</string>
+    <string name="EsperarRecibirCodigo">Espera el código que se te ha enviado. Tardará unos segundos…</string>
+    <string name="IntroduceCodigoVerficiacion">Introduce el código de verificación</string>
+    <string name="Enviar">Enviar</string>
+    <string name="introduceTlefonoValido">Introduce un número de telefono válido</string>
+    <string name="introduceElCodigoVerf">Introduce el código</string>
+    <string name="tuTelefono">Tú Teléfono</string>
+    <string name="telefono">teléfono</string>
+    <string name="omitir">Omitir</string>
+    <string name="OmitirMasTarde">Si omites el proceso de verificación, puedes volver a verificar tu número de teléfono en Ajustes > Pérfil > Verificar número de teléfono.</string>
+    <string name="masTarde">Más tarde</string>
+
+    <!-- Users Strings -->
     <string name="bloqueado">Bloqueado</string>
-
-    <string name="hoy">Hoy a las</string>
-    <string name="ayer">Ayer a las </string>
-    <string name="ultavez1parte">Visto últ vez el</string>
-    <string name="ultavez2parte">a las</string>
-
-    <string name="escribirMensaje">Escribir mensaje…</string>
-
-
     <string name="descripcion">Descripción</string>
     <string name="descripcionCampo">Introduce una descripción</string>
     <string name="nombreUsuario">Nombre de usuario</string>
     <string name="perfil">Perfil</string>
     <string name="perfilAjustes">Ajustes del perfil</string>
+
+    <!-- Message Activity Strings -->
+    <string name="escribirMensaje">Escribir mensaje…</string>
+    <string name="hoy">Hoy a las</string>
+    <string name="ayer">Ayer </string>
+    <string name="ayerAlas">Ayer a las </string>
+    <string name="ultavez1parte">Visto últ vez el</string>
+    <string name="ultavez2parte">a las</string>
+    <string name="errorAlCargar">Error al actualizar..</string>
+    <string name="imagen">IMAGEN</string>
+    <string name="foto">FOTO</string>
+    <string name="ubicacion">UBICACIÓN</string>
+    <string name="errorCargarImagen">Imagen no disponible sin red.</string>
+    <string name="errorCargarUbicacion">Ubicación no disponible sin red.</string>
+    <string name="ahoraMismo">Ahora mismo</string>
+    <string name="compartirUbicacion">Compartir Ubicación</string>
+    <string name="GPSAdvertencia">Tu ubicación esta desactivada, ¿Deseas volver a activarlo?</string>
+    <!-- Histories Activity Strings -->
+
+    <string name="hora">hora</string>
+    <string name="h">h</string>
+    <string name="minuto">minuto</string>
+    <string name="m">m</string>
+    <string name="tusHistorias">Tus historias</string>
+
+    <!-- Profile Strings-->
     <string name="guardar">Guardar</string>
     <string name="cambiosGuardados">Se ha guardado correctamente.</string>
     <string name="descripcionGrandeError">La descripción deber tener menos de 140 caracteres.</string>
@@ -52,10 +82,19 @@
     <string name="actualizandoImagenPerfil">Subiendo y actualizando su foto de pérfil</string>
     <string name="exitoSubirImagenPerfil">Su foto se ha actualizado correctamente</string>
     <string name="errorSubirImagenPerfil">Su foto se ha actualizado correctamente</string>
+    <string name="noVerificado">No verificado.</string>
+    <string name="Verificado">Verificado</string>
+    <string name="VerificadoSinT2A">Teléfono verificado, sin auntenticación en 2 pasos.</string>
+    <string name="VerificadoConT2A">Teléfono verificado, con auntenticación en 2 pasos.</string>
+    <string name="usuario">Usuario</string>
+    <string name="soisAmigos">Sois amigos</string>
+    <string name="noSoisAmigos">No sois amigos</string>
+    <string name="verPerfil">Ver perfil</string>
+    <string name="sinDescripcion">Sin descripción.</string>
+    <string name="telefonoDesconocido">Desconocido</string>
+    <string name="enviarMensaje">Enviar Mensaje</string>
 
-    <string name="escribiendo">Escribiendo..</string>
-    <string name="buscarAmigos">Buscar amigos</string>
-
+    <!-- Menu Strings -->
     <string name="llamar">Llamar</string>
     <string name="añadir">Añadir</string>
     <string name="agregarAmigo">Agregar</string>
@@ -65,44 +104,33 @@
     <string name="silenciar">Silenciar</string>
     <string name="eliminarAmigo">Eliminar Amigo</string>
 
-
+    <!-- Functions and Dialog Strings -->
     <string name="unblockUser">Desbloquear Usuario</string>
     <string name="confirmUnlock">Estas seguro de que quieres desbloquear a </string>
     <string name="unblocked">Has desbloqueado a </string>
-
     <string name="blockUser">Bloquear Usuario</string>
     <string name="confirmBlock">Estas seguro de que quieres bloquear a </string>
     <string name="blockedUser">Has bloqueado a </string>
-
     <string name="enviarPeticion">Enviar petición</string>
     <string name="cancelarPeticion">Cancelar petición</string>
-
-
     <string name="Aceptar">Aceptar</string>
     <string name="Cancelar">Cancelar</string>
+    <string name="escribiendo">Escribiendo..</string>
+    <string name="buscarAmigos">Buscar amigos</string>
 
-    <string name="hora">hora</string>
-    <string name="h">h</string>
-    <string name="minuto">minuto</string>
-    <string name="m">m</string>
+    <!-- Permissions Strings -->
+    <string name="permisoAbrirCamara">Se necesitan permisos para acceder a la cámara.</string>
+    <string name="permisoLocalizacion">Se necesitan permisos para acceder a la localización.</string>
 
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="usuario">Usuario</string>
+    <!-- Another Strings -->
     <string name="todo">TODO</string>
     <string name="error">ERROR</string>
-    <string name="errorAlCargar">Error al actualizar.</string>
-    <string name="introduceTlefonoValido">Introduce un número de telefono válido</string>
-    <string name="introduceElCodigoVerf">Introduce el código</string>
-    <string name="tuTelefono">Tú Teléfono</string>
-    <string name="telefono">teléfono</string>
-    <string name="omitir">Omitir</string>
-    <string name="masTarde">Más tarde</string>
-    <string name="OmitirMasTarde">Si omites el proceso de verificación, puedes volver a verificar tu número de teléfono en Ajustes > Pérfil > Verificar número de teléfono.</string>
-    <string name="noVerificado">No verificado.</string>
-    <string name="Verificado">Verificado</string>
-    <string name="VerificadoSinT2A">Teléfono verificado, sin auntenticación en 2 pasos.</string>
-    <string name="VerificadoConT2A">Teléfono verificado, con auntenticación en 2 pasos.</string>
+
+    <!-- Test Strings -->
+    <string name="chat_fragment_text_test_resource">Message Test Message Test Message Test Message Test Message Test Message TestMessage Test Message Test</string>
+    <string name="hora_chat_fragment_test_resource">10:24</string>
+    <string name="text">TEXT</string>
+    <string name="title_activity_maps">Map</string>
+
 
 </resources>

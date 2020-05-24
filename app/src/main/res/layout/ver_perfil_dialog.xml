@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="350dp"
+    android:layout_height="600dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".Activitys.PerfilActivity">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="50sp">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imagen_perfil"
+            android:layout_marginTop="0dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/orange"
+            >
+        </de.hdodenhof.circleimageview.CircleImageView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@mipmap/logo_usuario_sin_foto"/>
+
+            <TextView
+                android:layout_marginStart="20dp"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                android:id="@+id/usuarioCampoPerfil"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="left"
+                android:background="@mipmap/logo_descripcion_azul"/>
+
+            <TextView
+                android:layout_marginStart="20dp"
+                android:layout_width="match_parent"
+                android:gravity="center_vertical"
+                android:layout_height="30dp"
+                android:id="@+id/descripcionCampoPerfil"
+                android:ellipsize="middle"
+                android:textColor="@color/colorPrimaryDark"
+                android:maxLength="60"
+                android:textSize="12sp"
+                android:singleLine="true" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@mipmap/logo_telefono_azul"/>
+
+            <TextView
+                android:layout_marginStart="20dp"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                android:id="@+id/usuarioTelefonoperfil"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/ver_perfil_dialog_llamar"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="@string/llamar"
+                android:background="@drawable/border_rectangle"
+                android:layout_marginBottom="5dp"/>
+            <Button
+                android:id="@+id/ver_perfil_dialog_enviar_mensaje"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="@string/enviarMensaje"
+                android:background="@drawable/border_rectangle"
+                android:layout_marginBottom="5dp"/>
+            <Button
+                android:id="@+id/ver_perfil_dialog_bloquear"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="@string/bloquear"
+                android:background="@drawable/border_rectangle"
+                android:layout_marginBottom="5dp"/>
+        </LinearLayout>
+    </LinearLayout>
+    </ScrollView>
+</LinearLayout>

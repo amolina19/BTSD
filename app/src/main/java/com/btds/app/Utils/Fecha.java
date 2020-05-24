@@ -1,6 +1,7 @@
 package com.btds.app.Utils;
 
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -33,6 +34,62 @@ public class Fecha {
         this.anno = this.obtenerAnno();
     }
 
+    public int getMilisegundosInteger() {
+        return Integer.parseInt(milisegundos);
+    }
+
+    public void setMilisegundosInteger(int milisegundos) {
+        this.milisegundos = String.valueOf(milisegundos);
+    }
+
+    public int getSegundosInteger() {
+        return Integer.parseInt(segundos);
+    }
+
+    public void setSegundosInteger(int segundos) {
+        this.segundos = String.valueOf(segundos);
+    }
+
+    public int getMinutosInteger() {
+        return Integer.parseInt(minutos);
+    }
+
+    public void setMinutosInteger(int minutos) {
+        this.minutos = String.valueOf(minutos);
+    }
+
+    public int getHoraInteger() {
+        return Integer.parseInt(hora);
+    }
+
+    public void setHoraInteger(int hora) {
+        this.hora = String.valueOf(hora);
+    }
+
+    public int getDiaInteger() {
+        return Integer.parseInt(dia);
+    }
+
+    public void setDiaInteger(int dia) {
+        this.dia = String.valueOf(dia);
+    }
+
+    public int getMesInteger() {
+        return Integer.parseInt(mes);
+    }
+
+    public void setMesInteger(int mes) {
+        this.mes = String.valueOf(mes);
+    }
+
+    public int getAnnoInteger() {
+        return Integer.parseInt(anno);
+    }
+
+    public void setAnnoInteger(int anno) {
+        this.anno = String.valueOf(anno);
+    }
+
     /**
      * Devuelve la fecha actual del sistema concatenada
      * @return Devuelve milisengudos en String
@@ -40,9 +97,16 @@ public class Fecha {
 
     private String obtenerMilisegundos(){
 
-        String fecha = java.time.LocalDateTime.now().toString();
-        int longitudPunto = fecha.lastIndexOf(".");
-        this.milisegundos = java.time.LocalDateTime.now().toString().substring(longitudPunto+1,fecha.length());
+            String fecha = java.time.LocalDateTime.now().toString();
+            int longitudPunto = fecha.lastIndexOf(".");
+            try{
+                this.milisegundos = java.time.LocalDateTime.now().toString().substring((longitudPunto+1),fecha.length());
+            }catch (StringIndexOutOfBoundsException sioobe){
+                this.milisegundos = "000";
+                //sioobe.printStackTrace();
+                Log.d("Debug Fecha ObtenerMilisegundos","Milisegundos mal concatenados");
+            }
+
         return milisegundos;
     }
 
@@ -52,7 +116,13 @@ public class Fecha {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private String obtenerSegundos(){
-        this.minutos = java.time.LocalDateTime.now().toString().substring(17,19);
+        try{
+            this.minutos = java.time.LocalDateTime.now().toString().substring(17,19);
+        }catch (StringIndexOutOfBoundsException sioobe){
+            this.segundos = "00";
+            //sioobe.printStackTrace();
+            Log.d("Debug Fecha ObtenerSegundos","Segundos mal concatenados");
+        }
         return this.minutos;
     }
 

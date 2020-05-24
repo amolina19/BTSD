@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import com.btds.app.Modelos.Estados;
 import com.btds.app.R;
-import com.btds.app.Utils.Constantes;
 import com.btds.app.Utils.Funciones;
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
@@ -93,44 +92,49 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
                 assert listaEstadosUsuario != null;
                 storiesImageView.setOnTouchListener(EstadoActivity.this::onTouch);
 
-                usuarioTextView.setText(listaEstadosUsuario.get(0).getUsuario().getUsuario());
-                //fechaSubida.setText(listaEstadosUsuario.get(0).getFecha().hora+""+listaEstadosUsuario.get(0).getFecha().minutos);
-                Estados estado = listaEstadosUsuario.get(0);
-                Log.d("FECHA EstadoActivity ESTADO",estado.getFecha().toString());
-
-                int minutosTranscurridos = Funciones.obtenerMinutosSubida(estado);
-                String fechaSubidaEstado;
-                if(minutosTranscurridos<60){
-                    fechaSubidaEstado = minutosTranscurridos+" "+getResources().getString(R.string.m);
-                }else{
-                    fechaSubidaEstado = minutosTranscurridos / 60 +" "+getResources().getString(R.string.h);
-                }
-                fechaSubida.setText(fechaSubidaEstado);
+                if(listaEstadosUsuario != null){
+                    usuarioTextView.setText(listaEstadosUsuario.get(0).getUsuario().getUsuario());
 
 
-                //Picasso.with(context).load(listaEstadosUsuario.get(storiesCount).getEstadoURL()).into(storiesImageView);
-                String userPictureURL = listaEstadosUsuario.get(0).getUsuario().getImagenURL();
-                if(userPictureURL.contentEquals("default")){
-                    Glide.with(EstadoActivity.this).load(Constantes.default_image_profile).into(circleImageView);
-                }
+                    //fechaSubida.setText(listaEstadosUsuario.get(0).getFecha().hora+""+listaEstadosUsuario.get(0).getFecha().minutos);
+                    Estados estado = listaEstadosUsuario.get(0);
+                    Log.d("FECHA EstadoActivity ESTADO",estado.getFecha().toString());
 
-                if(!EstadoActivity.this.isFinishing()){
-                    Glide.with(EstadoActivity.this).load(userPictureURL).into(circleImageView);
-                }
-                //Glide.with(EstadoActivity.this).load(userPictureURL).into(circleImageView);
-
-                Log.d("DEBUG EstadosActivity","Valor contador "+storiesCount);
-                Picasso.with(context).load(listaEstadosUsuario.get(0).getEstadoURL()).into(storiesImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        storiesProgressView.startStories(storiesCount);
+                    int minutosTranscurridos = Funciones.obtenerMinutosSubida(estado);
+                    String fechaSubidaEstado;
+                    if(minutosTranscurridos<60){
+                        fechaSubidaEstado = minutosTranscurridos+" "+getResources().getString(R.string.m);
+                    }else{
+                        fechaSubidaEstado = minutosTranscurridos / 60 +" "+getResources().getString(R.string.h);
                     }
+                    fechaSubida.setText(fechaSubidaEstado);
 
-                    @Override
-                    public void onError() {
-                        //storiesProgressView.resume();
+
+                    //Picasso.with(context).load(listaEstadosUsuario.get(storiesCount).getEstadoURL()).into(storiesImageView);
+                    String userPictureURL = listaEstadosUsuario.get(0).getUsuario().getImagenURL();
+                    if(!EstadoActivity.this.isFinishing()){
+                        if(userPictureURL.contentEquals("default")){
+                            Glide.with(EstadoActivity.this).load(R.drawable.default_user_picture).into(circleImageView);
+                        }else{
+                            Glide.with(EstadoActivity.this).load(userPictureURL).into(circleImageView);
+                        }
                     }
-                });
+                    //Glide.with(EstadoActivity.this).load(userPictureURL).into(circleImageView);
+
+                    Log.d("DEBUG EstadosActivity","Valor contador "+storiesCount);
+                    Picasso.with(context).load(listaEstadosUsuario.get(0).getEstadoURL()).into(storiesImageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            storiesProgressView.startStories(storiesCount);
+                        }
+
+                        @Override
+                        public void onError() {
+                            //storiesProgressView.resume();
+                        }
+                    });
+                }
+
 
                  // <- start progress
             }
@@ -197,21 +201,6 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
         onBackPressed();
     }
 
-    @Override
-    protected void onDestroy() {
-        // Very important !
-        storiesProgressView.destroy();
-        super.onDestroy();
-        finish();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //Intent backToMainActivity = new Intent(EstadoActivity.this,MainActivity.class);
-        //startActivity(backToMainActivity);
-        finish();
-    }
 
     @Override
     public boolean onTouch(View v, @org.jetbrains.annotations.NotNull MotionEvent event) {
@@ -248,9 +237,9 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
     @Override
     public void onBackPressed() {
         //Funciones.setBackPressed();
-        super.onBackPressed();
         Intent backToMainActivity = new Intent(EstadoActivity.this,MainActivity.class);
         startActivity(backToMainActivity);
         finish();
     }
+
 }

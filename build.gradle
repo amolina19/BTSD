@@ -5,11 +5,11 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.3'
         classpath 'com.google.gms:google-services:4.3.3'
+
 
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -21,10 +21,13 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url "https://github.com/QuickBlox/quickblox-android-sdk-releases/raw/master/" }
         maven { url "https://jitpack.io" }
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
+def qbSdkVersion = '3.9.2'
 
 task clean(type: Delete) {
     delete rootProject.buildDir

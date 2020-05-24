@@ -16,7 +16,6 @@ import com.google.firebase.auth.FirebaseUser;
 public class StartActivity extends BasicActivity {
 
     Button login, registrarse;
-
     FirebaseUser firebaseUser;
 
     @Override
@@ -47,4 +46,5 @@ public class StartActivity extends BasicActivity {
 
         registrarse.setOnClickListener(v -> startActivity(new Intent(StartActivity.this,RegisterActivity.class)));
     }
+
 }

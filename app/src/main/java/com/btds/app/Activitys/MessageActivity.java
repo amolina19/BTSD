@@ -1,14 +1,20 @@
 package com.btds.app.Activitys;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -17,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,21 +35,31 @@ import com.btds.app.R;
 import com.btds.app.Utils.Fecha;
 import com.btds.app.Utils.Funciones;
 import com.bumptech.glide.Glide;
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.features.ReturnMode;
+import com.esafirm.imagepicker.model.Image;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.vdx.designertoast.DesignerToast;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
@@ -57,8 +74,11 @@ public class MessageActivity extends BasicActivity {
 
     //Referencias necesarias con la base de datos.
     private FirebaseUser firebaseUser;
-    private DatabaseReference reference;
+    private DatabaseReference chatsReference;
 
+    private FloatingActionButton fab,fab1,fab2,fab3;
+    private Animation fabOpen, fabClose, backRotateForward, rotateBackWard;
+    private Boolean fabIsOpen = false;
 
     private EditText enviar_texto;
     //private String cadenaTeclado;
@@ -67,11 +87,12 @@ public class MessageActivity extends BasicActivity {
     private String usuarioID;
     private int diasPasados;
 
+    private Boolean ubicacion = false;
+
     private MensajesAdapter mensajesAdapter;
     private List<Mensaje> listaMensajes;
     private HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados;
     private RecyclerView recyclerView;
-    private String usuario_profile_default= "https://res.cloudinary.com/teepublic/image/private/s--6vDtUIZ---/t_Resized%20Artwork/c_fit,g_north_west,h_1054,w_1054/co_ffffff,e_outline:53/co_ffffff,e_outline:inner_fill:53/co_bbbbbb,e_outline:3:1000/c_mpad,g_center,h_1260,w_1260/b_rgb:eeeeee/c_limit,f_jpg,h_630,q_90,w_630/v1570281377/production/designs/6215195_0.jpg";
 
     //Obtener el contexto de la actividad
     private Context contexto;
@@ -97,6 +118,36 @@ public class MessageActivity extends BasicActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
+        fab = findViewById(R.id.fab);
+        fab1 = findViewById(R.id.fab1);
+        fab2 = findViewById(R.id.fab2);
+        fab3 = findViewById(R.id.fab3);
+        fabOpen = AnimationUtils.loadAnimation(this,R.anim.fab_open);
+        fabClose = AnimationUtils.loadAnimation(this,R.anim.fab_close);
+        backRotateForward = AnimationUtils.loadAnimation(this,R.anim.rotate_forward);
+        rotateBackWard = AnimationUtils.loadAnimation(this,R.anim.rotate_backward);
+        fab.setOnClickListener(v -> animarFab());
+        fab1.setOnClickListener(v -> {
+            abrirCamara();
+            Toast.makeText(contexto, "ABRIENDO CAMARA", Toast.LENGTH_SHORT).show();
+        });
+        fab2.setOnClickListener(v -> Toast.makeText(contexto, "ABRIENDO MICRO", Toast.LENGTH_SHORT).show());
+        fab3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(ubicacion == false){
+                    preguntarPermisosLocalizacion();
+                }else{
+                    animarFab();
+
+                    Intent intentMap = new Intent(MessageActivity.this,MapsActivity.class);
+                    intentMap.putExtra("userID",usuarioChat.getId());
+                    startActivity(intentMap);
+                }
+            }
+        });
+
         recyclerView = findViewById(R.id.recycler_view_mensaje);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -116,7 +167,8 @@ public class MessageActivity extends BasicActivity {
 
         Intent intent = getIntent();
         usuarioID = intent.getStringExtra("userID");
-        reference = FirebaseDatabase.getInstance().getReference("Usuarios").child(usuarioID);
+        assert usuarioID != null;
+        chatsReference = Funciones.getUsersDatabaseReference().child(usuarioID);
 
         enviar_button.setOnClickListener(v -> {
             String mensaje = enviar_texto.getText().toString();
@@ -133,7 +185,7 @@ public class MessageActivity extends BasicActivity {
             }
         });
 
-        reference.addValueEventListener(new ValueEventListener() {
+        chatsReference.addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -146,8 +198,6 @@ public class MessageActivity extends BasicActivity {
                 //Comprobar si esta bloqueado y así descartar el calculo de días de su última conexión.
                 if(Funciones.getListaUsuariosBloqueados().containsKey(usuarioChat.getId())){
                     estado.setText(R.string.bloqueado);
-
-
                     //Si esta desconectado calculamos su última conexión.
                 }else if(usuarioChat.getEstado().contentEquals(getResources().getString(R.string.desconectado))) {
 
@@ -159,7 +209,9 @@ public class MessageActivity extends BasicActivity {
                 }
                 //Si su perfil contiene en su atributo de ImagenURL default se cargará una imagen de pérfil.
                 if(usuarioChat.getImagenURL().equals("default")){
-                    Glide.with(MessageActivity.this).load(usuario_profile_default).into(imagen_perfil);
+                    if(!MessageActivity.this.isFinishing()){
+                        Glide.with(MessageActivity.this).load(R.drawable.default_user_picture).into(imagen_perfil);
+                    }
                 }else{
                     //Este if comprueba que la actividad no esta destruida o en pausa, ya que si se intenta cargar una imagén antes o después de iniciar la actividad, crasheará.
                     if (!MessageActivity.this.isFinishing()) {
@@ -183,6 +235,35 @@ public class MessageActivity extends BasicActivity {
         });
     }
 
+    private void animarFab(){
+
+        if(fabIsOpen){
+            fab.startAnimation(rotateBackWard);
+            fab1.startAnimation(fabClose);
+            fab2.startAnimation(fabClose);
+            fab3.startAnimation(fabClose);
+            fab1.setClickable(false);
+            fab2.setClickable(false);
+            fab3.setClickable(false);
+            fab1.setVisibility(View.INVISIBLE);
+            fab2.setVisibility(View.INVISIBLE);
+            fab3.setVisibility(View.INVISIBLE);
+            fabIsOpen = false;
+        }else{
+            fab.startAnimation(backRotateForward);
+            fab1.startAnimation(fabOpen);
+            fab2.startAnimation(fabOpen);
+            fab3.startAnimation(fabOpen);
+            fab1.setClickable(true);
+            fab2.setClickable(true);
+            fab3.setClickable(true);
+            fab1.setVisibility(View.VISIBLE);
+            fab2.setVisibility(View.VISIBLE);
+            fab3.setVisibility(View.VISIBLE);
+            fabIsOpen = true;
+        }
+    }
+
     /**
      * Función para enviar mensajes a un determinado usuario.
      * @param emisor es el ID del objeto Usuario (Nuestro usuario).
@@ -194,23 +275,31 @@ public class MessageActivity extends BasicActivity {
     private void enviarMensaje(String emisor, String receptor, String mensaje){
 
         //Luego instanciar la fecha actual del dispositivo.
-        Fecha fecha = new Fecha();
+        //Fecha fecha = new Fecha();
+        String id = new Fecha().obtenerFechaTotal();
+        Mensaje.Tipo tipoMensaje = Mensaje.Tipo.TEXTO;
+        Mensaje mensajeObject = new Mensaje(id,emisor,receptor,mensaje,tipoMensaje,false,new Fecha());
+        chatsReference = Funciones.getChatsDatabaseReference();
 
-        Mensaje mensajeObject = new Mensaje();
-        reference = Funciones.getChatsDatabaseReference();
-
-        mensajeObject.setId(fecha.obtenerFechaTotal()+""+Funciones.getAlphaNumericString(8));
-        mensajeObject.setEmisor(emisor);
-        mensajeObject.setReceptor(receptor);
-        mensajeObject.setMensaje(mensaje);
-        mensajeObject.setHora(fecha.obtenerHora()+":"+ fecha.obtenerMinutos());
-        mensajeObject.setHora(fecha.obtenerHora()+":"+ fecha.obtenerMinutos());
-        mensajeObject.setFecha(fecha.obtenerDia()+" "+ fecha.obtenerMes()+" "+ fecha.obtenerAnno());
-        mensajeObject.setLeido("false");
-
-        reference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
+        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 Log.d("DEBUG Mensaje","Se ha enviado el mensaje");
+            }
+        });
+    }
+
+    private void enviarFoto(String emisor, String receptor, String URLFoto){
+
+        //Luego instanciar la fecha actual del dispositivo.
+        //Fecha fecha = new Fecha();
+        String id = new Fecha().obtenerFechaTotal();
+        Mensaje.Tipo tipoMensaje = Mensaje.Tipo.FOTO;
+        Mensaje mensajeObject = new Mensaje(id,emisor,receptor,URLFoto,tipoMensaje,false,new Fecha());
+        chatsReference = Funciones.getChatsDatabaseReference();
+
+        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                Log.d("DEBUG Mensaje","Se ha enviado La foto");
             }
         });
     }
@@ -225,8 +314,8 @@ public class MessageActivity extends BasicActivity {
 
         listaMensajes = new ArrayList<>();
 
-        reference = Funciones.getChatsDatabaseReference();
-        reference.addValueEventListener(new ValueEventListener() {
+        chatsReference = Funciones.getChatsDatabaseReference();
+        chatsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listaMensajes.clear();
@@ -239,7 +328,7 @@ public class MessageActivity extends BasicActivity {
                         //mensaje.setLeido("true");
 
                         if(!mensaje.getEmisor().contentEquals(id)) {
-                            mensaje.setLeido("true");
+                            mensaje.setLeido(true);
                         }
                         listaMensajes.add(mensaje);
                     }
@@ -258,46 +347,6 @@ public class MessageActivity extends BasicActivity {
 
     }
 
-
-    /*
-    private void setOnFocusChangeListener(TextView textView, String name){
-
-        textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus) {
-                    Toast.makeText(MessageActivity.this, "ESTAS EN EL TECLADO", Toast.LENGTH_SHORT).show();
-                    enviar_texto.addTextChangedListener(new TextWatcher() {
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                        }
-
-                        public void onTextChanged(CharSequence s, int start, int before,
-                                                  int count) {
-                            if(!s.equals("") ) {
-                               // System.out.println("ESTAS ESCRIBIENDO");
-                            }
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            /*
-                            //System.out.println("ESTAS ESCRIBIENDO");
-                            if((cadenaTeclado = enviar_texto.getText().toString()).length() > 0){
-
-                                //Funciones.escribiendo(firebaseUser,contexto);
-                            }else{
-
-                            }
-
-
-                        }
-                    });
-                }
-            }
-        });
-    }  */
 
     /**
      * Parámetro donde al iniciar la actividad se inflara el menú según si esta bloqueado o no.
@@ -390,6 +439,91 @@ public class MessageActivity extends BasicActivity {
         Intent backToChats = new Intent(MessageActivity.this,MainActivity.class);
         startActivity(backToChats);
         finish();
+    }
+
+    @AfterPermissionGranted(1)
+    public void abrirCamara(){
+        String[] perms = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        if(EasyPermissions.hasPermissions(this,perms)){
+            ImagePicker.create(MessageActivity.this).returnMode(ReturnMode.GALLERY_ONLY).single().start();
+        }else{
+            EasyPermissions.requestPermissions(this,getResources().getString(R.string.permisoAbrirCamara),1,perms);
+        }
+        //
+    }
+
+    @AfterPermissionGranted(2)
+    public void preguntarPermisosLocalizacion() {
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            //Si tiene permisos
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            ubicacion = true;
+            fab3.performClick();
+        }else{
+            EasyPermissions.requestPermissions(this,getResources().getString(R.string.permisoLocalizacion),2,perms);
+        }
+        //
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            // or get a single image only
+            Image image = ImagePicker.getFirstImageOrNull(data);
+            //Log.d("DEBUG PerfilActivity","IMAGEN PATH "+image.getPath());
+            //Toast.makeText(this, getResources().getString(R.string.actualizandoImagenPerfil), Toast.LENGTH_SHORT).show();
+            subirImagen(image);
+        }
+        animarFab();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    public void subirImagen(Image image){
+
+        Uri file = Uri.fromFile(new File(image.getPath()));
+
+        //FirebaseStorage storage;
+        //StorageReference storageReference;
+
+        //storage = FirebaseStorage.getInstance();
+        StorageReference storageReference = Funciones.getFirebaseStorageReference();
+        String generated = Funciones.getAlphaNumericString(16);
+        StorageReference storageUserProfileRef = storageReference.child("Chats/"+firebaseUser.getUid()+"/"+generated);
+        UploadTask uploadTask = storageUserProfileRef.putFile(file);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(exception -> {
+            // Handle unsuccessful uploads
+            //Log.d("DEBUG PerfilActivity","LA IMAGEN NO SE HA SUBIDO");
+            //Toast.makeText(M.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
+        }).addOnSuccessListener(taskSnapshot -> {
+            storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+                // getting image uri and converting into string
+                //usuarioObject.setImagenURL(downloadUrl.toString());
+                enviarFoto(firebaseUser.getUid(),usuarioID,downloadUrl.toString());
+            });
+            //Log.d("DEBUG PerfilActivity","La imagen se ha subido al perfil de "+usuarioObject.getUsuario());
+        });
+
     }
 
 }

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:padding="5dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="50dp"
+        android:maxWidth="320dp"
         android:background="@drawable/background_messages_rigth"
         android:textSize="15sp"
         android:id="@+id/enseñar_mensaje"
@@ -20,11 +22,12 @@
     <TextView
         android:id="@+id/hora"
         android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="-23dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="-24dp"
         android:layout_toRightOf="@id/enseñar_mensaje"
-        android:layout_marginTop="35sp"
         android:text="TEXT"
+        android:layout_below="@id/enseñar_mensaje"
+        android:layout_marginTop="-15dp"
         android:textColor="@color/colorBlanco"
         android:textSize="8sp" />
 
@@ -34,7 +37,7 @@
         android:layout_height="10dp"
         android:background="@drawable/ic_visto"
         android:layout_marginTop="36dp"
-        android:layout_marginEnd="22dp"
-        android:layout_toStartOf="@id/hora" />
+        android:layout_marginEnd="27dp"
+        android:layout_toLeftOf="@id/hora" />
 
 </RelativeLayout>

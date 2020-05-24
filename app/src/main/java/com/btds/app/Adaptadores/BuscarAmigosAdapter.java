@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.btds.app.Modelos.PeticionAmistadUsuario;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
-import com.btds.app.Utils.Constantes;
 import com.btds.app.Utils.Funciones;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +30,6 @@ import java.util.List;
 
 public class BuscarAmigosAdapter extends RecyclerView.Adapter<BuscarAmigosAdapter.ViewHolder>  {
 
-    int limite = 7;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private Context context;
     private List<Usuario> listaUsuariosEncontrados;
@@ -74,8 +72,7 @@ public class BuscarAmigosAdapter extends RecyclerView.Adapter<BuscarAmigosAdapte
         if(usuario.getImagenURL().equals("default")){
             //holder.imagen_perfil.setImageResource(R.mipmap.ic_launcher);
             //private static final int USUARIO_BLOQUEADO = 1;
-            String default_profile = Constantes.default_image_profile;
-            Glide.with(context).load(default_profile).into(holder.imagen_perfil);
+            Glide.with(context).load(R.drawable.default_user_picture).into(holder.imagen_perfil);
         }else{
             Glide.with(context).load(usuario.getImagenURL()).into(holder.imagen_perfil);
         }
@@ -147,7 +144,7 @@ public class BuscarAmigosAdapter extends RecyclerView.Adapter<BuscarAmigosAdapte
         public TextView usuario;
         public TextView estado;
         public ImageView imagen_perfil;
-        public Button buttonPeticion;
+        Button buttonPeticion;
 
 
         ViewHolder(View itemView){

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--android:background="#E6E6E6"-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E6E6E6"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/activity_drawable_mensajes_acrylic"
     tools:context=".Activitys.MessageActivity">
 
 
@@ -16,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/activity_drawable_naranja_acrylic"
+            android:background="@drawable/activity_drawable_naranja_acrylic_all"
             android:popupTheme="@style/menuStyle"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
@@ -36,24 +38,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:layout_marginLeft="15dp"
                     android:textColor="#FFF"
                     android:textStyle="bold"
-                    android:textSize="20dp">
+                    android:textSize="20sp">
                 </TextView>
-
-
 
                 <TextView
                     android:id="@+id/estado"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
-                    android:layout_marginLeft="15dp"
                     android:layout_marginTop="25dp"
                     android:textColor="#FFF"
                     android:textStyle="bold"
-                    android:textSize="10dp">
+                    android:textSize="10sp">
                 </TextView>
 
             </RelativeLayout>
@@ -66,64 +64,92 @@
         android:layout_height="match_parent"
         android:id="@+id/recycler_view_mensaje"
         android:layout_below="@id/bar_layout"
-        android:layout_above="@id/bottom"/>
-
-
+        android:layout_above="@id/bottom"
+        android:layout_marginBottom="60dp"
+        android:layout_marginTop="60dp"/>
 
     
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="50dp"
         android:id="@+id/bottom"
         android:padding="5dp"
         android:background="#FFFFFF"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|center_vertical">
 
         <EditText
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
+            android:maxWidth="250dp"
+            android:inputType="text"
             android:id="@+id/enviar_mensaje"
             android:background="@android:color/transparent"
-            android:layout_toLeftOf="@+id/foto_enviar"
             android:hint="@string/escribirMensaje"
             android:layout_centerVertical="true"
-            />
-
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/enviar_mensaje_button"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/ic_send_message"
-            android:clickable="true"
-            />
-
-        <ImageButton
-            android:id="@+id/audio_enviar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/ic_mic"
-            android:layout_marginRight="40dp"
-            />
-
-        <ImageButton
-            android:id="@+id/foto_enviar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/ic_camera"
-            android:layout_marginRight="80dp"
-            android:clickable="true"
-            />
-
+            android:autofillHints="" />
 
     </RelativeLayout>
 
+    <ImageButton
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/enviar_mensaje_button"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/ic_enviar_mensaje_naranja"
+        android:clickable="true"
+        android:contentDescription="@string/todo" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="0dp"
+        android:src="@drawable/ic_attach_vector"
+        android:outlineProvider="none"
+        app:backgroundTint="#00FFFFFF"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab1"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="60dp"
+        android:src="@drawable/ic_camera_vector"
+        android:visibility="invisible"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab2"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="120dp"
+        android:src="@drawable/ic_mic_vector"
+        android:visibility="invisible"
+        />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab3"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="180dp"
+        android:src="@drawable/ic_location_on_vector"
+        android:visibility="invisible"
+        />
 
 
 
-</RelativeLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

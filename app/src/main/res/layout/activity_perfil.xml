@@ -16,7 +16,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/activity_drawable_naranja_acrylic"
+        android:background="@drawable/activity_drawable_naranja_acrylic_all"
         android:popupTheme="@style/menuStyle"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
@@ -62,27 +62,12 @@
             android:visibility="visible"
             />
 
-        <ImageView
-            android:layout_marginTop="20dp"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="left"
-            android:background="@mipmap/logo_descripcion_azul"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/descripcionCampoPerfil"
-            android:hint="@string/descripcionCampo"
-            android:textColor="@color/colorPrimaryDark"
-            android:maxLength="80"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_marginTop="20dp"
             android:layout_height="30dp"
             android:orientation="horizontal">
-            
+
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -98,6 +83,33 @@
                 android:id="@+id/usuarioCampoPerfil"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_height="35dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="left"
+                android:background="@mipmap/logo_descripcion_azul"/>
+
+            <EditText
+                android:layout_marginStart="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:inputType="textNoSuggestions"
+                android:id="@+id/descripcionCampoPerfil"
+                android:ellipsize="middle"
+                android:hint="@string/descripcionCampo"
+                android:textColor="@color/colorPrimaryDark"
+                android:maxLength="60"
+                android:textSize="12sp"
+                android:singleLine="true" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -123,7 +135,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_marginTop="20dp"
-            android:layout_height="60dp"
+            android:layout_height="50dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -134,27 +146,12 @@
             <TextView
                 android:layout_marginStart="20dp"
                 android:gravity="center_vertical"
-                android:layout_width="200dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="16sp"
                 android:id="@+id/usuarioVerificado"/>
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/perfilT2Aoption"
-                android:layout_width="60dp"
-                android:layout_height="20dp"/>
         </LinearLayout>
-
-        <Button
-            android:id="@+id/cambiarContraseña"
-            android:layout_marginTop="30dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/activity_drawable_azul_acrylic"
-            android:textColor="@color/colorBlanco"
-            android:text="@string/cambiarContraseña"
-            />
 
         <Button
         android:id="@+id/guardarButton"

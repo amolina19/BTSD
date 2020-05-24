@@ -21,6 +21,9 @@
     <color name="blue">#0000FF</color>
     <color name="violet">#7F00FF</color>
     <color name="magenta">#FF00FF</color>
+    <color name="gray">#EAEAEA</color>
+    <color name="gray_drak">#C1C1C1</color>
+    <color name="default_color">#EEEEEE</color>
 
     <array name="coloresArray">
         <item>@color/bright_pink</item>
@@ -35,5 +38,9 @@
         <item>@color/blue</item>
         <item>@color/violet</item>
         <item>@color/magenta</item>
+        <item>@color/gray</item>
+        <item>@color/gray_drak</item>
+        <item>@color/default_color</item>
+
     </array>
 </resources>

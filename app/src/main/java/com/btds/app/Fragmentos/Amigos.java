@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import in.shrinathbhosale.preffy.Preffy;
+
 /**
  * @author Alejandro Molina Louchnikov
  */
@@ -50,6 +52,9 @@ public class Amigos extends Fragment {
 
         usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios,listaUsuariosBloqueados);
         recyclerView.setAdapter(usuariosAdapter);
+
+        Preffy preffy = Preffy.getInstance(getContext());
+        preffy.putString("FragmentHome", "Amigos");
 
         //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //DatabaseReference referenceUserDataBase = FirebaseDatabase.getInstance().getReference("Usuarios");

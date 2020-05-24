@@ -1,6 +1,6 @@
 package com.btds.app.Activitys;
 
-import android.app.AlertDialog;
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -22,7 +22,6 @@ import com.bumptech.glide.Glide;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.ReturnMode;
 import com.esafirm.imagepicker.model.Image;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,29 +30,33 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.vdx.designertoast.DesignerToast;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
 
 /**
  * @author Alejandro Molina Louchnikov
  */
-public class PerfilActivity extends BasicActivity {
+public class PerfilActivity extends BasicActivity implements EasyPermissions.PermissionCallbacks {
 
     CircleImageView imagen_perfil;
     TextView usuario;
     EditText descripcion;
     TextView nTelefono;
     TextView verificado;
-    SwitchMaterial T2Aoption;
+    //SwitchMaterial T2Aoption;
     Usuario usuarioObject;
     Button imageButton;
     Button guardarButton;
-    Button cambiarPassword;
     Toolbar toolbar;
 
     final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -81,14 +84,14 @@ public class PerfilActivity extends BasicActivity {
         nTelefono = findViewById(R.id.usuarioTelefonoperfil);
         verificado = findViewById(R.id.usuarioVerificado);
 
-        T2Aoption = findViewById(R.id.perfilT2Aoption);
+        //T2Aoption = findViewById(R.id.perfilT2Aoption);
 
         imageButton = findViewById(R.id.imagenButton);
         //Superpongo un boton encima de la imagen del perfil, al ser pulsao salta a la  actividad para insertar una nueva imagen
         imageButton.setBackgroundColor(Color.TRANSPARENT);
 
         guardarButton = findViewById(R.id.guardarButton);
-        cambiarPassword = findViewById(R.id.cambiarContraseña);
+        //cambiarPassword = findViewById(R.id.cambiarContraseña);
 
 
         Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
@@ -108,7 +111,9 @@ public class PerfilActivity extends BasicActivity {
                     usuario.setText(usuarioObject.getUsuario());
 
                     if(usuarioObject.getImagenURL().equals("default")){
-                        imagen_perfil.setImageResource(R.mipmap.ic_launcher);
+                        //Se cambiara de manera a un resource mas adelante
+                        //String URLdefault = Constantes.default_image_profile;
+                        Glide.with(getApplicationContext()).load(R.drawable.default_user_picture).into(imagen_perfil);
                     }else{
                         Glide.with(getApplicationContext()).load(usuarioObject.getImagenURL()).into(imagen_perfil);
                     }
@@ -118,17 +123,17 @@ public class PerfilActivity extends BasicActivity {
                     if(usuarioObject.getTelefono().isEmpty()){
                         nTelefono.setText(getResources().getString(R.string.noVerificado));
                         verificado.setText(getResources().getString(R.string.noVerificado));
-                        T2Aoption.setActivated(false);
+                        //T2Aoption.setActivated(false);
                     }else{
                         nTelefono.setText(usuarioObject.getTelefono());
-                        T2Aoption.setActivated(true);
+                        //T2Aoption.setActivated(true);
                         verificado.setGravity(Gravity.NO_GRAVITY);
                         if(usuarioObject.getTwoAunthenticatorFactor()){
                             verificado.setText(getResources().getString(R.string.VerificadoConT2A));
-                            T2Aoption.setChecked(true);
+                            //T2Aoption.setChecked(true);
                         }else{
                             verificado.setText(getResources().getString(R.string.VerificadoSinT2A));
-                            T2Aoption.setChecked(false);
+                            //T2Aoption.setChecked(false);
                         }
                     }
                 }
@@ -139,12 +144,18 @@ public class PerfilActivity extends BasicActivity {
 
             }
         });
-        imageButton.setOnClickListener(v -> ImagePicker.create(PerfilActivity.this).returnMode(ReturnMode.GALLERY_ONLY).single().start());
+
+        imageButton.setOnClickListener(v -> abrirCamara());
+
+        /*
         cambiarPassword.setOnClickListener(v -> {
             //cambiar contraseña
             System.out.println("PASSWORD CHANGE");
         });
 
+         */
+
+        /*
         T2Aoption.setOnClickListener(v -> {
 
             if(T2Aoption.isChecked()){
@@ -177,6 +188,8 @@ public class PerfilActivity extends BasicActivity {
             }
 
         });
+
+         */
         guardarButton.setOnClickListener(v -> {
 
             if(descripcion.getText().length() > 80){
@@ -211,6 +224,18 @@ public class PerfilActivity extends BasicActivity {
 
     }
 
+    @AfterPermissionGranted(1)
+    public void abrirCamara(){
+        String[] perms = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        if(EasyPermissions.hasPermissions(this,perms)){
+            ImagePicker.create(PerfilActivity.this).returnMode(ReturnMode.GALLERY_ONLY).single().start();
+        }else{
+            EasyPermissions.requestPermissions(this,getResources().getString(R.string.permisoAbrirCamara),1,perms);
+        }
+        //
+    }
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -220,15 +245,21 @@ public class PerfilActivity extends BasicActivity {
 
     @Override
     protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
-        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
-            // or get a single image only
-            Image image = ImagePicker.getFirstImageOrNull(data);
-            Log.d("DEBUG PerfilActivity","IMAGEN PATH "+image.getPath());
-            Toast.makeText(this, getResources().getString(R.string.actualizandoImagenPerfil), Toast.LENGTH_SHORT).show();
-            subirImagen(image);
-
-        }
         super.onActivityResult(requestCode, resultCode, data);
+            if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+                // or get a single image only
+                Image image = ImagePicker.getFirstImageOrNull(data);
+                Log.d("DEBUG PerfilActivity","IMAGEN PATH "+image.getPath());
+                Toast.makeText(this, getResources().getString(R.string.actualizandoImagenPerfil), Toast.LENGTH_SHORT).show();
+                subirImagen(image);
+            }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     public void subirImagen(Image image){
@@ -271,5 +302,18 @@ public class PerfilActivity extends BasicActivity {
         Intent backToMainActivity = new Intent(PerfilActivity.this,MainActivity.class);
         startActivity(backToMainActivity);
         finish();
+    }
+
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if(EasyPermissions.somePermissionPermanentlyDenied(this,perms)){
+            new AppSettingsDialog.Builder(this).build().show();
+        }
     }
 }

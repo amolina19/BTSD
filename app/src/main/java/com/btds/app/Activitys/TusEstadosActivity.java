@@ -1,5 +1,6 @@
 package com.btds.app.Activitys;
 
+import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,17 +36,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
 /**
  * @author Alejandro Molina Louchnikov
  */
 
-public class TusEstadosActivity extends AppCompatActivity {
+public class TusEstadosActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
 
     private List<Estados> listaTusEstados;
     GridView gridViewEstados;
     Toolbar toolbar;
     Usuario usuarioObject;
     final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private Boolean backPressed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +127,7 @@ public class TusEstadosActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.añadir_estado_item_menu_toolbar) {
-            ImagePicker.create(TusEstadosActivity.this).returnMode(ReturnMode.GALLERY_ONLY).single().start();
+            abrirCamara();
             return true;
         }
         return false;
@@ -163,24 +169,26 @@ public class TusEstadosActivity extends AppCompatActivity {
         //storage = FirebaseStorage.getInstance();
         storageReference = Funciones.getFirebaseStorageReference();
 
-        //StorageReference storageUserProfileRef = storageReference.child("Imagenes/Perfil/"+usuarioObject.getId());
+        //StorageReference storageUserEstadosRef = storageReference.child("Imagenes/Perfil/"+usuarioObject.getId());
 
         String URLstring = Funciones.getAlphaNumericString(16);
         Log.d("DEBUG TusEstadosActivity","URL "+ URLstring);
-        StorageReference storageUserProfileRef = storageReference.child("Estados/"+usuarioObject.getId()+"/"+URLstring);
-        UploadTask uploadTask = storageUserProfileRef.putFile(file);
+        StorageReference storageUserEstadosRef = storageReference.child("Estados/"+usuarioObject.getId()+"/"+URLstring);
+        UploadTask uploadTask = storageUserEstadosRef.putFile(file);
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(exception -> {
             // Handle unsuccessful uploads
             Log.d("DEBUG PerfilActivity","El Estado no se ha subido");
             //Toast.makeText(TusEstadosActivity.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "ERROR al subir el estado", Toast.LENGTH_SHORT).show();
         }).addOnSuccessListener(taskSnapshot -> {
-            storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+            storageUserEstadosRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
                 // getting image uri and converting into string
                 //usuarioObject.setImagenURL(downloadUrl.toString());
                 //Fecha fecha = new Fecha();
-                Estados estado = new Estados(downloadUrl.toString(),usuarioObject,new Fecha());
+
+                Estados estado = new Estados(URLstring,downloadUrl.toString(),usuarioObject,new Fecha());
                 Log.d("DEBUG TusEstadosActivity ","FECHA SUBIDA "+estado.fecha.toString());
 
                 assert firebaseUser != null;
@@ -204,13 +212,45 @@ public class TusEstadosActivity extends AppCompatActivity {
         });
     }
 
+    @AfterPermissionGranted(1)
+    public void abrirCamara(){
+        String[] perms = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        if(EasyPermissions.hasPermissions(this,perms)){
+            ImagePicker.create(TusEstadosActivity.this).returnMode(ReturnMode.GALLERY_ONLY).single().start();
+        }else{
+            EasyPermissions.requestPermissions(this,getResources().getString(R.string.permisoAbrirCamara),1,perms);
+        }
+        //
+    }
+
     @Override
     public void onBackPressed() {
         //Funciones.setBackPressed();
         super.onBackPressed();
+        backPressed = true;
         Intent backToMainActivity = new Intent(TusEstadosActivity.this,MainActivity.class);
         startActivity(backToMainActivity);
         finish();
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if(EasyPermissions.somePermissionPermanentlyDenied(this,perms)){
+            new AppSettingsDialog.Builder(this).build().show();
+        }
+    }
 }
