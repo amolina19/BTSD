@@ -1,13 +1,16 @@
 package com.btds.app.Modelos;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.btds.app.Utils.Fecha;
 
 /**
  * @author Alejandro Molina Louchnikov
  */
 
-public class Mensaje {
+public class Mensaje implements Parcelable {
 
     private String key;
     private String id;
@@ -18,6 +21,7 @@ public class Mensaje {
     private Tipo tipoMensaje;
     public Fecha fecha;
     private LatLng ubicacion;
+    private Audio audio;
 
 
     //Class com.btds.app.Modelos.Mensaje does not define a no-argument constructor
@@ -44,6 +48,17 @@ public class Mensaje {
         this.ubicacion = ubicacion;
         this.leido = leido;
         this.tipoMensaje = Tipo.LOCALIZACION;
+        this.fecha = fecha;
+    }
+
+    //Audio
+    public Mensaje(String id, String emisor, String receptor, Audio audio, boolean leido,Fecha fecha) {
+        this.id = id;
+        this.emisor = emisor;
+        this.receptor = receptor;
+        this.audio = audio;
+        this.leido = leido;
+        this.tipoMensaje = Tipo.AUDIO;
         this.fecha = fecha;
     }
 
@@ -119,10 +134,59 @@ public class Mensaje {
         this.ubicacion = ubicacion;
     }
 
+    public Audio getAudio() {
+        return audio;
+    }
+
+    public void setAudio(Audio audio) {
+        this.audio = audio;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(key);
+        dest.writeString(id);
+        dest.writeString(emisor);
+        dest.writeString(receptor);
+        dest.writeString(mensaje);
+        dest.writeByte((byte) (leido ? 1 : 0));
+        dest.writeParcelable(ubicacion, flags);
+    }
+
+
+    protected Mensaje(Parcel in) {
+        key = in.readString();
+        id = in.readString();
+        emisor = in.readString();
+        receptor = in.readString();
+        mensaje = in.readString();
+        leido = in.readByte() != 0;
+        ubicacion = in.readParcelable(LatLng.class.getClassLoader());
+    }
+
+    public static final Creator<Mensaje> CREATOR = new Creator<Mensaje>() {
+        @Override
+        public Mensaje createFromParcel(Parcel in) {
+            return new Mensaje(in);
+        }
+
+        @Override
+        public Mensaje[] newArray(int size) {
+            return new Mensaje[size];
+        }
+    };
+
+
     public enum Tipo{
         TEXTO,
         AUDIO,
         FOTO,
         LOCALIZACION
     }
+
 }

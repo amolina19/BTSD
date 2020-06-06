@@ -7,7 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import in.shrinathbhosale.preffy.Preffy;
 
@@ -39,6 +42,7 @@ public class Amigos extends Fragment {
     private List<Usuario> listaUsuarios;
     private final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados = new HashMap<>();
+    private HashMap<String,String> listaAmigos = new HashMap<>();
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -49,8 +53,11 @@ public class Amigos extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(Objects.requireNonNull(getActivity()), R.drawable.divider_recycler_view)));
+        recyclerView.addItemDecoration(itemDecorator);
 
-        usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios,listaUsuariosBloqueados);
+        usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios,listaUsuariosBloqueados,listaAmigos);
         recyclerView.setAdapter(usuariosAdapter);
 
         Preffy preffy = Preffy.getInstance(getContext());
@@ -64,7 +71,7 @@ public class Amigos extends Fragment {
         //new TaskProgressBar().execute();
 
         listaUsuarios = new ArrayList<>();
-        obtenerUsuarios();
+        obtenerAmigos();
 
         //System.out.println("FRAGMENTO CREADO");
         //listaAmigos = new ArrayList<>();
@@ -75,6 +82,27 @@ public class Amigos extends Fragment {
     }
 
 
+    private void obtenerAmigos(){
+
+        assert firebaseUser != null;
+        Funciones.getAmigosReference().child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaAmigos.clear();
+                for(DataSnapshot data:dataSnapshot.getChildren()){
+                    String valorClaveAmigo = data.getValue(String.class);
+                    listaAmigos.put(valorClaveAmigo,valorClaveAmigo);
+                }
+
+                obtenerUsuarios();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     private void obtenerUsuarios(){
         //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -87,6 +115,8 @@ public class Amigos extends Fragment {
                 listaUsuariosBloqueados.clear();
                 for (DataSnapshot data:dataSnapshot.getChildren()){
                     UsuarioBloqueado usuarioBloqueado = data.getValue(UsuarioBloqueado.class);
+                    assert usuarioBloqueado != null;
+                    assert firebaseUser != null;
                     if(usuarioBloqueado.getUsuarioAccionBloquear().contentEquals(firebaseUser.getUid())){
                         listaUsuariosBloqueados.put(data.getKey(),usuarioBloqueado);
                     }
@@ -100,7 +130,7 @@ public class Amigos extends Fragment {
                             Usuario usuario = snapshot.getValue(Usuario.class);
                             if(usuario !=null){
                                 assert firebaseUser != null;
-                                if(!usuario.getId().equals(firebaseUser.getUid())){
+                                if(!usuario.getId().equals(firebaseUser.getUid())  && listaAmigos.containsKey(usuario.getId())){
                                     listaUsuarios.add(usuario);
                                 }
                             }
@@ -108,7 +138,7 @@ public class Amigos extends Fragment {
                         //System.out.println("ARRAY "+listaUsuarios.size());
                         Log.d("DEBUG Fragment Amigos","Lista de Amigos "+listaUsuarios.size() );
                         Log.d("DEBUG Fragment Amigos","Lista de Amigos Bloqueados "+listaUsuariosBloqueados.size());
-                        usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios,listaUsuariosBloqueados);
+                        usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios,listaUsuariosBloqueados,listaAmigos);
                         //usuariosAdapter.notifyDataSetChanged();
                         recyclerView.setAdapter(usuariosAdapter);
                         usuariosAdapter.notifyDataSetChanged();

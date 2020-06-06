@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:padding="10dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/imagen_perfil"
+        android:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/usuario"
+        android:layout_width="280dp"
+        android:maxWidth="280dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@id/imagen_perfil"
+        android:text="@string/usuario"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:singleLine="true"/>
+
+    <Button
+        android:layout_marginStart="20dp"
+        android:id="@+id/buttonAdd"
+        android:layout_width="120dp"
+        android:layout_height="30dp"
+        android:background="@color/spring_green"
+        android:textColor="@color/colorBlanco"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@id/imagen_perfil"
+        android:layout_below="@id/usuario"
+        android:layout_marginTop="15dp"
+        android:text="@string/Aceptar"
+        android:textSize="10sp" />
+
+    <Button
+        android:id="@+id/buttonDeny"
+        android:layout_width="120dp"
+        android:layout_height="30dp"
+        android:background="@color/red"
+        android:textColor="@color/colorBlanco"
+        android:layout_toEndOf="@id/buttonAdd"
+        android:layout_below="@id/usuario"
+        android:layout_marginTop="15dp"
+        android:text="@string/cancelarPeticion"
+        android:textSize="10sp" />
+
+</RelativeLayout>

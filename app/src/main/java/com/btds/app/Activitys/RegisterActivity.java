@@ -113,6 +113,7 @@ public class RegisterActivity extends BasicActivity {
                         usuarioRegistrandose.setFecha(fecha.obtenerDia()+" "+fecha.obtenerMes()+" "+fecha.obtenerAnno());
                         usuarioRegistrandose.setEstado("En Linea");
                         usuarioRegistrandose.setTelefono("");
+                        Funciones.VisibilidadUsuarioPublica(usuarioRegistrandose);
                         //usuarioRegistrandose.setTwoAunthenticatorFactor(false);
                         Toast.makeText(RegisterActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
 

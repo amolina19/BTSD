@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/imagen_error_chat"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="@string/errorCargarAudio"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="5dp"
+        android:textStyle="bold"
+        android:gravity="end"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/duracionAudio"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_alignParentEnd="true"
+        android:text="@string/text"
+        android:textAlignment="textEnd"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="5dp"
+        android:textStyle="bold"/>
+
+    <ImageButton
+        android:id="@+id/buttonAudioPlay"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/ic_audio_play"
+        android:visibility="visible"
+        android:layout_toLeftOf="@id/duracionAudio" />
+
+    <ImageButton
+        android:id="@+id/buttonAudioStop"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/ic_audio_pause"
+        android:visibility="invisible"
+        android:layout_toLeftOf="@id/duracionAudio" />
+
+    <TextView
+        android:id="@+id/hora"
+        android:layout_width="wrap_content"
+        android:layout_height="12dp"
+        android:layout_marginStart="-24dp"
+        android:layout_toRightOf="@id/duracionAudio"
+        android:text="@string/text"
+        android:layout_below="@id/buttonAudioPlay"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/colorNegro"
+        android:textSize="8sp" />
+
+    <ImageView
+        android:id="@+id/leido"
+        android:layout_width="12dp"
+        android:layout_height="10dp"
+        android:background="@drawable/ic_leido"
+        android:layout_below="@id/buttonAudioPlay"
+        android:layout_marginTop="5dp"
+        android:visibility="visible"
+        android:layout_marginEnd="27dp"
+        android:layout_toLeftOf="@id/hora" />
+
+</RelativeLayout>

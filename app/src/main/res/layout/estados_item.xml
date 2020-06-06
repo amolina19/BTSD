@@ -26,14 +26,16 @@
 
     <TextView
         android:id="@+id/usuario"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
+        android:maxWidth="50dp"
         android:layout_height="20dp"
         android:layout_marginTop="2dp"
         android:text="Usuario"
         android:textColor="@color/colorPrimaryDark"
         android:layout_gravity="center_horizontal"
         android:textSize="8sp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
+        android:textAlignment="center"
+        android:singleLine="true"
+        android:textStyle="bold"/>
 
 </LinearLayout>

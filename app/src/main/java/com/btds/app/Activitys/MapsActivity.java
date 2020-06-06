@@ -2,7 +2,6 @@ package com.btds.app.Activitys;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -10,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -42,14 +42,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String usuarioID;
     private LatLng ubicacionCompartida;
     private Button compartirUbicacion;
-    private DatabaseReference chatsReference;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        SupportMapFragment googleMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment googleMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         assert googleMapFragment != null;
         googleMapFragment.getMapAsync(this);
 
@@ -58,7 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         compartirUbicacion = findViewById(R.id.compartirUbicacionButton);
         compartirUbicacion.setOnClickListener(v -> {
-            enviarUbicacion(firebaseUser.getUid(),usuarioID);
+            enviarUbicacion(firebaseUser.getUid(), usuarioID);
             onBackPressed();
         });
 
@@ -67,8 +66,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //ubicacionStr = intent.getStringExtra("Ubicacion");
         //getIntent().getSerializableExtra("Ubicacion");
         ubicacionCompartida = (LatLng) getIntent().getSerializableExtra("Ubicacion");
-        if(ubicacionCompartida != null){
-            Log.d("Debug MapsActivity","La ubicacion obtenida es obtenida a traves del chat");
+        if (ubicacionCompartida != null) {
+            Log.d("Debug MapsActivity", "La ubicacion obtenida es obtenida a traves del chat");
         }
 
     }
@@ -77,6 +76,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap map) {
         googleMap = map;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         googleMap.setMyLocationEnabled(true);
         googleMap.setMinZoomPreference(1);
         googleMap.setMaxZoomPreference(20);
@@ -99,6 +108,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
                     //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
                     //googleMap
+                    if(isLocationEnabled(MapsActivity.this)){
+                        compartirUbicacion.setClickable(true);
+                        compartirUbicacion.setVisibility(View.VISIBLE);
+                    }else{
+                        compartirUbicacion.setClickable(false);
+                        compartirUbicacion.setVisibility(View.GONE);
+                    }
 
                 }
 
@@ -157,6 +173,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void statusCheckGPS() {
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        assert manager != null;
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             alertaNoGPS();
         }
@@ -166,16 +183,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getResources().getString(R.string.GPSAdvertencia))
                 .setCancelable(false)
-                .setPositiveButton(getResources().getString(R.string.Aceptar), new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
+                .setPositiveButton(getResources().getString(R.string.Aceptar), (dialog, id) -> startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)))
+                .setNegativeButton(getResources().getString(R.string.Cancelar), (dialog, id) -> {
+                    dialog.cancel();
+                    compartirUbicacion.setVisibility(View.GONE);
+                    compartirUbicacion.setClickable(false);
                 })
-                .setNegativeButton(getResources().getString(R.string.Cancelar), new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.cancel();
-                    }
-                });
+                ;
         final AlertDialog alert = builder.create();
         alert.show();
     }
@@ -186,15 +200,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Luego instanciar la fecha actual del dispositivo.
         //Fecha fecha = new Fecha();
         String id = new Fecha().obtenerFechaTotal();
-        LatLng ubicacion = new LatLng(actualLocation.latitude,actualLocation.longitude);
-        Mensaje mensajeObject = new Mensaje(id,emisor,receptor,ubicacion,false,new Fecha());
-        chatsReference = Funciones.getChatsDatabaseReference();
 
-        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
-                Log.d("DEBUG Mensaje","Se ha enviado la localización");
-            }
-        });
+
+        if(actualLocation != null){
+            LatLng ubicacion = new LatLng(actualLocation.latitude,actualLocation.longitude);
+
+            Mensaje mensajeObject = new Mensaje(id,emisor,receptor,ubicacion,false,new Fecha());
+            DatabaseReference chatsReference = Funciones.getChatsDatabaseReference();
+
+            chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    Log.d("DEBUG Mensaje","Se ha enviado la localización");
+                }
+            });
+        }
     }
 
 
@@ -202,6 +221,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    public static Boolean isLocationEnabled(Context context)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+// This is new method provided in API 28
+            LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            return lm.isLocationEnabled();
+        } else {
+// This is Deprecated in API 28
+            int mode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE,
+                    Settings.Secure.LOCATION_MODE_OFF);
+            return  (mode != Settings.Secure.LOCATION_MODE_OFF);
+
+        }
     }
 
     /*

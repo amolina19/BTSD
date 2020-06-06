@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -59,11 +58,11 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int posicion) {
 
-        holder.imagen_perfil.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        holder.usuario.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        holder.textoChat.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        holder.hora.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        holder.leido.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+        //holder.imagen_perfil.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+        //holder.usuario.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+        //holder.textoChat.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+        //holder.hora.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
+        //holder.leido.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
 
         final ListaMensajesChat listaMensaje = lista.get(posicion);
 
@@ -80,6 +79,8 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             holder.textoChat.setText(R.string.imagen);
         }else if(listaMensaje.getMensaje().getTipoMensaje() == Mensaje.Tipo.LOCALIZACION){
             holder.textoChat.setText(R.string.ubicacion);
+        }else if(listaMensaje.getMensaje().getTipoMensaje() == Mensaje.Tipo.AUDIO){
+            holder.textoChat.setText(R.string.audio);
         }
 
 
@@ -97,7 +98,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
 
 
-        if(listaMensaje.getMensaje().getLeido() && listaMensaje.getMensaje().getEmisor().contentEquals(firebaseUser.getUid())){
+        if(firebaseUser != null && listaMensaje.getMensaje().getLeido() && listaMensaje.getMensaje().getEmisor().contentEquals(firebaseUser.getUid())){
             holder.leido.setVisibility(View.VISIBLE);
         }
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.btds.app">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -41,15 +40,16 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".Utils.Persistence"
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_logo_btsd_1"
+        android:icon="@mipmap/ic_logo_final_round"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_logo_btsd_1_round"
+        android:roundIcon="@mipmap/ic_logo_final_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:allowBackup="true">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -65,19 +65,19 @@
 
         <activity
             android:name=".Activitys.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
-        <activity android:name=".Activitys.ViewImageActivity" />
-        <activity android:name=".Activitys.CallActivity" />
+            android:label="@string/title_activity_maps"
+            android:launchMode="singleInstance"/>
+        <activity android:name=".Activitys.ViewImageActivity"
+            android:launchMode="singleInstance"/>
+        <activity
+            android:name=".Activitys.CallActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activitys.PhoneVerifyActivity"
             android:launchMode="singleInstance" />
         <activity
             android:name=".Activitys.PhoneCheckActivity"
             android:launchMode="singleInstance" />
-        <activity
-            android:name=".Activitys.TusEstadosActivity"
-            android:launchMode="singleInstance"
-            android:parentActivityName=".Activitys.PerfilActivity" />
         <activity
             android:name=".Activitys.BasicActivity"
             android:launchMode="singleInstance" />
@@ -113,6 +113,15 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".Activitys.ChangeEmailActivity"
+            android:launchMode="singleInstance"/>
+        <activity android:name=".Activitys.RecoverActivity"
+            android:launchMode="singleInstance"/>
+        <activity android:name=".Activitys.ChangePasswordActivity"
+            android:launchMode="singleInstance"/>
+        <activity android:name=".Activitys.AjustesActivity"
+            android:launchMode="singleInstance"/>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -123,10 +132,10 @@
                 android:resource="@xml/paths" />
         </provider>
 
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key"/>
+            android:value="@string/google_maps_key" />
+
         <uses-library
             android:name="com.google.android.maps"
             android:required="true" />

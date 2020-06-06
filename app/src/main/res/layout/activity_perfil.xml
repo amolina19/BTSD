@@ -21,11 +21,19 @@
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="230dp"
             android:layout_height="match_parent"
             android:textColor="@color/colorBlanco"
             android:text="@string/perfilAjustes"
             android:textSize="25sp"/>
+
+        <ImageButton
+            android:id="@+id/check_azul"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_check_azul"
+            android:visibility="gone"
+            android:clickable="false"/>
     </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -80,7 +88,8 @@
                 android:layout_height="30dp"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="16sp"
-                android:id="@+id/usuarioCampoPerfil"/>
+                android:id="@+id/usuarioCampoPerfil"
+                android:singleLine="true"/>
         </LinearLayout>
 
         <LinearLayout
@@ -129,7 +138,8 @@
                 android:layout_height="match_parent"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="16sp"
-                android:id="@+id/usuarioTelefonoperfil"/>
+                android:id="@+id/usuarioTelefonoperfil"
+                android:singleLine="true"/>
         </LinearLayout>
 
         <LinearLayout
@@ -153,15 +163,38 @@
                 android:id="@+id/usuarioVerificado"/>
         </LinearLayout>
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_email_blue"/>
+
+            <TextView
+                android:layout_marginStart="20dp"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:id="@+id/usuarioemail"/>
+        </LinearLayout>
+
         <Button
-        android:id="@+id/guardarButton"
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+            android:id="@+id/ajustes_button"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@drawable/activity_drawable_azul_acrylic"
-        android:textColor="@color/colorBlanco"
-        android:text="@string/guardar"
-        />
+            android:textColor="@color/colorBlanco"
+            android:text="@string/masAjustes"
+            />
 
     </LinearLayout>
     </ScrollView>

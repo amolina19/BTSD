@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,16 +29,18 @@ import com.hbb20.CountryCodePicker;
 
 import java.util.concurrent.TimeUnit;
 
-import in.shrinathbhosale.preffy.Preffy;
-
 public class PhoneCheckActivity extends AppCompatActivity {
 
     private EditText editTextMobile;
     private static Activity activityCheckPhone;
     private TextView textView_informacion;
+    private TextView textView;
     private Button buttonOmitir;
+    private Button buttonSalir;
     CountryCodePicker codeCountryPicker;
     final private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private Usuario usuarioActual;
+    String phoneCode;
     //String systemLanguage;
     //String verificationid;
     @Override
@@ -49,8 +52,30 @@ public class PhoneCheckActivity extends AppCompatActivity {
         codeCountryPicker = findViewById(R.id.codeCountryPicker);
         buttonOmitir = findViewById(R.id.buttonOmitir);
         textView_informacion = findViewById(R.id.textView_informacion);
+        textView = findViewById(R.id.textView);
+        buttonSalir = findViewById(R.id.buttonSalir);
         textView_informacion.setError(getResources().getString(R.string.OmitirMasTarde));
-        Preffy preffy = Preffy.getInstance(this);
+
+        Intent intentMain = getIntent();
+        Bundle bundle = intentMain.getExtras();
+        usuarioActual = bundle.getParcelable("usuario");
+
+        buttonSalir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent goLogin = new Intent(PhoneCheckActivity.this,LoginActivity.class);
+                startActivity(goLogin);
+                Funciones.actualizarT2A(false, usuarioActual);
+                FirebaseAuth.getInstance().signOut();
+                finish();
+            }
+        });
+        if(!(usuarioActual.getTwoAunthenticatorFactor() == null)){
+            if(usuarioActual.getTwoAunthenticatorFactor()){
+                T2A();
+            }
+        }
+
 
         buttonOmitir.setOnClickListener(v -> {
             assert firebaseUser != null;
@@ -64,7 +89,6 @@ public class PhoneCheckActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             Log.d("DEBUG Phone Check","Verificacion omitida");
-                            preffy.putBoolean("T2A", false);
                             Intent intent = new Intent(PhoneCheckActivity.this, MainActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                             startActivity(intent);
@@ -91,6 +115,14 @@ public class PhoneCheckActivity extends AppCompatActivity {
             codeCountryPicker.setCountryForNameCode("USA");
         }
         codeCountryPicker.changeLanguage(Funciones.obtainLanguageContryPicker());
+        phoneCode = "+"+ Funciones.getCountryCode();
+
+        codeCountryPicker.setOnCountryChangeListener(new CountryCodePicker.OnCountryChangeListener() {
+            @Override
+            public void onCountrySelected() {
+                phoneCode = codeCountryPicker.getSelectedCountryCodeWithPlus();
+            }
+        });
 
         //firebaseAuth.useAppLanguage();
         //mAuth.setLanguageCode("es");
@@ -107,7 +139,7 @@ public class PhoneCheckActivity extends AppCompatActivity {
                 return;
             }
 
-            mobile = "+"+Funciones.getCountryCode()+""+mobile;
+            mobile = phoneCode+""+mobile;
             //Log.d("DEBUG TELEFONO INTRODUCIDO",mobile);
 
             Intent intent = new Intent(PhoneCheckActivity.this, PhoneVerifyActivity.class);
@@ -154,6 +186,23 @@ public class PhoneCheckActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+    private void T2A(){
+        textView_informacion.setVisibility(View.GONE);
+        buttonOmitir.setVisibility(View.GONE);
+        buttonOmitir.setClickable(false);
+        textView.setText(R.string.introduceTelefonoT2A);
+        buttonSalir.setVisibility(View.VISIBLE);
+        buttonSalir.setClickable(true);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(usuarioActual != null){
+            Funciones.actualizarConexion(getResources().getString(R.string.online),usuarioActual);
+        }
     }
 
 

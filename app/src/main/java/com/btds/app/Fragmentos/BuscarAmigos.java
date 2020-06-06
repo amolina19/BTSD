@@ -11,7 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,8 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import in.shrinathbhosale.preffy.Preffy;
+import java.util.Objects;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
@@ -47,34 +48,8 @@ public class BuscarAmigos extends Fragment {
     private BuscarAmigosAdapter buscarAmigosAdapter;
     private List<Usuario> listaUsuarios = new ArrayList<>();
     private static HashMap<String,PeticionAmistadUsuario> peticionAmistadUsuarios = new HashMap<>();
+    private static HashMap<String,String> listaAmigos = new HashMap<>();
     final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-    private boolean firstSearch;
-
-    /*
-    class TaskProgressBar extends AsyncTask<Void, Void, Void> {
-
-
-        @SuppressLint("WrongThread")
-        @Override
-        protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
-            for(int i=0;i<100;i+=3){
-                try {
-                    Thread.sleep(15);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                progressBar.setProgress(i);
-            }
-            progressBar.setVisibility(View.INVISIBLE);
-            return null;
-        }
-    }
-    */
-
-
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -88,62 +63,53 @@ public class BuscarAmigos extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        Preffy preffy = Preffy.getInstance(getContext());
-        preffy.putString("FragmentHome", "BuscarAmigos");
-
-        //peticionAmistadUsuarios = Funciones.obtenerPeticionesAmistadEnviadas(firebaseUser);
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(getActivity(), R.drawable.divider_recycler_view)));
+        recyclerView.addItemDecoration(itemDecorator);
 
         buscarAmigosAdapter = new BuscarAmigosAdapter(getActivity(),listaUsuarios,peticionAmistadUsuarios);
         recyclerView.setAdapter(buscarAmigosAdapter);
-
-        firstSearch = true;
-
-        //TaskProgressBar taskProgressBar = new TaskProgressBar();
-        //taskProgressBar.execute();
-
-
-        //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //DatabaseReference referenceUserDataBase = FirebaseDatabase.getInstance().getReference("Usuarios");
-        //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, referenceUserDataBase, getContext());
-
-
-        obtenerUsuarios();
-
-        //System.out.println("FRAGMENTO CREADO");
-        //listaAmigos = new ArrayList<>();
-
-        //registerForContextMenu(recyclerView);
-        //obtenerAmigos();
+        obtenerAmigos();
         return view;
     }
 
+    private void obtenerAmigos(){
 
-    /*
-    public String limpiarCadenaBaseDatos(String valor){
+        Funciones.getAmigosReference().child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaAmigos.clear();
+                for(DataSnapshot data:dataSnapshot.getChildren()){
+                    String valorClaveAmigo = data.getValue(String.class);
+                    listaAmigos.put(valorClaveAmigo,valorClaveAmigo);
+                }
 
-        int position = valor.lastIndexOf("=");
-        String valorFinal = valor.substring(position+1,valor.length()-1);
-        return valorFinal;
+                obtenerUsuarios();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
-     */
-
 
     private void obtenerUsuarios(){
 
             Funciones.getPeticionesAmistadReference().addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //obtenerAmigos();
                     peticionAmistadUsuarios.clear();
                     for (DataSnapshot data:dataSnapshot.getChildren()){
                         PeticionAmistadUsuario peticion = data.getValue(PeticionAmistadUsuario.class);
                         assert firebaseUser != null;
-                        if(peticion.getUsuarioAccionPeticion().contentEquals(firebaseUser.getUid())){
+                        if(peticion.getUsuarioAccionPeticion().contentEquals(firebaseUser.getUid()) && !listaAmigos.containsKey(peticion.getUsuarioAccionPeticion())){
                             peticionAmistadUsuarios.put(data.getKey(),peticion);
                         }
                     }
 
-                    if(firstSearch){
-                        firstSearch = false;
+
                         //Log.d("DEBUG BuscarAmigosAdapter","Lista de peticiones enviadas "+peticionAmistadUsuarios.size());
                         //DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
 
@@ -155,7 +121,7 @@ public class BuscarAmigos extends Fragment {
                                     Usuario usuario = snapshot.getValue(Usuario.class);
                                     if(usuario !=null){
                                         assert firebaseUser != null;
-                                        if(!usuario.getId().equals(firebaseUser.getUid())){
+                                        if(!usuario.getId().equals(firebaseUser.getUid())  && !listaAmigos.containsKey(usuario.getId())){
                                             listaUsuarios.add(usuario);
 
                                         }
@@ -174,7 +140,7 @@ public class BuscarAmigos extends Fragment {
 
                             }
                         });
-                    }
+
 
                 }
 
@@ -216,7 +182,7 @@ public class BuscarAmigos extends Fragment {
                                             Log.d("DEBUG Buscar Amigos","VALOR USUARIO "+usuario.getId());
 
                                             assert firebaseUser != null;
-                                            if(!usuario.getId().equals(firebaseUser.getUid())){
+                                            if(!usuario.getId().equals(firebaseUser.getUid()) && !listaAmigos.containsKey(usuario.getId())){
                                                 Log.d("DEBUG Buscar Amigos","LISTA NUEVOS AMIGOS SIN AGREGAR "+listaUsuarios.size());
 
                                                 if(usuario.getUsuario().toLowerCase().contains(buscarAmigosEditText.getText().toString().toLowerCase())){

@@ -1,6 +1,8 @@
 package com.btds.app.Utils;
 
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -9,7 +11,7 @@ import androidx.annotation.RequiresApi;
 /**
  * @author Alejandro Molina Louchnikov
  */
-public class Fecha {
+public class Fecha implements Parcelable {
 
     public String milisegundos;
     public String segundos;
@@ -200,4 +202,42 @@ public class Fecha {
     public String obtenerFechaTotal(){
         return this.obtenerAnno()+""+this.obtenerMes()+""+this.obtenerDia()+""+this.obtenerHora()+""+this.obtenerMinutos()+""+this.obtenerSegundos()+""+this.obtenerMilisegundos();
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(milisegundos);
+        dest.writeString(segundos);
+        dest.writeString(minutos);
+        dest.writeString(hora);
+        dest.writeString(dia);
+        dest.writeString(mes);
+        dest.writeString(anno);
+    }
+
+    protected Fecha(Parcel in) {
+        milisegundos = in.readString();
+        segundos = in.readString();
+        minutos = in.readString();
+        hora = in.readString();
+        dia = in.readString();
+        mes = in.readString();
+        anno = in.readString();
+    }
+
+    public static final Creator<Fecha> CREATOR = new Creator<Fecha>() {
+        @Override
+        public Fecha createFromParcel(Parcel in) {
+            return new Fecha(in);
+        }
+
+        @Override
+        public Fecha[] newArray(int size) {
+            return new Fecha[size];
+        }
+    };
 }

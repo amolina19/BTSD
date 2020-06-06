@@ -89,10 +89,11 @@ public class PhoneVerifyActivity extends AppCompatActivity {
                 if(usuario !=null){
                     usuario.setTelefono(nTelefono);
                     usuario.setTwoAunthenticatorFactor(true);
+                    Funciones.actualizarT2A(true,usuario);
                     Funciones.mostrarDatosUsuario(usuario);
                     databaseUserReference.setValue(usuario).addOnCompleteListener(task -> {
                         if(task.isSuccessful()){
-                            Toast.makeText(PhoneVerifyActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(PhoneVerifyActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

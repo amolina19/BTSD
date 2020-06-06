@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -26,6 +27,7 @@ public class LoginActivity extends BasicActivity {
 
     MaterialEditText email,password;
     Button button_iniciarSesion;
+    TextView textView_contrasena_perdida;
     ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
@@ -50,8 +52,17 @@ public class LoginActivity extends BasicActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         button_iniciarSesion = findViewById(R.id.button_iniciarSesion);
+        textView_contrasena_perdida = findViewById(R.id.textView_contrasena_perdida);
         progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.GONE);
+
+        textView_contrasena_perdida.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentRecover = new Intent(LoginActivity.this,RecoverActivity.class);
+                startActivity(intentRecover);
+            }
+        });
 
         button_iniciarSesion.setOnClickListener(v -> {
             String text_email = Objects.requireNonNull(email.getText()).toString();

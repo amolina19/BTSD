@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activitys.AjustesActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp">
+        <TextView
+            android:id="@+id/ajustes_visibilidad_usuario"
+            android:layout_marginStart="10dp"
+            android:maxWidth="220dp"
+            android:minWidth="220dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textStyle="bold"
+            android:text="@string/visibilidadUsuario"/>
+
+        <Switch
+            android:id="@+id/ajustes_switch_usuario"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp">
+        <TextView
+            android:id="@+id/ajustes_visibilidad_descripcion"
+            android:layout_marginStart="10dp"
+            android:maxWidth="220dp"
+            android:minWidth="220dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textStyle="bold"
+            android:text="@string/visibilidadDescripcion"/>
+
+        <Switch
+            android:id="@+id/ajustes_switch_descripcion"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp">
+        <TextView
+            android:id="@+id/ajustes_visibilidad"
+            android:layout_marginStart="10dp"
+            android:maxWidth="220dp"
+            android:minWidth="220dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textStyle="bold"
+            android:text="@string/visibilidadTelefono"/>
+
+        <Switch
+            android:id="@+id/ajustes_switch_telefono"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp">
+        <TextView
+            android:id="@+id/ajustes_visibilidad_foto"
+            android:layout_marginStart="10dp"
+            android:maxWidth="220dp"
+            android:minWidth="220dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textStyle="bold"
+            android:text="@string/visibilidadFoto"/>
+
+        <Switch
+            android:id="@+id/ajustes_switch_foto"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp">
+        <TextView
+            android:id="@+id/ajustes_visibilidad_linea"
+            android:layout_marginStart="10dp"
+            android:maxWidth="220dp"
+            android:minWidth="220dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textStyle="bold"
+            android:text="@string/visibilidadEnLinea"/>
+
+        <Switch
+            android:id="@+id/ajustes_switch_linea"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp">
+        <TextView
+            android:id="@+id/ajustes_T2A"
+            android:layout_marginStart="10dp"
+            android:maxWidth="220dp"
+            android:minWidth="220dp"
+            android:layout_width="220dp"
+            android:layout_height="40dp"
+            android:textStyle="bold"
+            android:text="@string/habilitarT2A"/>
+
+        <Switch
+            android:id="@+id/ajustes_switch_T2A"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+    <Button
+
+        android:id="@+id/ajustes_button_email"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:text="@string/cambiarCorreo"
+        android:background="@drawable/border_rectangle"
+        android:paddingRight="50dp"
+        android:paddingLeft="50dp"
+        />
+
+    <Button
+
+        android:id="@+id/ajustes_button_contrasena"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:text="@string/cambiarContrasena"
+        android:background="@drawable/border_rectangle"
+        android:paddingRight="30dp"
+        android:paddingLeft="30dp"
+        />
+
+</LinearLayout>

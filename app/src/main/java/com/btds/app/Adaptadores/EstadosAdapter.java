@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.btds.app.Activitys.EstadoActivity;
-import com.btds.app.Activitys.TusEstadosActivity;
 import com.btds.app.Modelos.Estados;
 import com.btds.app.R;
 import com.bumptech.glide.Glide;
@@ -79,35 +78,15 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
             holder.imagen_estado.setBorderOverlay(false);
             holder.imagen_estado.setCircleBackgroundColorResource(R.color.white);
         }else{
-            holder.usuario.setText(estado.getUsuario().getUsuario());
+
+            if(estado.getUsuario().getVisibilidad().getUsuario()){
+                holder.usuario.setText(estado.getUsuario().getUsuario());
+            }else{
+                holder.usuario.setText(R.string.desconocido);
+            }
+
             Glide.with(context).load(estado.getEstadoURL()).into(holder.imagen_estado);
         }
-
-
-
-            //Glide.with(context).load(listaEstados.get(0).getestadoURL()).into(holder.imagen_estado);
-
-
-        /*
-        if(!listaUsuariosBloqueados.containsKey(usuario.getId())){
-            holder.estado.setText(usuario.getEstado());
-        }
-
-         */
-
-        //System.out.println("usuario bindeado");
-        /*
-        if(usuario.getImagenURL().equals("default")){
-            holder.imagen_perfil.setImageResource(R.mipmap.ic_launcher);
-        }else{
-            Glide.with(context).load(usuario.getImagenURL()).into(holder.imagen_perfil);
-        }
-
-        if(!listaUsuariosBloqueados.containsKey(usuario.getId())){
-            holder.estado.setText(usuario.getEstado());
-        }
-
-        */
 
         //Entra a la actividad
         holder.itemView.setOnClickListener(v -> {
@@ -122,7 +101,8 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
             if(position == 0){
                 //Toast.makeText(context, "FUNCIONA", Toast.LENGTH_SHORT).show();
                 Log.d("DEBUG EstadosAdapter","Has entrado en tus estados");
-                Intent tusEstados = new Intent(context, TusEstadosActivity.class);
+                Intent tusEstados = new Intent(context, EstadoActivity.class);
+                tusEstados.putExtra("estadoUsuarioIDFirebase",firebaseUser.getUid());
                 //tusEstados.addFlags(FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(tusEstados);
             }else{

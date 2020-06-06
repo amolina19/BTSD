@@ -12,9 +12,6 @@ public class Persistence extends android.app.Application  {
         /* Enable disk persistence  */
         Funciones.persistencia(true);
         Log.d("DEBUG Persistencia", "Activada");
-
-
-
     }
 
 }

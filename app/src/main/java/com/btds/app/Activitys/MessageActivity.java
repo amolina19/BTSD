@@ -5,9 +5,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -15,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -28,7 +33,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.btds.app.Adaptadores.MensajesAdapter;
+import com.btds.app.Modelos.Audio;
+import com.btds.app.Modelos.Llamada;
 import com.btds.app.Modelos.Mensaje;
+import com.btds.app.Modelos.PeticionAmistadUsuario;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
 import com.btds.app.R;
@@ -52,15 +60,19 @@ import com.vdx.designertoast.DesignerToast;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
+import at.markushi.ui.CircleButton;
 import de.hdodenhof.circleimageview.CircleImageView;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static com.btds.app.Utils.Funciones.borrarAmigo;
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
 /**
@@ -80,10 +92,21 @@ public class MessageActivity extends BasicActivity {
     private Animation fabOpen, fabClose, backRotateForward, rotateBackWard;
     private Boolean fabIsOpen = false;
 
+    private ImageButton enviar_button;
+
+    private MediaRecorder mediaRecorder;
+    private MediaPlayer mediaPlayer;
+    CircleButton circleButton_save;
+    CircleButton circleButton_delete;
+    private String pathSaveAudio;
+    private String audioName;
+    private Chronometer audioChronometer;
+
     private EditText enviar_texto;
     //private String cadenaTeclado;
 
     private Usuario usuarioChat;
+    private Usuario usuarioActual;
     private String usuarioID;
     private int diasPasados;
 
@@ -92,10 +115,14 @@ public class MessageActivity extends BasicActivity {
     private MensajesAdapter mensajesAdapter;
     private List<Mensaje> listaMensajes;
     private HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados;
+    private HashMap<String,String> listaAmigos = new HashMap<>();
     private RecyclerView recyclerView;
 
     //Obtener el contexto de la actividad
     private Context contexto;
+
+    public MessageActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,14 +136,20 @@ public class MessageActivity extends BasicActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         getInstance().getReference("Usuarios");
-        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
+        //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
         listaUsuariosBloqueados = Funciones.obtenerUsuariosBloqueados(firebaseUser);
+        listaAmigos = Funciones.obtenerListaAmigos(firebaseUser);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+        obtenerUsuarioActual(firebaseUser);
+        circleButton_save = findViewById(R.id.button_Audio_stopRecording_save);
+        circleButton_delete = findViewById(R.id.button_Audio_stopRecording_delete);
+        audioChronometer = findViewById(R.id.audioChronometer);
 
         fab = findViewById(R.id.fab);
         fab1 = findViewById(R.id.fab1);
@@ -129,22 +162,32 @@ public class MessageActivity extends BasicActivity {
         fab.setOnClickListener(v -> animarFab());
         fab1.setOnClickListener(v -> {
             abrirCamara();
-            Toast.makeText(contexto, "ABRIENDO CAMARA", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(contexto, "ABRIENDO CAMARA", Toast.LENGTH_SHORT).show();
         });
-        fab2.setOnClickListener(v -> Toast.makeText(contexto, "ABRIENDO MICRO", Toast.LENGTH_SHORT).show());
-        fab3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        fab2.setOnClickListener(v -> {
+            //Toast.makeText(contexto, "ABRIENDO MICRO", Toast.LENGTH_SHORT).show();
+            preguntarPermisosAudio();
+        });
 
-                if(ubicacion == false){
-                    preguntarPermisosLocalizacion();
-                }else{
+        circleButton_save.setOnClickListener(v -> stopRecordingSave());
+
+        circleButton_delete.setOnClickListener(v -> stopRecordingDelete());
+
+        fab3.setOnClickListener(v -> {
+
+            if(!ubicacion){
+                preguntarPermisosLocalizacion();
+            }else{
+                if(Funciones.conectividadDisponible(MessageActivity.this)){
                     animarFab();
 
                     Intent intentMap = new Intent(MessageActivity.this,MapsActivity.class);
                     intentMap.putExtra("userID",usuarioChat.getId());
                     startActivity(intentMap);
+                }else{
+                    DesignerToast.Error(MessageActivity.this, getResources().getString(R.string.sinInternet), Gravity.BOTTOM, Toast.LENGTH_SHORT);
                 }
+
             }
         });
 
@@ -154,10 +197,10 @@ public class MessageActivity extends BasicActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        mensajesAdapter = new MensajesAdapter(MessageActivity.this,listaMensajes);
+        mensajesAdapter = new MensajesAdapter(MessageActivity.this,listaMensajes,null,null);
         recyclerView.setAdapter(mensajesAdapter);
 
-        ImageButton enviar_button = findViewById(R.id.enviar_mensaje_button);
+        enviar_button = findViewById(R.id.enviar_mensaje_button);
         enviar_texto = findViewById(R.id.enviar_mensaje);
         //setOnFocusChangeListener(enviar_texto, "teclado");
 
@@ -184,55 +227,7 @@ public class MessageActivity extends BasicActivity {
                 Toast.makeText(contexto, "Desbloquea al usuario para enviar mensajes", Toast.LENGTH_SHORT).show();
             }
         });
-
-        chatsReference.addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                usuarioChat = dataSnapshot.getValue(Usuario.class);
-                assert usuarioChat != null;
-                usuario.setText(usuarioChat.getUsuario());
-
-
-                //Comprobar si esta bloqueado y así descartar el calculo de días de su última conexión.
-                if(Funciones.getListaUsuariosBloqueados().containsKey(usuarioChat.getId())){
-                    estado.setText(R.string.bloqueado);
-                    //Si esta desconectado calculamos su última conexión.
-                }else if(usuarioChat.getEstado().contentEquals(getResources().getString(R.string.desconectado))) {
-
-                    diasPasados = (int) Funciones.obtenerDiasPasados(usuarioChat);
-                    estado.setText(Funciones.obtenerEstadoUsuario(contexto,diasPasados,usuarioChat));
-                    //Si el usuario esta en línea se descarta el cálculo de su última conexión y el TextView sera En Línea.
-                }else {
-                    estado.setText(usuarioChat.getEstado());
-                }
-                //Si su perfil contiene en su atributo de ImagenURL default se cargará una imagen de pérfil.
-                if(usuarioChat.getImagenURL().equals("default")){
-                    if(!MessageActivity.this.isFinishing()){
-                        Glide.with(MessageActivity.this).load(R.drawable.default_user_picture).into(imagen_perfil);
-                    }
-                }else{
-                    //Este if comprueba que la actividad no esta destruida o en pausa, ya que si se intenta cargar una imagén antes o después de iniciar la actividad, crasheará.
-                    if (!MessageActivity.this.isFinishing()) {
-                        Glide.with(MessageActivity.this).load(usuarioChat.getImagenURL()).into(imagen_perfil);
-                    }
-                }
-                //Esta línea está para comprobar en modo depuración si los datos visuales se corresponden a los de este log.
-                Log.d("DEBUG Usuarios Bloqueados","USUARIOS BLOQUEADOS " + listaUsuariosBloqueados.size());
-
-                if(!listaUsuariosBloqueados.containsKey(usuarioChat.getId())){
-                    leerMensaje(firebaseUser.getUid(),usuarioChat.getId());
-                    //De todos los mensajes recibidos por parte nuestra conversación han sido leídos.
-                    Log.d("DEBUG Mensajes Leidos","HA LEIDO LOS MENSAJES");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        abrirChat();
     }
 
     private void animarFab(){
@@ -333,7 +328,7 @@ public class MessageActivity extends BasicActivity {
                         listaMensajes.add(mensaje);
                     }
 
-                    mensajesAdapter = new MensajesAdapter(MessageActivity.this,listaMensajes);
+                    mensajesAdapter = new MensajesAdapter(MessageActivity.this,listaMensajes,usuarioChat,usuarioActual);
                     recyclerView.setAdapter(mensajesAdapter);
                 }
                 Log.d("DEBUG Lista mensajes totales recibidos","LISTA MENSAJES "+ listaMensajes.size());
@@ -344,7 +339,6 @@ public class MessageActivity extends BasicActivity {
 
             }
         });
-
     }
 
 
@@ -358,9 +352,19 @@ public class MessageActivity extends BasicActivity {
         try {
 
             if(listaUsuariosBloqueados.containsKey(usuarioChat.getId())){
-                getMenuInflater().inflate(R.menu.context_menu_amigo_2,menu);
+                if(listaAmigos.containsKey(usuarioChat.getId())){
+                    getMenuInflater().inflate(R.menu.context_menu_amigo_2,menu);//Desbloquear y Eliminar Amigo
+                }else{
+                    getMenuInflater().inflate(R.menu.context_menu_amigo_4,menu);//Desbloquear y Añadir Amigo
+                }
+
             }else{
-                getMenuInflater().inflate(R.menu.context_menu_amigo,menu);
+                if(listaAmigos.containsKey(usuarioChat.getId())){
+                    getMenuInflater().inflate(R.menu.context_menu_amigo,menu);//Bloquear y Eliminar Amigo
+                }else{
+                    getMenuInflater().inflate(R.menu.context_menu_amigo_3,menu);//Bloquear y Añadir Amigo
+                }
+
             }
 
         } catch (Exception e) {
@@ -380,18 +384,12 @@ public class MessageActivity extends BasicActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.silenciar:
-
-                //Se desactivara las notifcaciones del usuario en cuestión.
-                return true;
-
-            //El id no cambia, ya que esto está definido en el layout de menu/context_menu_amigo de manera estática
             case R.id.bloquear:
 
                 //Si el usuario está bloqueado, en el menú inflado aparecerá el String desbloquear donde nos mostrará un diálogo de confirmación por parte del usuario.
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 if(listaUsuariosBloqueados.containsKey(usuarioChat.getId())){
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(getResources().getString(R.string.unblockUser));
                     builder.setMessage(getResources().getString(R.string.confirmUnlock)+" "+usuarioChat.getUsuario());
                     builder.setNegativeButton(getResources().getString(R.string.Cancelar),null);
@@ -407,7 +405,6 @@ public class MessageActivity extends BasicActivity {
                     dialog.show();
 
                 }else{
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(getResources().getString(R.string.blockUser));
                     builder.setMessage(getResources().getString(R.string.confirmBlock)+" "+usuarioChat.getUsuario());
                     builder.setNegativeButton(getResources().getString(R.string.Cancelar),null);
@@ -425,11 +422,91 @@ public class MessageActivity extends BasicActivity {
 
                 return true;
             case R.id.eliminar:
-                //Eliminar a un usuario de nuestra lista de amigos.
+                if(listaAmigos.containsKey(usuarioChat.getId())){
+                    borrarAmigo(firebaseUser,usuarioChat);
+                    DesignerToast.Warning(MessageActivity.this,getResources().getString(R.string.hasEliminado)+" "+ usuarioChat.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
+                    finish();
+                    startActivity(getIntent());
+                }else{
+                    DesignerToast.Success(MessageActivity.this, getResources().getString(R.string.peticionEnviada)+" "+usuarioChat.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
+                    PeticionAmistadUsuario peticion = new PeticionAmistadUsuario(firebaseUser.getUid()+""+usuarioChat.getId(),firebaseUser.getUid(),usuarioChat.getId());
+                    Funciones.getPeticionesAmistadReference().child(firebaseUser.getUid()+""+usuario.getId()).setValue(peticion);
+                }
+                return true;
+            case R.id.llamar_mensaje_item_menu_toolbar:
+                //llamar();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void abrirChat(){
+        chatsReference.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //obtenerAmigos();
+                usuarioChat = dataSnapshot.getValue(Usuario.class);
+                assert usuarioChat != null;
+                if(usuarioChat.getVisibilidad().getUsuario()){
+                    usuario.setText(usuarioChat.getUsuario());
+                }else{
+                    usuario.setText(R.string.desconocido);
+                }
+
+                //Comprobar si esta bloqueado y así descartar el calculo de días de su última conexión.
+                if(Funciones.getListaUsuariosBloqueados().containsKey(usuarioChat.getId())){
+                    estado.setText(R.string.bloqueado);
+                    //Si esta desconectado calculamos su última conexión.
+                }else if(usuarioChat.getEstado().contentEquals(getResources().getString(R.string.desconectado))) {
+
+                    diasPasados = (int) Funciones.obtenerDiasPasados(usuarioChat);
+                    estado.setText(Funciones.obtenerEstadoUsuario(contexto,diasPasados,usuarioChat));
+                    //Si el usuario esta en línea se descarta el cálculo de su última conexión y el TextView sera En Línea.
+                }else {
+                    if(usuarioChat.getVisibilidad().getEnLinea()){
+                        estado.setText(R.string.online);
+                    }else{
+                        estado.setText(R.string.desconocido);
+                    }
+
+                }
+                //Si su perfil contiene en su atributo de ImagenURL default se cargará una imagen de pérfil.
+
+                if(usuarioChat.getVisibilidad().getFoto()){
+                    if(usuarioChat.getImagenURL().equals("default")){
+                        if(!MessageActivity.this.isFinishing()){
+                            Glide.with(MessageActivity.this).load(R.drawable.default_user_picture).into(imagen_perfil);
+                        }
+                    }else{
+                        //Este if comprueba que la actividad no esta destruida o en pausa, ya que si se intenta cargar una imagén antes o después de iniciar la actividad, crasheará.
+                        if (!MessageActivity.this.isFinishing()) {
+                            Glide.with(MessageActivity.this).load(usuarioChat.getImagenURL()).into(imagen_perfil);
+                        }
+                    }
+                }else{
+                    if(!MessageActivity.this.isFinishing()){
+                        Glide.with(MessageActivity.this).load(R.drawable.default_user_picture).into(imagen_perfil);
+                    }
+                }
+
+                //Esta línea está para comprobar en modo depuración si los datos visuales se corresponden a los de este log.
+                Log.d("DEBUG Usuarios Bloqueados","USUARIOS BLOQUEADOS " + listaUsuariosBloqueados.size());
+
+                if(!listaUsuariosBloqueados.containsKey(usuarioChat.getId())){
+                    leerMensaje(firebaseUser.getUid(),usuarioChat.getId());
+                    //De todos los mensajes recibidos por parte nuestra conversación han sido leídos.
+                    Log.d("DEBUG Mensajes Leidos","HA LEIDO LOS MENSAJES");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -477,14 +554,23 @@ public class MessageActivity extends BasicActivity {
         //
     }
 
+    @AfterPermissionGranted(3)
+    public void preguntarPermisosAudio() {
+        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
+
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            startRecording();
+        }else{
+            EasyPermissions.requestPermissions(this,getResources().getString(R.string.permisoGrabar),3,perms);
+        }
+        //
+    }
+
     @Override
     protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
-            // or get a single image only
             Image image = ImagePicker.getFirstImageOrNull(data);
-            //Log.d("DEBUG PerfilActivity","IMAGEN PATH "+image.getPath());
-            //Toast.makeText(this, getResources().getString(R.string.actualizandoImagenPerfil), Toast.LENGTH_SHORT).show();
             subirImagen(image);
         }
         animarFab();
@@ -493,37 +579,171 @@ public class MessageActivity extends BasicActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
+
 
     public void subirImagen(Image image){
 
         Uri file = Uri.fromFile(new File(image.getPath()));
-
-        //FirebaseStorage storage;
-        //StorageReference storageReference;
-
-        //storage = FirebaseStorage.getInstance();
         StorageReference storageReference = Funciones.getFirebaseStorageReference();
         String generated = Funciones.getAlphaNumericString(16);
         StorageReference storageUserProfileRef = storageReference.child("Chats/"+firebaseUser.getUid()+"/"+generated);
         UploadTask uploadTask = storageUserProfileRef.putFile(file);
 
-        // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(exception -> {
-            // Handle unsuccessful uploads
-            //Log.d("DEBUG PerfilActivity","LA IMAGEN NO SE HA SUBIDO");
-            //Toast.makeText(M.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
-        }).addOnSuccessListener(taskSnapshot -> {
-            storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
-                // getting image uri and converting into string
-                //usuarioObject.setImagenURL(downloadUrl.toString());
-                enviarFoto(firebaseUser.getUid(),usuarioID,downloadUrl.toString());
-            });
-            //Log.d("DEBUG PerfilActivity","La imagen se ha subido al perfil de "+usuarioObject.getUsuario());
-        });
+        }).addOnSuccessListener(taskSnapshot ->
+                storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> enviarFoto(firebaseUser.getUid(),usuarioID,downloadUrl.toString())));
 
     }
+
+    public void llamar(){
+        String id = new Fecha().obtenerFechaTotal();
+        Llamada llamada = new Llamada(id,usuarioActual,usuarioChat,false);
+        DatabaseReference llamadas = Funciones.getLlamadasReference().child(usuarioChat.getId());
+        llamadas.child(id).setValue(llamada);
+
+        Intent intentCall = new Intent(MessageActivity.this, CallActivity.class);
+        intentCall.putExtra("UsuarioChat",usuarioChat);
+        intentCall.putExtra("UsuarioActual",usuarioActual);
+        this.startActivity(intentCall);
+
+        Toast.makeText(contexto, "Has inicado una llamada", Toast.LENGTH_SHORT).show();
+    }
+
+    public void obtenerUsuarioActual(FirebaseUser firebaseUser){
+        Funciones.getUsersDatabaseReference().child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usuarioActual = dataSnapshot.getValue(Usuario.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void disableButtons(){
+        animarFab();
+        fab.setVisibility(View.GONE);
+        fab.setClickable(false);
+        enviar_button.setClickable(false);
+        enviar_button.setVisibility(View.GONE);
+    }
+
+    private void enableButtons(){
+        fab.setVisibility(View.VISIBLE);
+        fab.setClickable(true);
+        enviar_button.setClickable(true);
+        enviar_button.setVisibility(View.VISIBLE);
+    }
+
+    private void startRecording(){
+        disableButtons();
+        circleButton_save.setClickable(true);
+        circleButton_save.setVisibility(View.VISIBLE);
+        circleButton_delete.setClickable(true);
+        circleButton_delete.setVisibility(View.VISIBLE);
+
+        audioChronometer.setBase(SystemClock.elapsedRealtime());
+        audioChronometer.start();
+        audioChronometer.setVisibility(View.VISIBLE);
+
+
+        audioName =  UUID.randomUUID().toString()+"_audio_record.3gp";
+        //File checkDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/btsd/audio/");
+
+        /*
+        if(checkDirectory.isDirectory() && checkDirectory.exists()){
+            pathSaveAudio = Environment.getExternalStorageDirectory().getAbsolutePath()+"/btsd/audio/"+audioName;
+        }else{
+            checkDirectory.mkdir();
+            pathSaveAudio = Environment.getExternalStorageDirectory().getAbsolutePath()+"/btsd/audio/"+audioName;
+        }
+
+         */
+        pathSaveAudio = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+audioName;
+
+        setMediaRecorder();
+        try{
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+        }catch (IOException ioe){
+            Log.d("DEBUG MensageActivity MediaRecorder error","ERROR");
+            ioe.printStackTrace();
+        }
+    }
+
+    private void stopRecordingDelete(){
+        circleButton_save.setClickable(false);
+        circleButton_save.setVisibility(View.GONE);
+        circleButton_delete.setClickable(false);
+        circleButton_delete.setVisibility(View.GONE);
+        mediaRecorder.stop();
+        audioName = "";
+        pathSaveAudio = "";
+        audioChronometer.stop();
+        audioChronometer.setVisibility(View.GONE);
+        enableButtons();
+    }
+
+    private void stopRecordingSave(){
+
+        if(mediaPlayer != null){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+        audioChronometer.stop();
+        audioChronometer.setVisibility(View.GONE);
+
+        circleButton_save.setClickable(false);
+        circleButton_save.setVisibility(View.GONE);
+        circleButton_delete.setClickable(false);
+        circleButton_delete.setVisibility(View.GONE);
+        mediaRecorder.stop();
+
+        Uri audio = Uri.fromFile(new File(pathSaveAudio));
+        Log.d("DEBUG MessageActivity AudioRecorder","Save path"+pathSaveAudio);
+
+        StorageReference storageReference = Funciones.getFirebaseStorageReference();
+        StorageReference storageAudioRef = storageReference.child("Audios/"+firebaseUser.getUid()+"/"+audioName);
+        UploadTask uploadTask = storageAudioRef.putFile(audio);
+
+        uploadTask.addOnFailureListener(exception -> {
+        }).addOnSuccessListener(taskSnapshot -> storageAudioRef.getDownloadUrl().addOnSuccessListener(urlDownload -> escribirAudio(pathSaveAudio,urlDownload.toString())));
+        enableButtons();
+    }
+
+    private void escribirAudio(String audioLocalPath, String urlDownload){
+        Audio audioObject = new Audio(audioLocalPath,urlDownload);
+        String id = new Fecha().obtenerFechaTotal();
+        Mensaje mensajeObject = new Mensaje(id,usuarioActual.getId(),usuarioChat.getId(),audioObject,false,new Fecha());
+        chatsReference = Funciones.getChatsDatabaseReference();
+
+        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                Log.d("DEBUG Mensaje","Se ha enviado el Audio");
+            }
+        });
+    }
+
+    private void setMediaRecorder(){
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        mediaRecorder.setOutputFile(pathSaveAudio);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(usuarioActual != null){
+            Funciones.actualizarConexion(getResources().getString(R.string.online),usuarioActual);
+        }
+    }
+
 
 }

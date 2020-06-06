@@ -11,10 +11,10 @@
         android:layout_height="wrap_content"
         android:text="@string/errorCargarImagen"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="125dp"
+        android:layout_marginTop="5dp"
         android:textStyle="bold"
         android:gravity="end"
-        android:visibility="invisible"/>
+        android:visibility="invisible" />
 
     <ImageView
         android:layout_width="300dp"
@@ -22,8 +22,8 @@
         android:minWidth="300dp"
         android:maxWidth="300dp"
         android:layout_marginStart="-30dp"
-        android:text="TEXT"
         android:id="@+id/enseñar_mensaje_foto"
+        android:textColor="@color/colorBlanco"
         />
 
     <TextView
@@ -37,13 +37,4 @@
         android:textColor="@color/colorNegro"
         android:textSize="8sp" />
     />
-
-    <ImageView
-        android:id="@+id/leido"
-        android:layout_width="12dp"
-        android:layout_height="10dp"
-        android:background="@drawable/ic_visto_gris"
-        android:layout_below="@id/enseñar_mensaje_foto"
-        android:layout_marginTop="6dp"
-        android:layout_toRightOf="@id/hora" />
 </RelativeLayout>

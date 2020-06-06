@@ -35,19 +35,21 @@
 
                 <TextView
                     android:id="@+id/usuario"
-                    android:layout_width="wrap_content"
+                    android:layout_width="150dp"
+                    android:maxWidth="150dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
+                    android:singleLine="true"
+                    android:layout_marginStart="5dp"
                     android:textColor="#FFF"
                     android:textStyle="bold"
-                    android:textSize="20sp">
+                    android:textSize="15sp">
                 </TextView>
 
                 <TextView
                     android:id="@+id/estado"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="25dp"
                     android:textColor="#FFF"
                     android:textStyle="bold"
@@ -91,6 +93,32 @@
             android:autofillHints="" />
 
     </RelativeLayout>
+
+    <at.markushi.ui.CircleButton
+        android:id="@+id/button_Audio_stopRecording_save"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:cb_color="@android:color/transparent"
+        android:background="@drawable/ic_audio_tick"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="90dp"
+        android:layout_marginBottom="5dp"
+        app:cb_pressedRingWidth="0dp"
+        android:visibility="gone"
+        />
+
+    <at.markushi.ui.CircleButton
+        android:id="@+id/button_Audio_stopRecording_delete"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:cb_pressedRingWidth="0dp"
+        app:cb_color="@android:color/transparent"
+        android:background="@drawable/ic_audio_close"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone"
+        />
 
     <ImageButton
         android:layout_width="30dp"
@@ -147,6 +175,17 @@
         android:layout_marginBottom="180dp"
         android:src="@drawable/ic_location_on_vector"
         android:visibility="invisible"
+        />
+
+    <Chronometer
+        android:textSize="30sp"
+        android:id="@+id/audioChronometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="60dp"
+        android:visibility="gone"
+        android:layout_marginEnd="40dp"
         />
 
 

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:padding="10dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/imagen_perfil"
+        android:src="@mipmap/ic_launcher" />
+
+    <ImageView
+        android:id="@+id/typeCall"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/ic_video_call"
+        android:layout_toEndOf="@id/imagen_perfil"/>
+
+    <TextView
+        android:id="@+id/usuario"
+        android:layout_width="250dp"
+        android:maxWidth="250dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@id/typeCall"
+        android:text="@string/usuario"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:singleLine="true"/>
+
+    <TextView
+        android:id="@+id/horaTexto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:layout_alignParentEnd="true"
+        android:text="@string/hora_chat_fragment_test_resource"
+        android:textSize="12sp"
+        android:paddingRight="0dp"
+        />
+
+    <TextView
+        android:id="@+id/tiempoTranscurrido"
+        android:layout_width="250dp"
+        android:maxWidth="250dp"
+        android:layout_height="20dp"
+        android:layout_below="@id/usuario"
+        android:layout_toEndOf="@id/typeCall"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        />
+
+
+</RelativeLayout>

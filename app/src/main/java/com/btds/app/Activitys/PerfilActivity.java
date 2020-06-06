@@ -5,10 +5,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,11 +57,13 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
     EditText descripcion;
     TextView nTelefono;
     TextView verificado;
+    TextView email;
     //SwitchMaterial T2Aoption;
-    Usuario usuarioObject;
+    Usuario usuarioActual;
     Button imageButton;
-    Button guardarButton;
     Toolbar toolbar;
+    Button masAjustesButton;
+    ImageButton imageButtonCheck;
 
     final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     DatabaseReference referenceUserDataBase;
@@ -83,52 +89,73 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
         descripcion = findViewById(R.id.descripcionCampoPerfil);
         nTelefono = findViewById(R.id.usuarioTelefonoperfil);
         verificado = findViewById(R.id.usuarioVerificado);
+        email = findViewById(R.id.usuarioemail);
+        masAjustesButton = findViewById(R.id.ajustes_button);
+        imageButtonCheck = findViewById(R.id.check_azul);
 
         //T2Aoption = findViewById(R.id.perfilT2Aoption);
 
         imageButton = findViewById(R.id.imagenButton);
         //Superpongo un boton encima de la imagen del perfil, al ser pulsao salta a la  actividad para insertar una nueva imagen
         imageButton.setBackgroundColor(Color.TRANSPARENT);
-
-        guardarButton = findViewById(R.id.guardarButton);
         //cambiarPassword = findViewById(R.id.cambiarContraseña);
 
-
-        Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
         referenceUserDataBase = Funciones.getUsersDatabaseReference();
         mainDatabasePath = Funciones.getDatabaseReference();
 
         //storage = FirebaseStorage.getInstance();
         storageReference = Funciones.getFirebaseStorageReference();
 
+        imageButtonCheck.setOnClickListener(v -> {
+            if(descripcion.getText().length() > 80){
+                Toast.makeText(PerfilActivity.this, getResources().getString(R.string.descripcionGrandeError), Toast.LENGTH_LONG).show();
+
+            }else{
+                usuarioActual.setDescripcion(descripcion.getText().toString());
+                Funciones.getUsersDatabaseReference().child(usuarioActual.getId()).setValue(usuarioActual);
+                imageButtonCheck.setClickable(false);
+                imageButtonCheck.setVisibility(View.GONE);
+                Toast.makeText(PerfilActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_LONG).show();
+            }
+
+        });
+
+        masAjustesButton.setOnClickListener(v -> {
+            Intent intentAjustes = new Intent(PerfilActivity.this, AjustesActivity.class);
+            intentAjustes.putExtra("usuarioAjustes", usuarioActual);
+            startActivity(intentAjustes);
+        });
+
+        setOnFocusChangeListener(descripcion);
+
         assert firebaseUser != null;
         referenceUserDataBase.child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                usuarioObject = dataSnapshot.getValue(Usuario.class);
+                usuarioActual = dataSnapshot.getValue(Usuario.class);
 
-                if(usuarioObject !=null){
-                    usuario.setText(usuarioObject.getUsuario());
+                if(usuarioActual !=null){
+                    usuario.setText(usuarioActual.getUsuario());
 
-                    if(usuarioObject.getImagenURL().equals("default")){
+                    if(usuarioActual.getImagenURL().equals("default")){
                         //Se cambiara de manera a un resource mas adelante
                         //String URLdefault = Constantes.default_image_profile;
                         Glide.with(getApplicationContext()).load(R.drawable.default_user_picture).into(imagen_perfil);
                     }else{
-                        Glide.with(getApplicationContext()).load(usuarioObject.getImagenURL()).into(imagen_perfil);
+                        Glide.with(getApplicationContext()).load(usuarioActual.getImagenURL()).into(imagen_perfil);
                     }
 
-                    descripcion.setText(usuarioObject.getDescripcion());
+                    descripcion.setText(usuarioActual.getDescripcion());
 
-                    if(usuarioObject.getTelefono().isEmpty()){
+                    if(usuarioActual.getTelefono().isEmpty()){
                         nTelefono.setText(getResources().getString(R.string.noVerificado));
                         verificado.setText(getResources().getString(R.string.noVerificado));
                         //T2Aoption.setActivated(false);
                     }else{
-                        nTelefono.setText(usuarioObject.getTelefono());
+                        nTelefono.setText(usuarioActual.getTelefono());
                         //T2Aoption.setActivated(true);
                         verificado.setGravity(Gravity.NO_GRAVITY);
-                        if(usuarioObject.getTwoAunthenticatorFactor()){
+                        if(usuarioActual.getTwoAunthenticatorFactor()){
                             verificado.setText(getResources().getString(R.string.VerificadoConT2A));
                             //T2Aoption.setChecked(true);
                         }else{
@@ -136,6 +163,9 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
                             //T2Aoption.setChecked(false);
                         }
                     }
+                    email.setText(firebaseUser.getEmail());
+
+                    Funciones.actualizarConexion(getResources().getString(R.string.online), usuarioActual);
                 }
             }
 
@@ -146,81 +176,6 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
         });
 
         imageButton.setOnClickListener(v -> abrirCamara());
-
-        /*
-        cambiarPassword.setOnClickListener(v -> {
-            //cambiar contraseña
-            System.out.println("PASSWORD CHANGE");
-        });
-
-         */
-
-        /*
-        T2Aoption.setOnClickListener(v -> {
-
-            if(T2Aoption.isChecked()){
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("AUTENTICADOR T2A");
-                builder.setMessage("Deseas activar el T2A");
-                builder.setNegativeButton(getResources().getString(R.string.Cancelar),(dialog, which) -> {
-                    T2Aoption.setChecked(true);
-                });
-                builder.setPositiveButton(getResources().getString(R.string.Aceptar), (dialog, which) -> {
-                    DesignerToast.Success(PerfilActivity.this,"HAS ACTIVADO EL AUTENTICADOR EN 2 FACTORES", Gravity.CENTER, Toast.LENGTH_SHORT);
-
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("AUTENTICADOR T2A");
-                builder.setMessage("Deseas desactivar el T2A");
-                builder.setNegativeButton(getResources().getString(R.string.Cancelar),(dialog, which) -> {
-                    T2Aoption.setChecked(false);
-                });
-                builder.setPositiveButton(getResources().getString(R.string.Aceptar), (dialog, which) -> {
-
-                    DesignerToast.Success(PerfilActivity.this,"HAS DESACTIVADO EL AUTENTICADOR EN 2 FACTORES", Gravity.CENTER, Toast.LENGTH_SHORT);
-
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-
-        });
-
-         */
-        guardarButton.setOnClickListener(v -> {
-
-            if(descripcion.getText().length() > 80){
-                Toast.makeText(PerfilActivity.this, getResources().getString(R.string.descripcionGrandeError), Toast.LENGTH_LONG).show();
-            }else{
-                referenceUserDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            usuarioObject = snapshot.getValue(Usuario.class);
-                            if (usuario != null) {
-                                assert usuarioObject != null;
-                                if (usuarioObject.getId().equals(firebaseUser.getUid())) {
-                                    usuarioObject.setDescripcion(descripcion.getText().toString());
-                                    referenceUserDataBase.child(firebaseUser.getUid()).setValue(usuarioObject).addOnCompleteListener(task -> {
-                                    if(task.isSuccessful()){
-                                        Toast.makeText(PerfilActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_SHORT).show();
-                                    }
-                                    });
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        });
 
     }
 
@@ -272,7 +227,7 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
         //storage = FirebaseStorage.getInstance();
         storageReference = Funciones.getFirebaseStorageReference();
 
-        StorageReference storageUserProfileRef = storageReference.child("Imagenes/Perfil/"+usuarioObject.getId());
+        StorageReference storageUserProfileRef = storageReference.child("Imagenes/Perfil/"+ usuarioActual.getId());
         UploadTask uploadTask = storageUserProfileRef.putFile(file);
 
         // Register observers to listen for when the download is done or if it fails
@@ -283,17 +238,18 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
         }).addOnSuccessListener(taskSnapshot -> {
             storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
                 // getting image uri and converting into string
-                usuarioObject.setImagenURL(downloadUrl.toString());
-                referenceUserDataBase.child(usuarioObject.getId()).setValue(usuarioObject).addOnCompleteListener(task -> {
+                usuarioActual.setImagenURL(downloadUrl.toString());
+                referenceUserDataBase.child(usuarioActual.getId()).setValue(usuarioActual).addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
                         Log.d("DEBUG PerfilActivity","Se ha Actualizado la foto de perfil");
                         Toast.makeText(PerfilActivity.this, getResources().getString(R.string.exitoSubirImagenPerfil), Toast.LENGTH_SHORT).show();
                     }
                 });
             });
-            Log.d("DEBUG PerfilActivity","La imagen se ha subido al perfil de "+usuarioObject.getUsuario());
+            Log.d("DEBUG PerfilActivity","La imagen se ha subido al perfil de "+ usuarioActual.getUsuario());
         });
     }
+
 
     @Override
     public void onBackPressed() {
@@ -314,6 +270,51 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         if(EasyPermissions.somePermissionPermanentlyDenied(this,perms)){
             new AppSettingsDialog.Builder(this).build().show();
+        }
+    }
+
+    private void setOnFocusChangeListener(TextView textView){
+
+        try{
+            textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if(hasFocus){
+
+                        descripcion.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                //imageButtonCheck.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                if(!usuarioActual.getDescripcion().contentEquals(descripcion.getText().toString())){
+                                    imageButtonCheck.setVisibility(View.VISIBLE);
+                                    imageButtonCheck.setClickable(true);
+                                }
+
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(usuarioActual != null){
+            Funciones.actualizarConexion(getResources().getString(R.string.online),usuarioActual);
         }
     }
 }

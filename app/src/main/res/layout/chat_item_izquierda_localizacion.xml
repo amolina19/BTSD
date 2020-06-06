@@ -37,14 +37,4 @@
         android:textColor="@color/colorNegro"
         android:textSize="8sp" />
     />
-
-    <ImageView
-        android:id="@+id/leido"
-        android:layout_width="12dp"
-        android:layout_height="10dp"
-        android:background="@drawable/ic_visto_gris"
-        android:layout_below="@id/enseñar_mensaje_ubicacion"
-        android:layout_marginTop="6dp"
-        android:layout_toRightOf="@id/hora"
-        android:visibility="gone"/>
 </RelativeLayout>

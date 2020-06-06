@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <item
-        android:id="@+id/llamar_mensaje_item_menu_toolbar"
-        android:title="Llamar"
-        android:icon="@drawable/llamar_icon"
-        app:showAsAction="always" />
-    <item android:id="@+id/silenciar"
-        android:title="Silenciar" />
     <item android:id="@+id/bloquear"
-        android:title="Bloquear" />
+        android:title="@string/bloquear" />
+
     <item android:id="@+id/eliminar"
-        android:title="Eliminar Amigo" />
+        android:title="@string/eliminarAmigo" />
 
 </menu>

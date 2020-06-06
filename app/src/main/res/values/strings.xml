@@ -1,8 +1,18 @@
 <resources>
     <!-- APP Strings -->
     <string name="app_name">BTSD</string>
-    <string name="version">Version Dev Alpha 1.8</string>
+    <string name="version">Version 1.0</string>
     <string name="Autor">Alejandro Molina Louchnikov</string>
+
+    <!-- Ajustes Strings-->
+    <string name="visibilidadUsuario">Mostrar nombre de usuario a los demás usuarios</string>
+    <string name="visibilidadDescripcion">Mostrar descripción de perfil a los demás usuarios</string>
+    <string name="visibilidadTelefono">Mostrar teléfono personal a los demás usuarios</string>
+    <string name="visibilidadFoto">Mostrar foto de pérfil a los demás usuarios</string>
+    <string name="visibilidadEnLinea">Mostrar última conexión en Linea a los demás usuarios</string>
+    <string name="habilitarT2A">Habilitar autenticación en 2 pasos</string>
+    <string name="cambiarContrasena">Cambiar contraseña</string>
+    <string name="cambiarCorreo">Cambiar email</string>
 
     <!-- Login Activity Strings -->
     <string name="email">Email</string>
@@ -20,6 +30,25 @@
     <string name="errorSesion">Error de sesión</string>
     <string name="online">En Linea</string>
     <string name="offline">Desconectado</string>
+    <string name="contrasenaPerdida"><u>¿Has perdido tu contraseña?</u></string>
+
+    <!-- Recover Activity Strings -->
+
+    <string name="recuperTuCuenta">Recupera tu cuenta</string>
+    <string name="IntroduceEmail">Introduce el email</string>
+    <string name="recuperar">Recuperar cuenta</string>
+    <string name="emailEnviado">Se ha enviado el email</string>
+    <string name="emailEnviadoFail">No se ha podido enviar el email. Puede ser que el email no este registrado</string>
+    <string name="campoVacio">El campo email esta vacio</string>
+    <string name="noPareceEmail">No parece ser una cuenta de email</string>
+
+    <!-- Change Email Activity -->
+    <string name="introduceContrasenaActual">Inserta tú contraseña actual</string>
+    <string name="cambiarEmail">Cambia tu correo electrónico</string>
+    <string name="campoEmailVacio">Campo del email está vacio</string>
+    <string name="introducirEmail">Introduce tu nuevo email</string>
+    <string name="cambiadoCorreoExito">Se ha cambiado el correo con exito. Puedes revisar los cambios en tu antiguo email.</string>
+    <string name="cambiadoCorreoFail">No se ha podido cambiar el correo.</string>
 
     <!-- Register Activity Strings-->
     <string name="registrarse">Registrarse</string>
@@ -39,8 +68,10 @@
     <string name="tuTelefono">Tú Teléfono</string>
     <string name="telefono">teléfono</string>
     <string name="omitir">Omitir</string>
-    <string name="OmitirMasTarde">Si omites el proceso de verificación, puedes volver a verificar tu número de teléfono en Ajustes > Pérfil > Verificar número de teléfono.</string>
+    <string name="OmitirMasTarde">Si omites el proceso de verificación, puedes volver a verificar tu número de teléfono en Pérfil > Mas Ajustes > Activar T2A</string>
     <string name="masTarde">Más tarde</string>
+    <string name="salir">Salir</string>
+    <string name="introduceTelefonoT2A">Introduce número de teléfono para iniciar sesión</string>
 
     <!-- Users Strings -->
     <string name="bloqueado">Bloqueado</string>
@@ -53,35 +84,49 @@
     <!-- Message Activity Strings -->
     <string name="escribirMensaje">Escribir mensaje…</string>
     <string name="hoy">Hoy a las</string>
+    <string name="alas">a las</string>
+    <string name="deldia">del</string>
+    <string name="enviado">Enviado</string>
     <string name="ayer">Ayer </string>
     <string name="ayerAlas">Ayer a las </string>
-    <string name="ultavez1parte">Visto últ vez el</string>
+    <string name="ultavez1parte">Últ vez visto</string>
     <string name="ultavez2parte">a las</string>
     <string name="errorAlCargar">Error al actualizar..</string>
     <string name="imagen">IMAGEN</string>
     <string name="foto">FOTO</string>
     <string name="ubicacion">UBICACIÓN</string>
+    <string name="audio">AUDIO</string>
     <string name="errorCargarImagen">Imagen no disponible sin red.</string>
     <string name="errorCargarUbicacion">Ubicación no disponible sin red.</string>
+    <string name="errorCargarAudio">Error cargar audio.</string>
     <string name="ahoraMismo">Ahora mismo</string>
     <string name="compartirUbicacion">Compartir Ubicación</string>
-    <string name="GPSAdvertencia">Tu ubicación esta desactivada, ¿Deseas volver a activarlo?</string>
-    <!-- Histories Activity Strings -->
+    <string name="GPSAdvertencia">Tu ubicación esta desactivada, ¿Deseas activarlo?</string>
+    <string name="compartido">Compartido</string>
+    <string name="sinInternet">No disponible sin red</string>
+    <string name="hasEliminado">Has eliminado a</string>
+    <string name="peticionEnviada">Peticion enviada a</string>
+    <string name="duracionAudio">Duración</string>
 
+    <!-- Histories Activity Strings -->
     <string name="hora">hora</string>
     <string name="h">h</string>
     <string name="minuto">minuto</string>
     <string name="m">m</string>
     <string name="tusHistorias">Tus historias</string>
+    <string name="addHistoria">Añade una historia</string>
+    <string name="borrarHistoria">Borrar historia</string>
+    <string name="borrarHistoriaPregunta">¿Estas seguro de querer borrar esta historia?</string>
+    <string name="errorSubirEstado">Error al subir la historia</string>
 
     <!-- Profile Strings-->
     <string name="guardar">Guardar</string>
     <string name="cambiosGuardados">Se ha guardado correctamente.</string>
-    <string name="descripcionGrandeError">La descripción deber tener menos de 140 caracteres.</string>
+    <string name="descripcionGrandeError">La descripción deber tener menos de 80 caracteres.</string>
     <string name="cambiarContraseña">Cambiar contraseña</string>
     <string name="actualizandoImagenPerfil">Subiendo y actualizando su foto de pérfil</string>
     <string name="exitoSubirImagenPerfil">Su foto se ha actualizado correctamente</string>
-    <string name="errorSubirImagenPerfil">Su foto se ha actualizado correctamente</string>
+    <string name="errorSubirImagenPerfil">Ocurrio un error al actualizar su foto de pérfil</string>
     <string name="noVerificado">No verificado.</string>
     <string name="Verificado">Verificado</string>
     <string name="VerificadoSinT2A">Teléfono verificado, sin auntenticación en 2 pasos.</string>
@@ -93,6 +138,9 @@
     <string name="sinDescripcion">Sin descripción.</string>
     <string name="telefonoDesconocido">Desconocido</string>
     <string name="enviarMensaje">Enviar Mensaje</string>
+    <string name="privado">Privado</string>
+    <string name="desconocido">Desconocido</string>
+    <string name="masAjustes">Más ajustes</string>
 
     <!-- Menu Strings -->
     <string name="llamar">Llamar</string>
@@ -117,10 +165,31 @@
     <string name="Cancelar">Cancelar</string>
     <string name="escribiendo">Escribiendo..</string>
     <string name="buscarAmigos">Buscar amigos</string>
+    <string name="cambiaTuContrasena">Cambia tu contraseña actual</string>
+    <string name="nuevaContrasena">Nueva contraseña</string>
+    <string name="repiteContrasena">Repita su contraseña</string>
+    <string name="aplicarCambios">Aplicar cambios</string>
+    <string name="camposVacios">Algunos campos estan vacios. Intentalo de nuevo</string>
+    <string name="contrasenaNoCoincide">Las contraseñas no coinciden. Intenalo de nuevo</string>
+    <string name="antiguaContrasena">Antigua contraseña</string>
+    <string name="repiteAntiguaContrasena">Repite tu antigua contrasena</string>
+    <string name="noSePuedeReauntenticar">Tu contraseña actual no coincide. Intentalo de nuevo</string>
+    <string name="contrasenaCambidaExitosa">La contraseña se ha cambiado correctamente.</string>
+    <string name="contrasenaCambiadaFail">La contrasena no se ha podido cambiar. Intentalo de nuevo</string>
+
+    <!--Call Strings-->
+    <string name="transcurrido">Transcurrido </string>
+
+    <!--Friends and Blocked Fragment-->
+    <string name="bloqueados">Bloqueados</string>
+    <string name="amigos">Amigos</string>
+    <string name="peticionesPendientes">Peticiones pendientes</string>
+    <string name="peticiones">Peticiones</string>
 
     <!-- Permissions Strings -->
     <string name="permisoAbrirCamara">Se necesitan permisos para acceder a la cámara.</string>
     <string name="permisoLocalizacion">Se necesitan permisos para acceder a la localización.</string>
+    <string name="permisoGrabar">Se necesitan permisos para acceder al microfono.</string>
 
     <!-- Another Strings -->
     <string name="todo">TODO</string>
@@ -131,6 +200,11 @@
     <string name="hora_chat_fragment_test_resource">10:24</string>
     <string name="text">TEXT</string>
     <string name="title_activity_maps">Map</string>
+    <string name="author_by">Author</string>
+    <string name="chats">Chats</string>
+    <string name="buscar">Buscar</string>
+    <string name="llamadas">Llamadas</string>
+    <string name="add_amigo">Añadir Amigo</string>
 
 
 </resources>

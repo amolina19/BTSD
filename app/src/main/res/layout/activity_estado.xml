@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activitys.EstadoActivity"
-    android:background="@drawable/activity_drawable_estados_acrylic"
+    android:background="@drawable/activity_drawable_negro_acrylic"
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/stories_imageview"
+        android:id="@+id/stories_imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
@@ -45,7 +45,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_width="200dp"
                 android:layout_height="18dp"
-                android:text="user"
+                android:text="@string/usuario"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 />
@@ -57,11 +57,40 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
                 android:textColor="@color/white"
-                android:text="Today 00:00"
+                android:text="@string/hora"
                 />
         </LinearLayout>
     </LinearLayout>
 
+
+    <Button
+        android:id="@+id/addHistoria"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:textColor="@color/colorBlanco"
+        android:text="@string/addHistoria"
+        android:background="@drawable/border_rectangle_black"
+        android:layout_gravity="center"
+    />
+
+    <Button
+        android:id="@+id/eliminarHistoria"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end|bottom"
+        android:background="@drawable/ic_papelera_24"
+        />
+
+    <Button
+        android:id="@+id/addv2Historia"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_gravity="end|bottom"
+        android:background="@drawable/add_icon"
+        />
 
 
 </FrameLayout>

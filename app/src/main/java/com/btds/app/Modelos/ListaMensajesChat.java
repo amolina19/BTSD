@@ -35,6 +35,7 @@ public class ListaMensajesChat implements Comparable<ListaMensajesChat>{
     @Override
     public int compareTo(ListaMensajesChat listaMensajes) {
         int segundos = Funciones.obtenerTiempoPasadosMensajes(this.getMensaje(),listaMensajes.getMensaje());
+
         if(segundos < 0){
             return -1;
         }else if (segundos == 0){

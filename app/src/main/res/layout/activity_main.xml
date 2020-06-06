@@ -50,13 +50,15 @@
 
                 <TextView
                     android:id="@+id/usuario"
-                    android:layout_width="wrap_content"
+                    android:layout_width="230dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginLeft="25dp"
                     android:textColor="#FFF"
                     android:textSize="20dp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:maxWidth="230dp"
+                    android:singleLine="true"/>
 
             </LinearLayout>
 

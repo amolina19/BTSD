@@ -14,6 +14,7 @@ public class Constantes {
     static String AUTH_SECRET;
     static String ACCOUNT_KEY;
     public static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
+
 //
 
 

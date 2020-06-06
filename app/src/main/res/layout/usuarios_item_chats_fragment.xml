@@ -16,13 +16,16 @@
 
     <TextView
         android:id="@+id/usuario"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
+        android:maxWidth="300dp"
         android:layout_marginTop="5dp"
         android:layout_height="20dp"
         android:layout_marginStart="10dp"
         android:layout_toEndOf="@id/imagen_perfil"
         android:text="@string/usuario"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:singleLine="true"/>
 
     <TextView
         android:id="@+id/textoChat"
@@ -52,7 +55,7 @@
         android:id="@+id/textoLeidoChat"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:background="@drawable/ic_visto_gray_dark"
+        android:background="@drawable/ic_leido"
         android:layout_alignParentEnd="true"
         android:visibility="gone"
         android:layout_below="@id/horaTexto"

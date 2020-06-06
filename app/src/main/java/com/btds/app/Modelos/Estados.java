@@ -3,7 +3,7 @@ package com.btds.app.Modelos;
 import com.btds.app.Utils.Fecha;
 import com.btds.app.Utils.Funciones;
 
-import java.util.HashMap;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Alejandro Molina Louchnikov
@@ -15,7 +15,6 @@ public class Estados implements Comparable<Estados>{
     public String estadoURL;
     public Usuario usuario;
     public Fecha fecha;
-    public HashMap<String,Usuario> usuariosVistos;
 
     public Estados(){
     }
@@ -59,19 +58,13 @@ public class Estados implements Comparable<Estados>{
         this.fecha = fecha;
     }
 
+    @NotNull
     public String toString(){
         return "USUARIO "+this.usuario+" URL "+this.estadoURL+" Fecha "+fecha.toString();
     }
 
-    public HashMap<String, Usuario> getUsuariosVistos() {
-        return usuariosVistos;
-    }
 
-    public void setUsuariosVistos(HashMap<String, Usuario> usuariosVistos) {
-        this.usuariosVistos = usuariosVistos;
-    }
-
-    public int compareTo(Estados estado){
+    public int compareTo(@NotNull Estados estado){
 
         if(Funciones.obtenerMinutosSubida(estado) > Funciones.obtenerMinutosSubida(this)){
             return 0;
@@ -79,15 +72,5 @@ public class Estados implements Comparable<Estados>{
             return 1;
         }
     }
-    /*
-    public Usuario getUsuarioEstado() {
-        return usuarioEstado;
-    }
-    public void setUsuarioEstado(Usuario usuarioEstado) {
-        this.usuarioEstado = usuarioEstado;
-    }
-     */
-
-
 
 }

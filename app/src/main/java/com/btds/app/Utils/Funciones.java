@@ -13,9 +13,9 @@ import androidx.annotation.RequiresApi;
 import com.btds.app.Modelos.Estados;
 import com.btds.app.Modelos.ListaMensajesChat;
 import com.btds.app.Modelos.Mensaje;
-import com.btds.app.Modelos.PeticionAmistadUsuario;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
+import com.btds.app.Modelos.Visibilidad;
 import com.btds.app.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,7 +30,6 @@ import com.google.firebase.storage.StorageReference;
 import com.hbb20.CountryCodePicker;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
-import com.sinch.android.rtc.calling.Call;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.firebase.database.FirebaseDatabase.getInstance;
+import in.shrinathbhosale.preffy.Preffy;
 
 /**
  * @author Alejandro Molina Louchnikov
@@ -48,8 +47,8 @@ import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
 
 public class Funciones {
-    private static Usuario usuario;
     private static HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados;
+    private static HashMap<String,String> listaAmigos;
     private static Fecha fecha;
 
     public Funciones(){
@@ -61,45 +60,30 @@ public class Funciones {
      * Función estática para actualizar la última conexión y el estado del usuario. Recorro la base de datos hasta encontrar la referencia de nuestro usuario y asignarselo a un objeto, asignamos los datos y actualizamos.
      * Recorro la base de datos de todos lso objetos ya que no estoy creado ni borrando un valor, sino actualizandolo.
      * @param estado Se le inserta un String, en este caso valores de strings en values/strings.xml
-     * @param firebaseUser El Objeto FirebaseUser para obtener el id del usuario local.
+     * @param usuario El Objeto usuario para actualizar sus datos y obtener el id del usuario local.
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static void actualizarConexion(@NonNull final String estado, final FirebaseUser firebaseUser) {
+    public static void actualizarConexion(@NonNull final String estado, Usuario usuario) {
 
         fecha = new Fecha();
-        usuario = new Usuario();
 
-        final DatabaseReference referenceUserDataBase = getInstance().getReference("Usuarios");
+        usuario.setEstado(estado);
+        usuario.setHora(new Fecha().hora+":"+new Fecha().minutos);
+        usuario.setFecha(new Fecha().dia+" "+new Fecha().mes+" "+new Fecha().anno);
+        Funciones.getUsersDatabaseReference().child(usuario.getId()).setValue(usuario);
 
-        //addListenerForSingleValueEvent() me ha solucionado un problema grandisimo
-        //Antes utilizaba el addValueEventListener() y al salir de la aplicacion aunque estuviese cerrada, la base de datos entraba en bucles sobrescibiendo los valores de Linea a Desconectado sin parar.
-        referenceUserDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    usuario = snapshot.getValue(Usuario.class);
-                    if (usuario != null) {
-                        if(firebaseUser != null){
-                            if (usuario.getId().equals(firebaseUser.getUid())) {
-                                usuario.setEstado(estado);
-                                usuario.setHora(new Fecha().hora+":"+new Fecha().minutos);
-                                usuario.setFecha(new Fecha().dia+" "+new Fecha().mes+" "+new Fecha().anno);
-                                referenceUserDataBase.child(firebaseUser.getUid()).setValue(usuario);
-                                //System.out.println("CONEXION: "+estado);
-                                //System.out.println("RECURSO "+contexto.getResources().getString(R.string.offline));
-                            }
-                        }
+    }
 
-                    }
-                }
-            }
+    public static void actualizarT2A(boolean value,Usuario usuario){
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+        usuario.setT2Aintroduced(value);
+        Funciones.getUsersDatabaseReference().child(usuario.getId()).setValue(usuario);
+    }
 
-            }
-        });
-
+    public static void VisibilidadUsuarioPublica(Usuario usuario){
+        Visibilidad  visibilidad= new Visibilidad(true, true, true, true, true);
+        usuario.setVisibilidad(visibilidad);
+        Funciones.getUsersDatabaseReference().child(usuario.getId()).setValue(usuario);
     }
 
 
@@ -243,6 +227,30 @@ public class Funciones {
         return listaUsuariosBloqueados;
     }
 
+    public static HashMap<String,String> obtenerListaAmigos(FirebaseUser firebaseUser){
+
+        listaAmigos = new HashMap<>();
+        DatabaseReference refernceAmigos = Funciones.getAmigosReference();
+
+        refernceAmigos.child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaAmigos.clear();
+                for(DataSnapshot data:dataSnapshot.getChildren()){
+                    String valorClaveAmigo = data.getValue(String.class);
+                    listaAmigos.put(valorClaveAmigo,valorClaveAmigo);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return listaAmigos;
+    }
+
     /**
      *
      * No esta sujeto a cambios en tiempo real sobre la base de datos, devuelve la que contiene en la memoria actual.
@@ -251,6 +259,12 @@ public class Funciones {
 
     public static HashMap<String,UsuarioBloqueado> getListaUsuariosBloqueados(){
         return listaUsuariosBloqueados;
+    }
+
+    public static Boolean obtenerEstadoUsuario(Context contexto, Usuario usuario){
+
+        return usuario.getEstado().contentEquals(contexto.getResources().getString(R.string.online));
+
     }
 
 
@@ -263,7 +277,7 @@ public class Funciones {
                 text = contexto.getResources().getString(R.string.ayerAlas) +" "+usuarioChat.getHora();
             } else if (diasPasados > 1) {
                 String fecha = usuarioChat.getFecha().replace(" ", "/");
-                text = contexto.getResources().getString(R.string.ultavez1parte)+" "+fecha+" "+ contexto.getResources().getString(R.string.ultavez2parte)+" "+ usuarioChat.getHora();
+                text = contexto.getResources().getString(R.string.ultavez1parte)+" "+fecha+" "+ usuarioChat.getHora();
             }
         }
 
@@ -298,6 +312,54 @@ public class Funciones {
         return minutosTranscurridos;
     }
 
+    public static String calcularTiempo(int milisegundos){
+        String tiempo,hrsStr,minStr,segStr;
+        int segundos = milisegundos/1000;
+        if(segundos < 60){
+            segStr = String.valueOf(segundos);
+            tiempo = segStr+"s";
+        }else if(segundos < 3600){
+            int min = segundos/60;
+            int seg = segundos - (min*60);
+            segStr = String.valueOf(seg);
+            minStr = String.valueOf(min);
+            tiempo = minStr+"m "+segStr+"s";
+        }else{
+            int hrs = segundos/3600;
+            int min = (segundos - (hrs/3600))/60;
+            int seg = segundos - (min*60)+(hrs*3600);
+
+            segStr = String.valueOf(seg);
+            minStr = String.valueOf(min);
+            hrsStr = String.valueOf(hrs);
+            tiempo = hrsStr+"h "+minStr+"m "+segStr+"s";
+        }
+        return tiempo;
+    }
+
+    public static List<Integer> obtenerTiempoLlamada(int milisegundos){
+        List<Integer> tiempoTranscurrido = new ArrayList<>();
+        int segundos = milisegundos/1000;
+        if(segundos < 60){
+            tiempoTranscurrido.add(segundos);
+        }else if(segundos < 3600){
+            int min = segundos/60;
+            int seg = segundos - (min*60);
+            tiempoTranscurrido.add(seg);
+            tiempoTranscurrido.add(min);
+        }else{
+            int hrs = segundos/3600;
+            int min = (segundos - (hrs/3600))/60;
+            int seg = segundos - (min*60)+(hrs*3600);
+
+            tiempoTranscurrido.add(seg);
+            tiempoTranscurrido.add(min);
+            tiempoTranscurrido.add(hrs);
+        }
+
+        return tiempoTranscurrido;
+    }
+
     public static int obtenerTiempoPasadosMensajes(Mensaje mensaje1, Mensaje mensaje2){
 
         LocalDateTime dateMensaje1 = LocalDateTime.of(mensaje1.getFecha().getAnnoInteger(),mensaje1.getFecha().getMesInteger(),mensaje1.getFecha().getDiaInteger(),mensaje1.getFecha().getHoraInteger(),mensaje1.getFecha().getMinutosInteger(),mensaje1.getFecha().getSegundosInteger());
@@ -305,60 +367,6 @@ public class Funciones {
 
         long segundos = ChronoUnit.SECONDS.between(dateMensaje1, dateMensaje2);
         return (int) segundos;
-    }
-
-    public static HashMap<String,Usuario> usuariosConEstados(){
-
-        HashMap<String,Usuario> usuariosConEstados = new HashMap<>();
-
-        Funciones.getEstadosDatabaseReference().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot data:dataSnapshot.getChildren()){
-                    //Log.d("DEBUG FUNCIONES obtenerEstados","ESTADO ITERADO");
-                    Estados estado = data.getValue(Estados.class);
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        return  usuariosConEstados;
-    }
-
-    public static List<Estados> obtenerEstados(){
-        ArrayList<Estados> listaEstados = new ArrayList<>();
-
-        Funciones.getEstadosDatabaseReference().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listaEstados.clear();
-                for(DataSnapshot data:dataSnapshot.getChildren()){
-                    Log.d("DEBUG FUNCIONES obtenerEstados","ESTADO ITERADO");
-                    Estados estado = data.getValue(Estados.class);
-                    listaEstados.add(estado);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        return listaEstados;
-    }
-
-    public static HashMap<String,PeticionAmistadUsuario> obtenerPeticionesAmistadEnviadas(FirebaseUser firebaseUser){
-
-        //UNFINISHED CONTENT
-        HashMap<String, PeticionAmistadUsuario> peticionesEnviadas = new HashMap<>();
-
-        return peticionesEnviadas;
     }
 
 
@@ -409,34 +417,34 @@ public class Funciones {
 
         switch (Funciones.getSystemLanguage()){
             case "es":
-                countryCode = +34;
+                countryCode = 34;
                 break;
             case "fr":
-                countryCode = +33;
+                countryCode = 33;
                 break;
             case "us":
-                countryCode = +1;
+                countryCode = 1;
                 break;
             case "uk":
-                countryCode = +44;
+                countryCode = 44;
                 break;
             case "cn":
-                countryCode = +86;
+                countryCode = 86;
                 break;
             case "pt":
-                countryCode = +351;
+                countryCode = 351;
                 break;
             case "jp":
-                countryCode = +81;
+                countryCode = 81;
                 break;
             case "de":
-                countryCode = +49;
+                countryCode = 49;
                 break;
             case "ru":
-                countryCode = +7;
+                countryCode = 7;
                 break;
             default:
-                countryCode = -1;
+                countryCode = 1;
                 break;
         }
         return countryCode;
@@ -476,10 +484,141 @@ public class Funciones {
 
         assert cm != null;
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
 
-        return isConnected;
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+    }
+
+    public static void aceptarAmigo(FirebaseUser firebaseUser, Usuario usuarioAceptar){
+
+        if(usuarioAceptar !=null && firebaseUser != null){
+            String valorAmigoID = usuarioAceptar.getId();
+            String valorUsuarioActual = firebaseUser.getUid();
+
+            Funciones.getAmigosReference().child(firebaseUser.getUid()).child(valorAmigoID).setValue(valorAmigoID);
+            Funciones.getAmigosReference().child(usuarioAceptar.getId()).child(valorUsuarioActual).setValue(valorUsuarioActual);
+            Funciones.eliminarPeticion(firebaseUser,usuarioAceptar);
+        }
+    }
+
+    public static Visibilidad corregirVisibilidad(Context context){
+
+        Visibilidad visibilidad = new Visibilidad();
+        Preffy preffy = Preffy.getInstance(context);
+
+        String keyUsuario  = preffy.getString("VisibilidadUsuario");
+        if(keyUsuario.contentEquals("true")){
+            visibilidad.setUsuario(true);
+        }else{
+            visibilidad.setUsuario(false);
+        }
+
+        String keyDescripcion  = preffy.getString("VisibilidadDescripcion");
+        if(keyDescripcion.contentEquals("true")){
+            visibilidad.setDescripcion(true);
+        }else{
+            visibilidad.setDescripcion(false);
+        }
+
+        String keyTelefono  = preffy.getString("VisibilidadTelefono");
+        if(keyTelefono.contentEquals("true")){
+            visibilidad.setTelefono(true);
+        }else{
+            visibilidad.setTelefono(false);
+        }
+
+        String keyFoto  = preffy.getString("VisibilidadFoto");
+        if(keyFoto.contentEquals("true")){
+            visibilidad.setFoto(true);
+        }else{
+            visibilidad.setFoto(false);
+        }
+
+        String keyLinea  = preffy.getString("VisibilidadLinea");
+        if(keyLinea.contentEquals("true")){
+            visibilidad.setEnLinea(true);
+        }else{
+            visibilidad.setEnLinea(false);
+        }
+        return visibilidad;
+    }
+
+    public static Visibilidad corregirVisibilidadPerfilIniciarSesion(Context context,Usuario usuario){
+
+        Visibilidad visibilidad = new Visibilidad();
+        Preffy preffy = Preffy.getInstance(context);
+
+        if(usuario.getVisibilidad().getUsuario()){
+            preffy.putString("VisibilidadUsuario","true");
+            visibilidad.setUsuario(true);
+        }else{
+            preffy.putString("VisibilidadUsuario","false");
+            visibilidad.setUsuario(false);
+        }
+
+        if(usuario.getVisibilidad().getDescripcion()){
+            preffy.putString("VisibilidadDescripcion","true");
+            visibilidad.setDescripcion(true);
+        }else{
+            preffy.putString("VisibilidadDescripcion","false");
+            visibilidad.setDescripcion(false);
+        }
+
+
+        if(usuario.getVisibilidad().getTelefono()){
+            preffy.putString("VisibilidadTelefono","true");
+            visibilidad.setTelefono(true);
+        }else{
+            preffy.putString("VisibilidadTelefono","false");
+            visibilidad.setTelefono(false);
+        }
+
+
+        if(usuario.getVisibilidad().getFoto()){
+            preffy.putString("VisibilidadFoto","true");
+            visibilidad.setFoto(true);
+        }else{
+            preffy.putString("VisibilidadFoto","false");
+            visibilidad.setFoto(false);
+        }
+
+        if(usuario.getVisibilidad().getEnLinea()){
+            preffy.putString("VisibilidadLinea","true");
+            visibilidad.setEnLinea(true);
+        }else{
+            preffy.putString("VisibilidadLinea","true");
+            visibilidad.setEnLinea(false);
+        }
+        return visibilidad;
+    }
+
+    public static void eliminarPeticion(FirebaseUser firebaseUser,Usuario usuarioPeticion){
+
+        if(usuarioPeticion != null && firebaseUser != null){
+            String clavePeticion1 = usuarioPeticion.getId()+""+firebaseUser.getUid();
+            String clavePeticion2 = firebaseUser.getUid()+""+usuarioPeticion.getId();
+            Funciones.getPeticionesAmistadReference().child(clavePeticion1).removeValue();
+            Funciones.getPeticionesAmistadReference().child(clavePeticion2).removeValue();
+        }
+    }
+
+    public static void eliminarPeticion(String peticionKey){
+
+        if(peticionKey != null){
+            Funciones.getPeticionesAmistadReference().child(peticionKey).removeValue();
+        }
+    }
+
+    public static void borrarAmigo(FirebaseUser firebaseUser, Usuario usuarioBorrar){
+
+        if(usuarioBorrar != null && firebaseUser != null){
+            String valorAmigoID = usuarioBorrar.getId();
+            String valorUsuarioActual = firebaseUser.getUid();
+
+            Funciones.getAmigosReference().child(firebaseUser.getUid()).child(valorAmigoID).removeValue();
+            Funciones.getAmigosReference().child(usuarioBorrar.getId()).child(valorUsuarioActual).removeValue();
+        }
+
     }
 
 
@@ -490,7 +629,6 @@ public class Funciones {
         final String ENVIRONMENT = "clientapi.sinch.com";
 
         SinchClient sinchClient;
-        Call call;
 
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(context)
@@ -549,22 +687,6 @@ public class Funciones {
         return databaseReference;
     }
 
-    public static DatabaseReference getFriendsPetitionListDatabaseReference(){
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("PeticionesAmigos");
-        //Persitencia en Disco
-        databaseReference.keepSynced(true);
-        return databaseReference;
-    }
-
-    public static DatabaseReference getFriendsListDatabaseReference(){
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("ListaAmigos");
-        //Persitencia en Disco
-        databaseReference.keepSynced(true);
-        return databaseReference;
-    }
-
     public static DatabaseReference getChatsDatabaseReference(){
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -581,8 +703,8 @@ public class Funciones {
         return databaseReference;
     }
 
-    public static DatabaseReference getEstadosUserDatabaseReference(FirebaseUser firebaseUser){
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Estados").child(firebaseUser.getUid());
+    public static DatabaseReference getAmigosReference(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Amigos");
         //Persitencia en Disco
         databaseReference.keepSynced(true);
         return databaseReference;
@@ -596,6 +718,18 @@ public class Funciones {
         return databaseReference;
     }
 
+    public static DatabaseReference getLlamadasReference(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Llamadas");
+        databaseReference.keepSynced(true);
+        return databaseReference;
+    }
+
+    public static DatabaseReference getLlamadasReferenceFragment(){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Llamadas");
+        databaseReference.keepSynced(true);
+        return databaseReference;
+    }
+
     public static FirebaseStorage getFirebaseStorage(){
         return FirebaseStorage.getInstance();
     }
@@ -604,15 +738,16 @@ public class Funciones {
         return getFirebaseStorage().getReference();
     }
 
-    public static StorageReference getUserEstadosFirebaseStorageReference(FirebaseUser firebaseUser){
-        return getFirebaseStorage().getReference().child("Estados").child(firebaseUser.getUid());
-    }
-
-
 
     public static PhoneAuthProvider getPhoneAuthProvider(){
         return PhoneAuthProvider.getInstance();
     }
+
+    public static void borrarHistoria(Estados estado){
+        String idEstado = estado.getKey();
+        Funciones.getEstadosDatabaseReference().child(idEstado).removeValue();
+    }
+
 
     public static int tiempoTranscurrido(Fecha fecha){
 
@@ -648,37 +783,4 @@ public class Funciones {
         }
         return lista;
     }
-
-
-
-
-    /*
-    @Deprecated
-    public ArrayList<String> ObtenerListaUsuariosStringID(){
-       final  ArrayList<String> arrayList = new ArrayList<>();
-
-       DatabaseReference referenceUserDataBase = getInstance().getReference("Usuarios");
-
-        referenceUserDataBase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    Usuario usuarioObj = snapshot.getValue(Usuario.class);
-                    if(usuarioObj != null){
-                        arrayList.add(usuarioObj.getId());
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        return arrayList;
-    }
-
-     */
 }

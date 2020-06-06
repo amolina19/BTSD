@@ -1,12 +1,17 @@
 package com.btds.app.Adaptadores;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +22,7 @@ import com.btds.app.Activitys.MapsActivity;
 import com.btds.app.Activitys.ViewImageActivity;
 import com.btds.app.Modelos.LatLng;
 import com.btds.app.Modelos.Mensaje;
+import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
 import com.btds.app.Utils.Funciones;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +34,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import static android.view.View.GONE;
 
 /**
  * @author Alejandro Molina Louchnikov
@@ -37,23 +47,36 @@ import java.util.List;
 
 public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHolder> {
 
-    final private String mapsKey = "AIzaSyBORKSQ18QNgE513owQRilIwZOaTY89oko";
-    private static final int MENSAGE_TIPO_IZQUIERDA = 0;
     private static final int MENSAGE_TIPO_DERECHA = 1;
-    private static final int MENSAGE_TIPO_IZQUIERDA_FOTO = 2;
     private static final int MENSAGE_TIPO_DERECHA_FOTO = 3;
-    private static final int MENSAGE_TIPO_IZQUIERDA_LOCALIZACION = 4;
     private static final int MENSAGE_TIPO_DERECHA_LOCALIZACION = 5;
+    private static final int MENSAGE_TIPO_DERECHA_AUDIO = 7;
+
+    private static final int MENSAGE_TIPO_IZQUIERDA = 0;
+    private static final int MENSAGE_TIPO_IZQUIERDA_FOTO = 2;
+    private static final int MENSAGE_TIPO_IZQUIERDA_LOCALIZACION = 4;
+    private static final int MENSAGE_TIPO_IZQUIERDA_AUDIO= 6;
+
+
 
     private Context context;
     private List<Mensaje> listaMensajes;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private Usuario usuarioChat;
+    private Usuario usuarioActual;
+    private Handler mHandler = new Handler();
 
     private DatabaseReference referenceChats = FirebaseDatabase.getInstance().getReference("Chats");
 
 
-    public MensajesAdapter(Context contexto, List<Mensaje> listaMensajes){
+    public MensajesAdapter(Context contexto, List<Mensaje> listaMensajes,Usuario usuarioChat,Usuario usuarioActual){
         this.listaMensajes = listaMensajes;
+        if(usuarioChat != null){
+            this.usuarioChat = usuarioChat;
+        }
+        if(usuarioActual != null){
+            this.usuarioActual = usuarioActual;
+        }
         this.context = contexto;
     }
 
@@ -79,6 +102,12 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
             return new com.btds.app.Adaptadores.MensajesAdapter.ViewHolder(view);
         }else if(viewType == MENSAGE_TIPO_IZQUIERDA_LOCALIZACION){
             view = LayoutInflater.from(context).inflate(R.layout.chat_item_izquierda_localizacion,parent,false);
+            return new com.btds.app.Adaptadores.MensajesAdapter.ViewHolder(view);
+        }else if(viewType == MENSAGE_TIPO_DERECHA_AUDIO){
+            view = LayoutInflater.from(context).inflate(R.layout.chat_item_derecha_audio,parent,false);
+            return new com.btds.app.Adaptadores.MensajesAdapter.ViewHolder(view);
+        }else if(viewType == MENSAGE_TIPO_IZQUIERDA_AUDIO){
+            view = LayoutInflater.from(context).inflate(R.layout.chat_item_izquierda_audio,parent,false);
             return new com.btds.app.Adaptadores.MensajesAdapter.ViewHolder(view);
         }
         return new com.btds.app.Adaptadores.MensajesAdapter.ViewHolder(view);
@@ -108,21 +137,26 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
             });
         }
 
-        /*
-        if(!firstEnter){
-            //holder.hora.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-            //holder.show_message.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-            firstEnter = true;
-        }
-
-         */
-
-        //holder.visto.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        //holder.estado.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-
         // != null me ha solucionado el problema de Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'void android.widget.ImageView.setVisibility(int)' on a null object reference
         //Decia que ImagenView no existia, al haber un chat donde la conversacion son de ambas partes y el layout esta dividio en 2, en una existe el ImagenView y en la otra no.
 
+
+        if(holder.visto != null){
+            if(!mensaje.getLeido()){
+                holder.visto.setVisibility(GONE);
+            }else{
+                if(mensaje.getEmisor().contentEquals(firebaseUser.getUid())){
+                    if(getMensajePosicionDerecha(getItemViewType(posicion))){
+                        Log.d("MENSAJE LEIDO ",mensaje.getTipoMensaje()+" "+mensaje.getMensaje());
+                        if(mensaje.getLeido()){
+                            holder.visto.setImageDrawable(null);
+                            holder.visto.setImageResource(R.drawable.ic_leido);
+                            //holder.visto.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        }
 
         if(mensaje.getTipoMensaje() == Mensaje.Tipo.TEXTO){
             Log.d("Debug MensajeAdapter","Mensaje Tipo TEXTO");
@@ -140,15 +174,23 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 holder.mensaje_foto.setOnClickListener(v -> {
 
                     Intent intentViewImage = new Intent(context, ViewImageActivity.class);
-                    intentViewImage.putExtra("FotoURL",mensaje.getMensaje());
+
+                    if(mensaje.getEmisor().contentEquals(firebaseUser.getUid())){
+                        intentViewImage.putExtra("Usuario", usuarioActual);
+                    }else{
+                        intentViewImage.putExtra("Usuario", usuarioChat);
+                    }
+
+                    intentViewImage.putExtra("Mensaje",mensaje);
+                    intentViewImage.putExtra("Fecha",mensaje.getFecha());
                     context.startActivity(intentViewImage);
 
                 });
             }else{
                 holder.error_imagen.setVisibility(View.VISIBLE);
-                holder.mensaje_foto.setVisibility(View.GONE);
-                holder.hora.setVisibility(View.GONE);
-                holder.visto.setVisibility(View.GONE);
+                holder.mensaje_foto.setVisibility(GONE);
+                holder.hora.setVisibility(GONE);
+                holder.visto.setVisibility(GONE);
             }
 
         }else if(mensaje.getTipoMensaje() == Mensaje.Tipo.LOCALIZACION){
@@ -162,34 +204,95 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 Log.d("Debug MensajesAdapter","MAPBOX URL ubicacion "+URLMAP);
                 Picasso.with(context).load(URLMAP).fit().centerCrop().into(holder.ubicacion);
 
-                holder.ubicacion.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intentMaps = new Intent(context, MapsActivity.class);
-                        LatLng ubicacion = mensaje.getUbicacion();
-                        intentMaps.putExtra("Ubicacion", (Parcelable) ubicacion);
-                        context.startActivity(intentMaps);
-                    }
+                holder.ubicacion.setOnClickListener(v -> {
+
+                    Intent intentMaps = new Intent(context, MapsActivity.class);
+                    LatLng ubicacion = mensaje.getUbicacion();
+                    intentMaps.putExtra("Ubicacion", (Parcelable) ubicacion);
+                    context.startActivity(intentMaps);
+
                 });
             }else{
                 holder.error_ubicacion.setVisibility(View.VISIBLE);
-                holder.ubicacion.setVisibility(View.GONE);
-                holder.hora.setVisibility(View.GONE);
-                holder.visto.setVisibility(View.GONE);
+                holder.ubicacion.setVisibility(GONE);
+                holder.hora.setVisibility(GONE);
+                holder.visto.setVisibility(GONE);
             }
 
-            if(holder.visto != null){
-                if(!mensaje.getLeido()){
-                    holder.visto.setVisibility(View.GONE);
-                }else{
-                    //holder.visto.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-                    if(mensaje.getEmisor().contentEquals(firebaseUser.getUid()) && mensaje.getLeido()){
-                        holder.visto.setVisibility(View.VISIBLE);
-                    }
 
+        }else if(mensaje.getTipoMensaje() == Mensaje.Tipo.AUDIO){
+
+            Uri uriAudio = Uri.parse(mensaje.getAudio().getURLirebase());
+            File fileAudio = new File(mensaje.getAudio().getPathLocal());
+
+            if(!fileAudio.exists()){
+
+                if(Funciones.conectividadDisponible(context)){
+
+                    DownloadManager downloadmanager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                    DownloadManager.Request request = new DownloadManager.Request(uriAudio);
+                    Uri destinationUri = Uri.fromFile(new File(mensaje.getAudio().getPathLocal()));
+                    request.setDestinationUri(destinationUri);
+                    downloadmanager.enqueue(request);
+
+                }else {
+                    holder.error_imagen.setVisibility(View.VISIBLE);
+                    holder.audioPause.setClickable(false);
+                    holder.audioPause.setVisibility(GONE);
+                    holder.audioStart.setClickable(false);
+                    holder.audioStart.setVisibility(GONE);
                 }
+
             }
 
+            String hora = mensaje.fecha.hora+":"+mensaje.fecha.minutos;
+            holder.hora.setText(hora);
+
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            try{
+                if(fileAudio.exists()){
+                    mediaPlayer.setDataSource(fileAudio.getAbsolutePath());
+                    mediaPlayer.prepare();
+                }
+                String tiempo = Funciones.calcularTiempo(mediaPlayer.getDuration());
+                String duracion = context.getResources().getString(R.string.duracionAudio)+" "+tiempo;
+                holder.duracionAudio.setText(duracion);
+
+            }catch (IOException ioe){
+                ioe.printStackTrace();
+            }
+
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    holder.audioStart.setVisibility(View.VISIBLE);
+                    holder.audioStart.setClickable(true);
+                    holder.audioPause.setVisibility(View.INVISIBLE);
+                    holder.audioPause.setClickable(false);
+                }
+            });
+
+            holder.audioStart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    holder.audioPause.setVisibility(View.VISIBLE);
+                    holder.audioPause.setClickable(true);
+                    holder.audioStart.setVisibility(View.INVISIBLE);
+                    holder.audioStart.setClickable(false);
+                    mediaPlayer.start();
+                }
+            });
+
+            holder.audioPause.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    holder.audioStart.setVisibility(View.VISIBLE);
+                    holder.audioStart.setClickable(true);
+                    holder.audioPause.setVisibility(View.INVISIBLE);
+                    holder.audioPause.setClickable(false);
+                    mediaPlayer.pause();
+                }
+            });
         }
     }
 
@@ -213,7 +316,10 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
         TextView error_ubicacion;
         ImageView visto;
         ImageView mensaje_foto;
+        TextView duracionAudio;
         ImageView ubicacion;
+        ImageButton audioStart;
+        ImageButton audioPause;
 
         ViewHolder(View itemView){
             super(itemView);
@@ -225,8 +331,19 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
             hora = itemView.findViewById(R.id.hora);
             estado = itemView.findViewById(R.id.estado);
             visto = itemView.findViewById(R.id.leido);
+
+            duracionAudio = itemView.findViewById(R.id.duracionAudio);
+            audioStart = itemView.findViewById(R.id.buttonAudioPlay);
+            audioPause = itemView.findViewById(R.id.buttonAudioStop);
         }
 
+    }
+
+    public boolean getMensajePosicionDerecha(int tipoMensajeIntView){
+        boolean valor = false;
+        valor = (tipoMensajeIntView % 2) != 0;
+        Log.d("TIPO MENSAJE ",""+valor+" "+tipoMensajeIntView);
+        return valor;
     }
 
 
@@ -247,7 +364,10 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 devolver = MENSAGE_TIPO_DERECHA;
             }else if(listaMensajes.get(posicion).getTipoMensaje() == Mensaje.Tipo.LOCALIZACION){
                 devolver = MENSAGE_TIPO_DERECHA_LOCALIZACION;
+            }else if(listaMensajes.get(posicion).getTipoMensaje() == Mensaje.Tipo.AUDIO){
+                devolver = MENSAGE_TIPO_DERECHA_AUDIO;
             }
+
         }else{
 
             if(listaMensajes.get(posicion).getTipoMensaje() == Mensaje.Tipo.FOTO){
@@ -256,6 +376,8 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 devolver = MENSAGE_TIPO_IZQUIERDA;
             }else if(listaMensajes.get(posicion).getTipoMensaje() == Mensaje.Tipo.LOCALIZACION){
                 devolver = MENSAGE_TIPO_IZQUIERDA_LOCALIZACION;
+            }else if(listaMensajes.get(posicion).getTipoMensaje() == Mensaje.Tipo.AUDIO){
+                devolver = MENSAGE_TIPO_IZQUIERDA_AUDIO;
             }
         }
         return devolver;
