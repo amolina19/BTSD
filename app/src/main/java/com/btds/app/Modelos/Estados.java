@@ -11,8 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Estados implements Comparable<Estados>{
 
-    public String key;
-    public String estadoURL;
+    public String key, estadoURL;
     public Usuario usuario;
     public Fecha fecha;
 

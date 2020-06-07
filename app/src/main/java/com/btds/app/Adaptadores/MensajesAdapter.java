@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,7 +63,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private Usuario usuarioChat;
     private Usuario usuarioActual;
-    private Handler mHandler = new Handler();
 
     private DatabaseReference referenceChats = FirebaseDatabase.getInstance().getReference("Chats");
 
@@ -120,8 +118,8 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
 
 
         final Mensaje mensaje = listaMensajes.get(posicion);
-        //mensaje.setLeido("true");
 
+        //Comprueba si el mensaje es leido
         if(mensaje.getLeido()){
             referenceChats.child(mensaje.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -139,8 +137,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
 
         // != null me ha solucionado el problema de Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'void android.widget.ImageView.setVisibility(int)' on a null object reference
         //Decia que ImagenView no existia, al haber un chat donde la conversacion son de ambas partes y el layout esta dividio en 2, en una existe el ImagenView y en la otra no.
-
-
         if(holder.visto != null){
             if(!mensaje.getLeido()){
                 holder.visto.setVisibility(GONE);
@@ -169,12 +165,10 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 String hora = mensaje.fecha.hora+":"+mensaje.fecha.minutos;
                 holder.hora.setText(hora);
                 Log.d("Debug MensajeAdapter","Mensaje Tipo FOTO URL "+mensaje.getMensaje());
-                //holder.mensaje_foto.
                 Picasso.with(context).load(mensaje.getMensaje()).fit().centerCrop().into(holder.mensaje_foto);
                 holder.mensaje_foto.setOnClickListener(v -> {
 
                     Intent intentViewImage = new Intent(context, ViewImageActivity.class);
-
                     if(mensaje.getEmisor().contentEquals(firebaseUser.getUid())){
                         intentViewImage.putExtra("Usuario", usuarioActual);
                     }else{
@@ -233,6 +227,7 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                     DownloadManager.Request request = new DownloadManager.Request(uriAudio);
                     Uri destinationUri = Uri.fromFile(new File(mensaje.getAudio().getPathLocal()));
                     request.setDestinationUri(destinationUri);
+                    assert downloadmanager != null;
                     downloadmanager.enqueue(request);
 
                 }else {
@@ -262,36 +257,27 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 ioe.printStackTrace();
             }
 
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    holder.audioStart.setVisibility(View.VISIBLE);
-                    holder.audioStart.setClickable(true);
-                    holder.audioPause.setVisibility(View.INVISIBLE);
-                    holder.audioPause.setClickable(false);
-                }
+            mediaPlayer.setOnCompletionListener(mp -> {
+                holder.audioStart.setVisibility(View.VISIBLE);
+                holder.audioStart.setClickable(true);
+                holder.audioPause.setVisibility(View.INVISIBLE);
+                holder.audioPause.setClickable(false);
             });
 
-            holder.audioStart.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    holder.audioPause.setVisibility(View.VISIBLE);
-                    holder.audioPause.setClickable(true);
-                    holder.audioStart.setVisibility(View.INVISIBLE);
-                    holder.audioStart.setClickable(false);
-                    mediaPlayer.start();
-                }
+            holder.audioStart.setOnClickListener(v -> {
+                holder.audioPause.setVisibility(View.VISIBLE);
+                holder.audioPause.setClickable(true);
+                holder.audioStart.setVisibility(View.INVISIBLE);
+                holder.audioStart.setClickable(false);
+                mediaPlayer.start();
             });
 
-            holder.audioPause.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    holder.audioStart.setVisibility(View.VISIBLE);
-                    holder.audioStart.setClickable(true);
-                    holder.audioPause.setVisibility(View.INVISIBLE);
-                    holder.audioPause.setClickable(false);
-                    mediaPlayer.pause();
-                }
+            holder.audioPause.setOnClickListener(v -> {
+                holder.audioStart.setVisibility(View.VISIBLE);
+                holder.audioStart.setClickable(true);
+                holder.audioPause.setVisibility(View.INVISIBLE);
+                holder.audioPause.setClickable(false);
+                mediaPlayer.pause();
             });
         }
     }
@@ -309,17 +295,10 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView show_message;
-        TextView hora;
-        TextView estado;
-        TextView error_imagen;
-        TextView error_ubicacion;
-        ImageView visto;
-        ImageView mensaje_foto;
+        TextView show_message, hora, estado, error_imagen, error_ubicacion;
+        ImageView visto, mensaje_foto, ubicacion;
         TextView duracionAudio;
-        ImageView ubicacion;
-        ImageButton audioStart;
-        ImageButton audioPause;
+        ImageButton audioStart, audioPause;
 
         ViewHolder(View itemView){
             super(itemView);
@@ -331,7 +310,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
             hora = itemView.findViewById(R.id.hora);
             estado = itemView.findViewById(R.id.estado);
             visto = itemView.findViewById(R.id.leido);
-
             duracionAudio = itemView.findViewById(R.id.duracionAudio);
             audioStart = itemView.findViewById(R.id.buttonAudioPlay);
             audioPause = itemView.findViewById(R.id.buttonAudioStop);
@@ -340,7 +318,7 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
     }
 
     public boolean getMensajePosicionDerecha(int tipoMensajeIntView){
-        boolean valor = false;
+        boolean valor;
         valor = (tipoMensajeIntView % 2) != 0;
         Log.d("TIPO MENSAJE ",""+valor+" "+tipoMensajeIntView);
         return valor;

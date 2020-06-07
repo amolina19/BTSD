@@ -55,8 +55,6 @@ public class BuscarAmigos extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_buscaramigos,container,false);
-        //Adaptador
-        //ProgressBar progressBar = view.findViewById(R.id.progressBar);
         buscarAmigosEditText = view.findViewById(R.id.buscar_amigos_editText);
         setOnFocusChangeListener(buscarAmigosEditText);
         recyclerView = view.findViewById(R.id.recycler_view);
@@ -64,7 +62,7 @@ public class BuscarAmigos extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL);
-        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(getActivity(), R.drawable.divider_recycler_view)));
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(Objects.requireNonNull(getActivity()), R.drawable.divider_recycler_view)));
         recyclerView.addItemDecoration(itemDecorator);
 
         buscarAmigosAdapter = new BuscarAmigosAdapter(getActivity(),listaUsuarios,peticionAmistadUsuarios);
@@ -75,6 +73,7 @@ public class BuscarAmigos extends Fragment {
 
     private void obtenerAmigos(){
 
+        assert firebaseUser != null;
         Funciones.getAmigosReference().child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -83,7 +82,6 @@ public class BuscarAmigos extends Fragment {
                     String valorClaveAmigo = data.getValue(String.class);
                     listaAmigos.put(valorClaveAmigo,valorClaveAmigo);
                 }
-
                 obtenerUsuarios();
             }
 
@@ -104,15 +102,11 @@ public class BuscarAmigos extends Fragment {
                     for (DataSnapshot data:dataSnapshot.getChildren()){
                         PeticionAmistadUsuario peticion = data.getValue(PeticionAmistadUsuario.class);
                         assert firebaseUser != null;
+                        assert peticion != null;
                         if(peticion.getUsuarioAccionPeticion().contentEquals(firebaseUser.getUid()) && !listaAmigos.containsKey(peticion.getUsuarioAccionPeticion())){
                             peticionAmistadUsuarios.put(data.getKey(),peticion);
                         }
                     }
-
-
-                        //Log.d("DEBUG BuscarAmigosAdapter","Lista de peticiones enviadas "+peticionAmistadUsuarios.size());
-                        //DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
-
                         Funciones.getUsersDatabaseReference().addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -140,8 +134,6 @@ public class BuscarAmigos extends Fragment {
 
                             }
                         });
-
-
                 }
 
                 @Override
@@ -149,8 +141,6 @@ public class BuscarAmigos extends Fragment {
 
                 }
             });
-
-
     }
 
 
@@ -210,23 +200,11 @@ public class BuscarAmigos extends Fragment {
 
                         public void onTextChanged(CharSequence s, int start, int before,
                                                   int count) {
-                            /*
-                            if(!s.equals("") ) {
-
-                            }
-
-                             */
                         }
 
                         @Override
                         public void afterTextChanged(Editable s) {
-                            System.out.println("ESTAS ESCRIBIENDO");
-                            /*if((cadenaTeclado = enviar_texto.getText().toString()).length() > 0){
-
-                                //Funciones.escribiendo(firebaseUser,contexto);
-                            }else{
-
-                            }*/
+                            //System.out.println("ESTAS ESCRIBIENDO");
                         }
                     });
                 }

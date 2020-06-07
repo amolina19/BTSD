@@ -19,24 +19,32 @@ import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class ViewImageActivity extends AppCompatActivity {
 
+    TextView image_view_error;
+    PhotoView photoView;
+    CircleImageView imagen_perfil;
+    TextView usuarioTextView, fechaTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_image);
-        TextView image_view_error;
-        PhotoView photoView;
-        CircleImageView imagen_perfil = findViewById(R.id.imagen_usuario_foto);
-        TextView usuarioTextView = findViewById(R.id.usuario);
-        TextView fechaTextView = findViewById(R.id.fecha);
+
+        imagen_perfil = findViewById(R.id.imagen_usuario_foto);
+        usuarioTextView = findViewById(R.id.usuario);
+        fechaTextView = findViewById(R.id.fecha);
 
         image_view_error = findViewById(R.id.image_view_error);
         photoView = findViewById(R.id.photo_view);
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
+        assert bundle != null;
         Usuario usuario = bundle.getParcelable("Usuario");
         Mensaje mensaje = bundle.getParcelable("Mensaje");
         Fecha fecha = bundle.getParcelable("Fecha");
@@ -45,6 +53,7 @@ public class ViewImageActivity extends AppCompatActivity {
         Glide.with(this).load(usuario.getImagenURL()).into(imagen_perfil);
         usuarioTextView.setText(usuario.getUsuario());
         assert mensaje != null;
+        assert fecha != null;
         String fechaStr = getResources().getString(R.string.enviado)+" "+fecha.hora+":"+fecha.minutos+" "+getResources().getString(R.string.deldia)+" "+fecha.dia+"/"+fecha.mes+"/"+fecha.anno;
         fechaTextView.setText(fechaStr);
 

@@ -7,14 +7,15 @@ import com.btds.app.Utils.Fecha;
 
 import java.util.List;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class Llamada  implements Parcelable {
 
     public String idLlamada;
-    public Usuario usuarioOrigen;
-    public Usuario usuarioDestino;
-    public boolean aceptada;
-    public boolean finalizado;
-    public boolean videollamada;
+    public Usuario usuarioOrigen, usuarioDestino;
+    public boolean aceptada, finalizado, videollamada;
     public Fecha fecha;
     public List<Integer> tiempoTranscurrido ;
 

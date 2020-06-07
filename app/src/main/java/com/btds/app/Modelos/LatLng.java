@@ -5,9 +5,12 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class LatLng implements Parcelable, Serializable {
-    private Double latitude;
-    private Double longitude;
+    private Double latitude, longitude;
 
     public LatLng() {}
 

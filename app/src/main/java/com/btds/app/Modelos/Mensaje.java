@@ -12,11 +12,7 @@ import com.btds.app.Utils.Fecha;
 
 public class Mensaje implements Parcelable {
 
-    private String key;
-    private String id;
-    private String emisor;
-    private String receptor;
-    private String mensaje;
+    private String key, id, emisor, receptor, mensaje;
     private boolean leido;
     private Tipo tipoMensaje;
     public Fecha fecha;

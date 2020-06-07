@@ -7,9 +7,7 @@ package com.btds.app.Modelos;
 
 public class ListaAmigos {
 
-    private String key;
-    private String usuarioAccionBloquear;
-    private String usuarioEnviadoPeticion;
+    private String key, usuarioAccionBloquear, usuarioEnviadoPeticion;
 
     public ListaAmigos() {
 

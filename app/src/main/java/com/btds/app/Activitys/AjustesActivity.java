@@ -2,7 +2,6 @@ package com.btds.app.Activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 
@@ -15,22 +14,18 @@ import com.btds.app.Utils.Funciones;
 
 import in.shrinathbhosale.preffy.Preffy;
 
-public class AjustesActivity extends AppCompatActivity {
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 
+public class AjustesActivity extends AppCompatActivity {
 
     Usuario usuario;
     Visibilidad visibilidad;
-
-    Button buttonContrasena;
-    Button buttonEmail;
+    Button buttonContrasena, buttonEmail;
     //Switchs
+    Switch usuarioSwitch, descripcionSwitch, telefonoSwitch, fotoSwitch, lineaSwitch, autenticacionSwitch;
 
-    Switch usuarioSwitch;
-    Switch descripcionSwitch;
-    Switch telefonoSwitch;
-    Switch fotoSwitch;
-    Switch lineaSwitch;
-    Switch autenticacionSwitch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,20 +48,14 @@ public class AjustesActivity extends AppCompatActivity {
         buttonContrasena = findViewById(R.id.ajustes_button_contrasena);
         buttonEmail = findViewById(R.id.ajustes_button_email);
 
-        buttonEmail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentEmail = new Intent(AjustesActivity.this,ChangeEmailActivity.class);
-                startActivity(intentEmail);
-            }
+        buttonEmail.setOnClickListener(v -> {
+            Intent intentEmail = new Intent(AjustesActivity.this,ChangeEmailActivity.class);
+            startActivity(intentEmail);
         });
 
-        buttonContrasena.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent cambiarPasswd = new Intent(AjustesActivity.this,ChangePasswordActivity.class);
-                startActivity(cambiarPasswd);
-            }
+        buttonContrasena.setOnClickListener(v -> {
+            Intent cambiarPasswd = new Intent(AjustesActivity.this,ChangePasswordActivity.class);
+            startActivity(cambiarPasswd);
         });
 
         if(visibilidad.getUsuario()){

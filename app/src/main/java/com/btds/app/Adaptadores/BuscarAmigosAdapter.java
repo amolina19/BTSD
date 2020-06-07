@@ -35,15 +35,11 @@ public class BuscarAmigosAdapter extends RecyclerView.Adapter<BuscarAmigosAdapte
     private Context context;
     private List<Usuario> listaUsuariosEncontrados;
     private HashMap<String,PeticionAmistadUsuario> peticionesEnviadasAnteriormente;
-    //private HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados;
-    //private FirebaseUser firebaseUser;
 
 
     public BuscarAmigosAdapter(Context contexto, List<Usuario> listaUsuariosEncontrados,HashMap<String,PeticionAmistadUsuario> listaDePeticiones){
         this.listaUsuariosEncontrados = listaUsuariosEncontrados;
         this.peticionesEnviadasAnteriormente = listaDePeticiones;
-        //Log.d("DEBUG BuscarAmigosAdapter","Lista de peticiones enviadas "+listaDePeticiones.size());
-        //listaUsuariosBloqueados = new HashMap<>();
         this.context = contexto;
     }
 
@@ -60,7 +56,6 @@ public class BuscarAmigosAdapter extends RecyclerView.Adapter<BuscarAmigosAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int posicion) {
 
         final Usuario usuario = listaUsuariosEncontrados.get(posicion);
-
         holder.usuario.setText(usuario.getUsuario());
 
         if(usuario.getImagenURL().equals("default")){
@@ -90,15 +85,12 @@ public class BuscarAmigosAdapter extends RecyclerView.Adapter<BuscarAmigosAdapte
 
             holder.buttonPeticion.setOnClickListener(v -> {
                 Log.d("DEBUG BuscarAmigosAdapter","Peticion enviada a "+holder.usuario.getText());
-                //Toast.makeText(context, "Has seleccionado la posicion"+holder.itemView.get, Toast.LENGTH_SHORT).show();
-
                 if(holder.buttonPeticion.getText().toString().contentEquals(context.getResources().getString(R.string.enviarPeticion))){
                     PeticionAmistadUsuario peticion = new PeticionAmistadUsuario(firebaseUser.getUid()+""+usuario.getId(),firebaseUser.getUid(),usuario.getId());
                     Funciones.getPeticionesAmistadReference().child(firebaseUser.getUid()+""+usuario.getId()).setValue(peticion);
                     holder.buttonPeticion.setText(context.getResources().getString(R.string.cancelarPeticion));
                     holder.buttonPeticion.setBackgroundColor(context.getColor(R.color.colorPrimary));
                 }else{
-                    //PeticionAmistadUsuario peticion = new PeticionAmistadUsuario(firebaseUser.getUid()+""+usuario.getId(),firebaseUser.getUid(),usuario.getId());
                     Funciones.getPeticionesAmistadReference().child(firebaseUser.getUid()+""+usuario.getId()).removeValue();
                     holder.buttonPeticion.setText(context.getResources().getString(R.string.enviarPeticion));
                     holder.buttonPeticion.setBackgroundColor(context.getColor(R.color.spring_green));

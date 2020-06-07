@@ -31,15 +31,11 @@ public class PeticionesAdapter extends RecyclerView.Adapter<PeticionesAdapter.Vi
     private Context context;
     private List<Usuario> listaPeticiones;
     private HashMap<String,String> listaAmigos;
-    //private HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados;
-    //private FirebaseUser firebaseUser;
 
 
     public PeticionesAdapter(Context contexto, List<Usuario> listaDePeticiones,HashMap<String,String> listaAmigos ){
         this.listaPeticiones = listaDePeticiones;
         this.listaAmigos = listaAmigos;
-        //Log.d("DEBUG BuscarAmigosAdapter","Lista de peticiones enviadas "+listaDePeticiones.size());
-        //listaUsuariosBloqueados = new HashMap<>();
         this.context = contexto;
     }
 
@@ -58,24 +54,18 @@ public class PeticionesAdapter extends RecyclerView.Adapter<PeticionesAdapter.Vi
         final Usuario usuario = listaPeticiones.get(posicion);
         holder.usuario.setText(usuario.getUsuario());
         if(usuario.getImagenURL().equals("default")){
-            //holder.imagen_perfil.setImageResource(R.mipmap.ic_launcher);
-            //private static final int USUARIO_BLOQUEADO = 1;
             Glide.with(context).load(R.drawable.default_user_picture).into(holder.imagen_perfil);
         }else{
             Glide.with(context).load(usuario.getImagenURL()).into(holder.imagen_perfil);
         }
 
-
         holder.buttonPeticionAccept.setOnClickListener(v -> Funciones.aceptarAmigo(firebaseUser,usuario));
-
         holder.buttonPeticionDeny.setOnClickListener(v -> Funciones.eliminarPeticion(firebaseUser,usuario));
 
     }
 
     @Override
     public int getItemCount() {
-
-
 
         if (listaPeticiones != null){
             return  listaPeticiones.size();
@@ -86,11 +76,9 @@ public class PeticionesAdapter extends RecyclerView.Adapter<PeticionesAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView usuario;
-        public TextView estado;
+        public TextView usuario, estado;
         public ImageView imagen_perfil;
-        Button buttonPeticionAccept;
-        Button buttonPeticionDeny;
+        Button buttonPeticionAccept, buttonPeticionDeny;
 
 
         ViewHolder(View itemView){
@@ -98,7 +86,6 @@ public class PeticionesAdapter extends RecyclerView.Adapter<PeticionesAdapter.Vi
 
             usuario = itemView.findViewById(R.id.usuario);
             imagen_perfil = itemView.findViewById(R.id.imagen_perfil);
-            //estado = itemView.findViewById(R.id.estado);
             buttonPeticionAccept = itemView.findViewById(R.id.buttonAdd);
             buttonPeticionDeny = itemView.findViewById(R.id.buttonDeny);
         }
@@ -112,5 +99,4 @@ public class PeticionesAdapter extends RecyclerView.Adapter<PeticionesAdapter.Vi
             return 0;
         }
     }
-
 }

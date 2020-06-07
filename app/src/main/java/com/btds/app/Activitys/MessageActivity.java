@@ -10,7 +10,6 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
@@ -72,6 +71,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static android.os.Environment.getExternalStorageDirectory;
 import static com.btds.app.Utils.Funciones.borrarAmigo;
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
@@ -81,8 +81,7 @@ import static com.google.firebase.database.FirebaseDatabase.getInstance;
 public class MessageActivity extends BasicActivity {
 
     private CircleImageView imagen_perfil;
-    private TextView usuario;
-    private TextView estado;
+    private TextView usuario, estado;
 
     //Referencias necesarias con la base de datos.
     private FirebaseUser firebaseUser;
@@ -96,20 +95,16 @@ public class MessageActivity extends BasicActivity {
 
     private MediaRecorder mediaRecorder;
     private MediaPlayer mediaPlayer;
-    CircleButton circleButton_save;
-    CircleButton circleButton_delete;
-    private String pathSaveAudio;
-    private String audioName;
+    CircleButton circleButton_save, circleButton_delete;
+    private String pathSaveAudio, audioName;
     private Chronometer audioChronometer;
 
     private EditText enviar_texto;
     //private String cadenaTeclado;
 
-    private Usuario usuarioChat;
-    private Usuario usuarioActual;
+    private Usuario usuarioChat, usuarioActual;
     private String usuarioID;
     private int diasPasados;
-
     private Boolean ubicacion = false;
 
     private MensajesAdapter mensajesAdapter;
@@ -117,7 +112,6 @@ public class MessageActivity extends BasicActivity {
     private HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados;
     private HashMap<String,String> listaAmigos = new HashMap<>();
     private RecyclerView recyclerView;
-
     //Obtener el contexto de la actividad
     private Context contexto;
 
@@ -664,7 +658,7 @@ public class MessageActivity extends BasicActivity {
         }
 
          */
-        pathSaveAudio = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+audioName;
+        pathSaveAudio = getExternalStorageDirectory().getAbsolutePath()+"/"+audioName;
 
         setMediaRecorder();
         try{

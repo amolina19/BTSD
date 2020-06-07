@@ -49,39 +49,19 @@ public class Llamadas extends Fragment {
 
 
         DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL);
-        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(getActivity(), R.drawable.divider_recycler_view)));
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(Objects.requireNonNull(getActivity()), R.drawable.divider_recycler_view)));
         recyclerView.addItemDecoration(itemDecorator);
 
         llamadasAdapter = new LlamadasAdapter(getActivity(),listaLlamadas);
         recyclerView.setAdapter(llamadasAdapter);
-
-        //Preffy preffy = Preffy.getInstance(getContext());
-        //preffy.putString("FragmentHome", "Amigos");
-
-        //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //DatabaseReference referenceUserDataBase = FirebaseDatabase.getInstance().getReference("Usuarios");
-        //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, referenceUserDataBase, getContext());
-
-
-        //new TaskProgressBar().execute();
-
         listaLlamadas = new ArrayList<>();
         obtenerLlamadas();
-
-        //System.out.println("FRAGMENTO CREADO");
-        //listaAmigos = new ArrayList<>();
-
-        //registerForContextMenu(recyclerView);
-        //obtenerAmigos();
         return view;
     }
 
 
 
     private void obtenerLlamadas(){
-        //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
-
 
         assert firebaseUser != null;
         Funciones.getLlamadasReferenceFragment().child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
@@ -105,6 +85,5 @@ public class Llamadas extends Fragment {
 
             }
         });
-
     }
 }

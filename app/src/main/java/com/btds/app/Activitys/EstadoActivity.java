@@ -59,17 +59,13 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
     private StoriesProgressView storiesProgressView;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     ImageView storiesImageView;
-    TextView usuarioTextView;
-    TextView fechaSubida;
+    TextView usuarioTextView, fechaSubida;
     private Context context;
     private int storiesCount = 0;
-    //private Usuario usuarioEstado;
     CircleImageView circleImageView;
     List<Estados> listaEstadosUsuario = new ArrayList<>();
     String usuarioIDFirebase;
-    Button addHistoria;
-    Button borrarHistoria;
-    Button addHistoriaV2;
+    Button addHistoria, borrarHistoria, addHistoriaV2;
     Usuario usuarioActual;
 
     @Override
@@ -422,7 +418,7 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, @NotNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);

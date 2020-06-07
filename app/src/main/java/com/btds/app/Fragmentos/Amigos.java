@@ -63,21 +63,8 @@ public class Amigos extends Fragment {
         Preffy preffy = Preffy.getInstance(getContext());
         preffy.putString("FragmentHome", "Amigos");
 
-        //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //DatabaseReference referenceUserDataBase = FirebaseDatabase.getInstance().getReference("Usuarios");
-        //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, referenceUserDataBase, getContext());
-
-
-        //new TaskProgressBar().execute();
-
         listaUsuarios = new ArrayList<>();
         obtenerAmigos();
-
-        //System.out.println("FRAGMENTO CREADO");
-        //listaAmigos = new ArrayList<>();
-
-        //registerForContextMenu(recyclerView);
-        //obtenerAmigos();
         return view;
     }
 
@@ -105,9 +92,6 @@ public class Amigos extends Fragment {
     }
 
     private void obtenerUsuarios(){
-        //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
-
 
         Funciones.getBlockUsersListDatabaseReference().addValueEventListener(new ValueEventListener() {
             @Override
@@ -158,64 +142,4 @@ public class Amigos extends Fragment {
         });
 
     }
-
- /*
-    private void obtenerAmigos() {
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
-        final DatabaseReference amigosUsuario = FirebaseDatabase.getInstance().getReference("Usuarios").child(firebaseUser.getUid()).child("Amigos");
-        final HashMap<Integer, String> hashMap = new HashMap<>();
-
-
-        //amigosUsuario
-        amigosUsuario.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //RECOGER EL ID DEL AMIGO
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    int i= 0;
-                    String valor = limpiarCadenaBaseDatos(dataSnapshot.getValue().toString());
-                    hashMap.put(i,valor);
-                    System.out.println("VALOR MAPA: "+valor);
-                    i++;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        references.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listaAmigos.clear();
-
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-
-                    Usuario usuario = snapshot.getValue(Usuario.class);
-                    if(usuario !=null){
-                        System.out.println("VALOR USUARIO "+usuario.getId());
-
-                        if(!usuario.getId().equals(firebaseUser.getUid()) &&  hashMap.containsValue(usuario.getId())){
-                            System.out.println("LISTA AMIGOS "+listaAmigos.size());
-                            listaAmigos.add(usuario);
-                        }
-                    }
-
-                }
-                //usuariosAdapter = new UsuariosAdapter(getActivity(),listaAmigos);
-                //recyclerView.setAdapter(usuariosAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-  */
 }

@@ -28,9 +28,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class BloqueadosAdapter extends RecyclerView.Adapter<BloqueadosAdapter.ViewHolder>  {
 
     private static final int USUARIO_NO_BLOQUEADO = 0;
-    //private static final int USUARIO_BLOQUEADO = 1;
-
-    //private boolean firstSearch = true;
     private final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private Context context;
     private List<Usuario> listaUsuariosBloqueados;
@@ -44,19 +41,13 @@ public class BloqueadosAdapter extends RecyclerView.Adapter<BloqueadosAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        //if(viewType == USUARIO_NO_BLOQUEADO){
-            View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item_blocked,parent,false);
-            return new BloqueadosAdapter.ViewHolder(view);
-        //}
+        View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item_blocked,parent,false);
+        return new BloqueadosAdapter.ViewHolder(view);
 
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int posicion) {
-
-        //holder.imagen_perfil.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        //holder.usuario.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        //holder.buttonDesbloquear.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
 
         final Usuario usuario = listaUsuariosBloqueados.get(posicion);
         holder.usuario.setText(usuario.getUsuario());
@@ -95,7 +86,6 @@ public class BloqueadosAdapter extends RecyclerView.Adapter<BloqueadosAdapter.Vi
 
         ViewHolder(View itemView){
             super(itemView);
-
             usuario = itemView.findViewById(R.id.usuario);
             imagen_perfil = itemView.findViewById(R.id.imagen_perfil);
             buttonDesbloquear = itemView.findViewById(R.id.buttonDesbloquear);

@@ -11,6 +11,10 @@ import androidx.fragment.app.Fragment;
 
 import com.btds.app.R;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class MainFragment extends Fragment {
 
     @Nullable

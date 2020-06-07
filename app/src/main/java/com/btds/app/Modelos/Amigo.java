@@ -2,6 +2,10 @@ package com.btds.app.Modelos;
 
 import java.util.HashMap;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class Amigo {
 
     private HashMap<String,String> amigosFirebaseID;

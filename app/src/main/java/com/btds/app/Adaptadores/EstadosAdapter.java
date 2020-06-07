@@ -90,25 +90,18 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
 
         //Entra a la actividad
         holder.itemView.setOnClickListener(v -> {
-
-            /*
-            Funciones.setActividadEnUso(true);
-            */
-
             final int position = holder.getAdapterPosition();
 
             //ENTRAR A TU PROPIA HISTORA Y SUBIR CONTENIDO O BORRAR
             if(position == 0){
-                //Toast.makeText(context, "FUNCIONA", Toast.LENGTH_SHORT).show();
                 Log.d("DEBUG EstadosAdapter","Has entrado en tus estados");
                 Intent tusEstados = new Intent(context, EstadoActivity.class);
+                assert firebaseUser != null;
                 tusEstados.putExtra("estadoUsuarioIDFirebase",firebaseUser.getUid());
-                //tusEstados.addFlags(FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(tusEstados);
             }else{
                 Intent intentEstado = new Intent(context, EstadoActivity.class);
                 intentEstado.putExtra("estadoUsuarioIDFirebase",estado.getUsuario().getId());
-                //intentEstado.addFlags(FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intentEstado);
             }
         });
@@ -127,19 +120,12 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
 
         public TextView usuario;
         CircleImageView imagen_estado;
-        //public TextView estado;
-        //public ImageView imagen_perfil;
-
-
-        //public StoriesProgressView storiesProgressView;
-
 
         ViewHolder(View itemView){
             super(itemView);
 
             usuario = itemView.findViewById(R.id.usuario);
             imagen_estado = itemView.findViewById(R.id.imagen_estado);
-            //estado = itemView.findViewById(R.id.estado);
         }
     }
 

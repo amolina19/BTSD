@@ -2,9 +2,11 @@ package com.btds.app.Utils;
 
 import android.util.Log;
 
-public class Persistence extends android.app.Application  {
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 
-
+public class Persistence extends android.app.Application {
 
     @Override
     public void onCreate() {

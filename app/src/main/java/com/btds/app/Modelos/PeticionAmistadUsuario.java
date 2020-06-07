@@ -7,9 +7,7 @@ package com.btds.app.Modelos;
 
 public class PeticionAmistadUsuario {
 
-    private String key;
-    private String usuarioAccionPeticion;
-    private String usuarioEnviadoPeticion;
+    private String key, usuarioAccionPeticion, usuarioEnviadoPeticion;
 
     public PeticionAmistadUsuario() {
 

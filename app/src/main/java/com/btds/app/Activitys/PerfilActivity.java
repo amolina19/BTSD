@@ -53,11 +53,8 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class PerfilActivity extends BasicActivity implements EasyPermissions.PermissionCallbacks {
 
     CircleImageView imagen_perfil;
-    TextView usuario;
     EditText descripcion;
-    TextView nTelefono;
-    TextView verificado;
-    TextView email;
+    TextView usuario, nTelefono, verificado, email;
     //SwitchMaterial T2Aoption;
     Usuario usuarioActual;
     Button imageButton;
@@ -66,8 +63,7 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
     ImageButton imageButtonCheck;
 
     final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-    DatabaseReference referenceUserDataBase;
-    DatabaseReference mainDatabasePath;
+    DatabaseReference referenceUserDataBase, mainDatabasePath;
     StorageReference storageReference;
 
     @Override
@@ -276,33 +272,29 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
     private void setOnFocusChangeListener(TextView textView){
 
         try{
-            textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            textView.setOnFocusChangeListener((v, hasFocus) -> {
+                if(hasFocus){
 
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if(hasFocus){
+                    descripcion.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                        descripcion.addTextChangedListener(new TextWatcher() {
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        }
 
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            //imageButtonCheck.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            if(!usuarioActual.getDescripcion().contentEquals(descripcion.getText().toString())){
+                                imageButtonCheck.setVisibility(View.VISIBLE);
+                                imageButtonCheck.setClickable(true);
                             }
 
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                //imageButtonCheck.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable s) {
-                                if(!usuarioActual.getDescripcion().contentEquals(descripcion.getText().toString())){
-                                    imageButtonCheck.setVisibility(View.VISIBLE);
-                                    imageButtonCheck.setClickable(true);
-                                }
-
-                            }
-                        });
-                    }
+                        }
+                    });
                 }
             });
         } catch (Throwable t) {

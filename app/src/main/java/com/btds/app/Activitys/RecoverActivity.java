@@ -16,6 +16,10 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.util.Objects;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class RecoverActivity extends AppCompatActivity {
 
     MaterialEditText email;

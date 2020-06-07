@@ -40,15 +40,11 @@ import static com.btds.app.Utils.Funciones.borrarAmigo;
 public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHolder>  {
 
     private static final int USUARIO_NO_BLOQUEADO = 0;
-    //private static final int USUARIO_BLOQUEADO = 1;
-
-    //private boolean firstSearch = true;
     private final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private Context context;
     private List<Usuario> listaUsuarios;
     private HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados;
     private HashMap<String,String> listaAmigos;
-    //private FirebaseUser firebaseUser;
 
 
     public UsuariosAdapter(Context contexto, List<Usuario> listaUsuarios, HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados,HashMap<String,String> listaAmigos){
@@ -61,29 +57,18 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        //if(viewType == USUARIO_NO_BLOQUEADO){
-            View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item_friends_fragment,parent,false);
-            return new com.btds.app.Adaptadores.UsuariosAdapter.ViewHolder(view);
-        //}
-
+        View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item_friends_fragment,parent,false);
+        return new com.btds.app.Adaptadores.UsuariosAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int posicion) {
 
-        //holder.imagen_perfil.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        //holder.usuario.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        //holder.verPerfil.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-
         final Usuario usuario = listaUsuarios.get(posicion);
         holder.usuario.setText(usuario.getUsuario());
 
-        //System.out.println("usuario bindeado");
-
         if(usuario.getVisibilidad().getFoto()){
             if(usuario.getImagenURL().equals("default")){
-                //holder.imagen_perfil.setImageResource(R.mipmap.ic_launcher);
                 //private static final int USUARIO_BLOQUEADO = 1;
                 Glide.with(context).load(R.drawable.default_user_picture).into(holder.imagen_perfil);
             }else{
@@ -98,29 +83,22 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
             if(usuario.getVisibilidad().getFoto()){
                 if(usuario.getEstado().contentEquals(context.getResources().getString(R.string.online))){
                     holder.imagen_perfil.setBorderColor(context.getColor(R.color.spring_green));
-                    //holder.imagen_perfil.setMaxWidth(1);
                 }else{
                     holder.imagen_perfil.setBorderColor(context.getColor(R.color.red));
-                    //holder.imagen_perfil.setMaxWidth(1);
                 }
             }else{
                 holder.imagen_perfil.setBorderColor(context.getColor(R.color.cyan));
             }
 
-
         }else{
             holder.imagen_perfil.setBorderColor(context.getColor(R.color.colorPrimary));
-            //holder.imagen_perfil.setMaxWidth(1);
         }
         holder.verPerfil.setText(R.string.verPerfil);
-
         holder.verPerfil.setOnClickListener(v -> {
-            //Toast.makeText(context, "Has seleccionado ver el perfil", Toast.LENGTH_SHORT).show();
 
             final Dialog dialogo = new Dialog(context);
             dialogo.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialogo.setCancelable(true);
-            //Objects.requireNonNull(dialogo.getWindow()).setBackgroundDrawable(context.getDrawable(R.drawable.activity_drawable_ver_perfil_acrylic));
             dialogo.setContentView(R.layout.ver_perfil_dialog);
 
             listaUsuariosBloqueados = Funciones.obtenerUsuariosBloqueados(firebaseUser);
@@ -151,7 +129,6 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
 
             if(usuario.getVisibilidad().getFoto()){
                 if(usuario.getImagenURL().equals("default")){
-                    //holder.imagen_perfil.setImageResource(R.mipmap.ic_launcher);
                     //private static final int USUARIO_BLOQUEADO = 1;
                     Glide.with(context).load(R.drawable.default_user_picture).into(imagen_perfil);
                 }else{
@@ -203,33 +180,28 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
                context.startActivity(intentChat);
            });
 
-           ver_perfil_bloquear.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   if(listaUsuariosBloqueados.containsKey(usuario.getId())){
-                       Funciones.desbloquearUsuario(usuario);
-                       DesignerToast.Warning(context,context.getResources().getString(R.string.desbloquear)+" "+ usuario.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
-                       ver_perfil_bloquear.setText(R.string.bloquear);
-                   }else{
-                       Funciones.bloquearUsuario(usuario);
-                       DesignerToast.Warning(context,context.getResources().getString(R.string.blockedUser)+" "+ usuario.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
-                       ver_perfil_bloquear.setText(R.string.desbloquear);
-                   }
+           ver_perfil_bloquear.setOnClickListener(v1 -> {
+               if(listaUsuariosBloqueados.containsKey(usuario.getId())){
+                   Funciones.desbloquearUsuario(usuario);
+                   DesignerToast.Warning(context,context.getResources().getString(R.string.desbloquear)+" "+ usuario.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
+                   ver_perfil_bloquear.setText(R.string.bloquear);
+               }else{
+                   Funciones.bloquearUsuario(usuario);
+                   DesignerToast.Warning(context,context.getResources().getString(R.string.blockedUser)+" "+ usuario.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
+                   ver_perfil_bloquear.setText(R.string.desbloquear);
                }
            });
 
-           ver_perfil_peticion.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   if(listaAmigos.containsKey(usuario.getId())){
-                       borrarAmigo(firebaseUser,usuario);
-                       DesignerToast.Warning(context,context.getResources().getString(R.string.hasEliminado)+" "+ usuario.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
-                       ver_perfil_peticion.setText(R.string.enviarPeticion);
-                   }else{
-                       DesignerToast.Success(context, context.getResources().getString(R.string.peticionEnviada)+" "+usuario.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
-                       PeticionAmistadUsuario peticion = new PeticionAmistadUsuario(firebaseUser.getUid()+""+usuario.getId(),firebaseUser.getUid(),usuario.getId());
-                       Funciones.getPeticionesAmistadReference().child(firebaseUser.getUid()+""+usuario.getId()).setValue(peticion);
-                   }
+           ver_perfil_peticion.setOnClickListener(v13 -> {
+               if(listaAmigos.containsKey(usuario.getId())){
+                   borrarAmigo(firebaseUser,usuario);
+                   DesignerToast.Warning(context,context.getResources().getString(R.string.hasEliminado)+" "+ usuario.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
+                   ver_perfil_peticion.setText(R.string.enviarPeticion);
+               }else{
+                   DesignerToast.Success(context, context.getResources().getString(R.string.peticionEnviada)+" "+usuario.getUsuario(), Gravity.CENTER, Toast.LENGTH_SHORT);
+                   assert firebaseUser != null;
+                   PeticionAmistadUsuario peticion = new PeticionAmistadUsuario(firebaseUser.getUid()+""+usuario.getId(),firebaseUser.getUid(),usuario.getId());
+                   Funciones.getPeticionesAmistadReference().child(firebaseUser.getUid()+""+usuario.getId()).setValue(peticion);
                }
            });
 
@@ -239,7 +211,6 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.ViewHo
 
         //Entra a la actividad
         holder.itemView.setOnClickListener(v -> {
-            //Funciones.setActividadEnUso(true);
             Intent intentChat = new Intent(context, MessageActivity.class);
             intentChat.putExtra("userID",usuario.getId());
             context.startActivity(intentChat);

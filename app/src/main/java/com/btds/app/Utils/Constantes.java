@@ -3,8 +3,6 @@ package com.btds.app.Utils;
 /**
  * @author Alejandro Molina Louchnikov
  */
-
-
 public class Constantes {
 
     public static final String default_history_image = "https://www.staffcreativa.pe/blog/wp-content/uploads/logos9.gif";

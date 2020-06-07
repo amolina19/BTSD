@@ -33,6 +33,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
+import static android.provider.Settings.Secure.LOCATION_MODE;
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private LocationManager locationManager;
@@ -90,10 +96,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setMinZoomPreference(1);
         googleMap.setMaxZoomPreference(20);
         Log.d("DEBUG MapsActivity", "Mapa cargado");
-        //googleMap.clear();
-        //googleMap.addMarker(new MarkerOptions().position(actualLocation).title(getResources().getString(R.string.ahoraMismo)));
-        //googleMap.addMarker(new MarkerOptions().position(actualLocation).title(getResources().getString(R.string.ahoraMismo)));
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
 
         if(ubicacionCompartida == null){
             locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -103,11 +105,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     actualLocation = new com.google.android.gms.maps.model.LatLng(location.getLatitude(), location.getLongitude());
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.google.android.gms.maps.model.LatLng(actualLocation.latitude,actualLocation.longitude) , 18.0f));
                     Log.d("DEBUG MapsActivity", "Localizacion Latitud " + location.getLatitude() + " Longitud " + location.getLongitude());
-                    //googleMap.clear();
-                    //googleMap.addMarker(new MarkerOptions().position(actualLocation).title(getResources().getString(R.string.ahoraMismo)));
-                    //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
-                    //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
-                    //googleMap
+
                     if(isLocationEnabled(MapsActivity.this)){
                         compartirUbicacion.setClickable(true);
                         compartirUbicacion.setVisibility(View.VISIBLE);
@@ -161,10 +159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             actualLocation = new com.google.android.gms.maps.model.LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
             Log.d("DEBUG MapsActivity","Ultima localizacion Latitud "+lastLocation.getLatitude()+" Longitud "+lastLocation.getLongitude());
             googleMap.clear();
-            //googleMap.addMarker(new MarkerOptions().position(actualLocation).title(getResources().getString(R.string.ahoraMismo)));
-
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.google.android.gms.maps.model.LatLng(actualLocation.latitude,actualLocation.longitude) , 18.0f));
-            //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
         }else{
             Log.d("DEBUG MapsActivity", "lastLocation Nulo");
         }
@@ -228,10 +223,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 // This is new method provided in API 28
             LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            assert lm != null;
             return lm.isLocationEnabled();
         } else {
 // This is Deprecated in API 28
-            int mode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE,
+            int mode = Settings.Secure.getInt(context.getContentResolver(), LOCATION_MODE,
                     Settings.Secure.LOCATION_MODE_OFF);
             return  (mode != Settings.Secure.LOCATION_MODE_OFF);
 

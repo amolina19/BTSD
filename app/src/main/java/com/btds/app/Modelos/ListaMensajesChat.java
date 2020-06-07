@@ -2,6 +2,10 @@ package com.btds.app.Modelos;
 
 import com.btds.app.Utils.Funciones;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class ListaMensajesChat implements Comparable<ListaMensajesChat>{
 
     private Usuario usuario;

@@ -39,6 +39,10 @@ import java.util.List;
 import at.markushi.ui.CircleButton;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class CallActivity extends AppCompatActivity {
 
     private static final String APP_KEY = "b464b750-1044-4c6c-91f0-d35dde526b58";
@@ -46,18 +50,11 @@ public class CallActivity extends AppCompatActivity {
     private static final String ENVIRONMENT = "clientapi.sinch.com";
 
     private Call call;
-    private CallClient callClient;
-    private SinchClient sinchClient;
-    private Usuario usuarioChat;
-    private Usuario usuarioActual;
+    private Usuario usuarioChat, usuarioActual;
     private Llamada llamada;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-    private CircleButton endcallButton;
-    private CircleButton acceptCallButton;
-    private CircleButton denyCallButton;
-    private CircleImageView circleImageViewCall;
-    private TextView usuarioTextView;
+    private CircleButton endcallButton, acceptCallButton, denyCallButton;
     private Chronometer chronometer;
     Vibrator v;
 
@@ -73,8 +70,8 @@ public class CallActivity extends AppCompatActivity {
         usuarioChat = bundle.getParcelable("UsuarioChat");
         usuarioActual = bundle.getParcelable("UsuarioActual");
 
-        usuarioTextView = findViewById(R.id.usuarioLlamada);
-        circleImageViewCall = findViewById(R.id.circleImageViewCall);
+        TextView usuarioTextView = findViewById(R.id.usuarioLlamada);
+        CircleImageView circleImageViewCall = findViewById(R.id.circleImageViewCall);
         chronometer =  findViewById(R.id.timerCall);
         chronometer.setVisibility(View.GONE);
         chronometer.setFormat("%s");
@@ -84,17 +81,17 @@ public class CallActivity extends AppCompatActivity {
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
 
+        assert v != null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //v.vibrate(VibrationEffect.createOneShot(0, VibrationEffect.DEFAULT_AMPLITUDE));
-            assert v != null;
             v.vibrate(VibrationEffect.createWaveform(vibratorPatern(), 1));
         } else {
             //deprecated in API 26
-            assert v != null;
+            //noinspection deprecation
             v.vibrate(60000);
         }
 
-        sinchClient = Sinch.getSinchClientBuilder()
+        SinchClient sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
                 .userId(firebaseUser.getUid())
                 .applicationKey(APP_KEY)
@@ -129,27 +126,12 @@ public class CallActivity extends AppCompatActivity {
             usuarioChat = llamada.getUsuarioOrigen();
         }
 
-        endcallButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finalizarLlamada();
-            }
-        });
+        endcallButton.setOnClickListener(v -> finalizarLlamada());
 
-        acceptCallButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cogerLlamada();
-            }
-        });
+        acceptCallButton.setOnClickListener(v -> cogerLlamada());
         //RotateDrawable rotateDrawable = (RotateDrawable) acceptCallButton.getDrawable();
         //rotateDrawable.setLevel(500);
-        denyCallButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finalizarLlamada();
-            }
-        });
+        denyCallButton.setOnClickListener(v -> finalizarLlamada());
 
         if (!CallActivity.this.isFinishing()) {
             assert usuarioChat != null;
@@ -165,20 +147,13 @@ public class CallActivity extends AppCompatActivity {
 
         }
 
-        endcallButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finalizarLlamada();
-            }
-        });
+        endcallButton.setOnClickListener(v -> finalizarLlamada());
 
         assert usuarioChat != null;
         String callerID = usuarioChat.getUsuario().toLowerCase();
 
 
-        sinchClient.getCallClient().addCallClientListener((callClient, call) -> {
-            Log.d("DEBUG CallActivity ","CREATED SinchCallClientListener");
-        });
+        sinchClient.getCallClient().addCallClientListener((callClient, call) -> Log.d("DEBUG CallActivity ","CREATED SinchCallClientListener"));
 
         sinchClient.addSinchClientListener(new SinchClientListener() {
 
@@ -207,7 +182,6 @@ public class CallActivity extends AppCompatActivity {
         public void onCallEnded(Call endedCall) {
             Log.d("DEBUG CallActivity SinchCallListener","Call Ended");
             call = null;
-            SinchError a = endedCall.getDetails().getError();
             //button.setText("Call");
             //callState.setText("");
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
@@ -236,7 +210,6 @@ public class CallActivity extends AppCompatActivity {
         @Override
         public void onIncomingCall(CallClient clientCall, Call incomingCall) {
             call = incomingCall;
-            callClient = clientCall;
             Log.d("DEBUG CallActivity ","OnIncomingCall idCall "+call.getCallId()+" STATUS "+call.getState()+" DETAILS "+call.getDetails()+" STATUS "+call.getState());
             Toast.makeText(CallActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
             //call.answer();
@@ -278,7 +251,6 @@ public class CallActivity extends AppCompatActivity {
             assert usuarioChat != null;
             intentChat.putExtra("userID", usuarioChat.getId());
             startActivity(intentChat);
-            finish();
         }else{
             int elapsed = (int)(SystemClock.elapsedRealtime()-chronometer.getBase());
             List<Integer> tiempoTranscurrido = Funciones.obtenerTiempoLlamada(elapsed);
@@ -290,8 +262,8 @@ public class CallActivity extends AppCompatActivity {
             assert usuarioChat != null;
             intentChat.putExtra("userID", usuarioChat.getId());
             startActivity(intentChat);
-            finish();
         }
+        finish();
     }
 
     public long[] vibratorPatern(){

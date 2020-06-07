@@ -44,7 +44,6 @@ public class Chats extends Fragment {
 
     private RecyclerView recyclerView;
     private HashMap<String, UsuarioBloqueado> listaUsuariosBloqueados = new HashMap<>();
-    private HashMap<String,Usuario > usuarioHashMap = new HashMap<>();
 
 
     private ChatsAdapter chatsAdapter;
@@ -73,7 +72,7 @@ public class Chats extends Fragment {
 
         //Genera las Lineas en el Recycler View
         DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL);
-        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(getActivity(), R.drawable.divider_recycler_view)));
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(Objects.requireNonNull(getActivity()), R.drawable.divider_recycler_view)));
         recyclerView.addItemDecoration(itemDecorator);
 
         listaMensajesChats = Funciones.ordernarChat(ListaUsuariosObject,ListaMensajes);
@@ -176,10 +175,8 @@ public class Chats extends Fragment {
                     listaMensajesChats = Funciones.ordernarChat(ListaUsuariosObject,ListaMensajes);
                     Collections.sort(listaMensajesChats);
                     chatsAdapter = new ChatsAdapter(getActivity(),listaMensajesChats);
-                    //usuariosAdapter.notifyDataSetChanged();
                     recyclerView.setAdapter(chatsAdapter);
                     chatsAdapter.notifyDataSetChanged();
-
                 }
 
                 @Override

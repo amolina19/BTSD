@@ -7,9 +7,7 @@ package com.btds.app.Modelos;
 
 public class UsuarioBloqueado {
 
-    private String key;
-    private String usuarioAccionBloquear;
-    private String usuarioBloqueado;
+    private String key, usuarioAccionBloquear, usuarioBloqueado;
 
     public UsuarioBloqueado() {
 

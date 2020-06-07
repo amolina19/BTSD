@@ -25,7 +25,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -40,14 +39,12 @@ import java.util.Objects;
 
 public class Peticiones extends Fragment {
 
-    private RecyclerView recyclerViewPeticiones;
-    private RecyclerView recyclerViewBloqueados;
+    private RecyclerView recyclerViewPeticiones, recyclerViewBloqueados;
 
     private PeticionesAdapter peticionesAdapter;
     private BloqueadosAdapter bloqueadosAdapter;
 
-    private List<Usuario> listaPeticiones;
-    private List<Usuario> listaBloqueados;
+    private List<Usuario> listaPeticiones, listaBloqueados;
     private HashMap<String,String> listaAmigos = new HashMap<>();
     private HashMap<String,PeticionAmistadUsuario> listaUsuariosEncontrados = new HashMap<>();
     private HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados = new HashMap<>();
@@ -76,32 +73,25 @@ public class Peticiones extends Fragment {
         recyclerViewBloqueados.setVisibility(View.GONE);
 
         DividerItemDecoration itemDecorator = new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL);
-        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(getActivity(), R.drawable.divider_recycler_view)));
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(Objects.requireNonNull(getActivity()), R.drawable.divider_recycler_view)));
         recyclerViewBloqueados.addItemDecoration(itemDecorator);
         recyclerViewPeticiones.addItemDecoration(itemDecorator);
 
-        buttonSitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        buttonSitch.setOnClickListener(v -> {
 
 
-                if(textView.getText().toString().contentEquals(getString(R.string.bloqueados))){
-                    recyclerViewBloqueados.setVisibility(View.GONE);
-                    recyclerViewPeticiones.setVisibility(View.VISIBLE);
-                    textView.setText(getString(R.string.peticionesPendientes));
-                    buttonSitch.setText(getString(R.string.bloqueados));
-                }else{
-                    recyclerViewPeticiones.setVisibility(View.GONE);
-                    recyclerViewBloqueados.setVisibility(View.VISIBLE);
-                    textView.setText(getString(R.string.bloqueados));
-                    buttonSitch.setText(getString(R.string.peticionesPendientes));
-                }
+            if(textView.getText().toString().contentEquals(getString(R.string.bloqueados))){
+                recyclerViewBloqueados.setVisibility(View.GONE);
+                recyclerViewPeticiones.setVisibility(View.VISIBLE);
+                textView.setText(getString(R.string.peticionesPendientes));
+                buttonSitch.setText(getString(R.string.bloqueados));
+            }else{
+                recyclerViewPeticiones.setVisibility(View.GONE);
+                recyclerViewBloqueados.setVisibility(View.VISIBLE);
+                textView.setText(getString(R.string.bloqueados));
+                buttonSitch.setText(getString(R.string.peticionesPendientes));
             }
         });
-
-
-        DatabaseReference peticionesUsuario = Funciones.getPeticionesAmistadReference();
-        //listaUsuariosEncontrados = getListaPeticionesAmistad();
 
         listaPeticiones = new ArrayList<>();
         listaBloqueados = new ArrayList<>();
@@ -113,31 +103,13 @@ public class Peticiones extends Fragment {
         bloqueadosAdapter = new BloqueadosAdapter(getActivity(),listaBloqueados);
         recyclerViewBloqueados.setAdapter(bloqueadosAdapter);
 
-       // Preffy preffy = Preffy.getInstance(getContext());
-        //preffy.putString("FragmentHome", "Amigos");
-
-        //FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //DatabaseReference referenceUserDataBase = FirebaseDatabase.getInstance().getReference("Usuarios");
-        //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser, referenceUserDataBase, getContext());
-
-
-        //new TaskProgressBar().execute();
-
         obtenerPeticiones();
-
-        //System.out.println("FRAGMENTO CREADO");
-        //listaAmigos = new ArrayList<>();
-
-        //registerForContextMenu(recyclerView);
-        //obtenerAmigos();
         return view;
     }
 
 
 
     private void obtenerPeticiones(){
-        //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //DatabaseReference references = FirebaseDatabase.getInstance().getReference("Usuarios");
         obtenerAmigos();
         Funciones.getBlockUsersListDatabaseReference().addValueEventListener(new ValueEventListener() {
             @Override
@@ -146,6 +118,7 @@ public class Peticiones extends Fragment {
                 for (DataSnapshot data:dataSnapshot.getChildren()){
                     UsuarioBloqueado usuarioBloqueado = data.getValue(UsuarioBloqueado.class);
                     assert usuarioBloqueado != null;
+                    assert firebaseUser != null;
                     if(usuarioBloqueado.getUsuarioAccionBloquear().contentEquals(firebaseUser.getUid())){
                         listaUsuariosBloqueados.put(data.getKey(),usuarioBloqueado);
                     }
@@ -169,9 +142,6 @@ public class Peticiones extends Fragment {
                                 }
                             }
                         }
-                        //System.out.println("ARRAY "+listaUsuarios.size());
-                        //Log.d("DEBUG Fragment Amigos","Lista de Amigos "+listaUsuarios.size() );
-                        //Log.d("DEBUG Fragment Amigos","Lista de Amigos Bloqueados "+listaUsuariosBloqueados.size());
 
                         Funciones.getUsersDatabaseReference().addValueEventListener(new ValueEventListener() {
                             @Override
@@ -179,16 +149,17 @@ public class Peticiones extends Fragment {
                                 listaPeticiones.clear();
                                 for(DataSnapshot data:dataSnapshot.getChildren()){
                                     Usuario usuario = data.getValue(Usuario.class);
+                                    assert usuario != null;
                                     if(listaUsuariosEncontrados.containsKey(usuario.getId())){
                                         listaPeticiones.add(usuario);
                                     }
+                                    assert firebaseUser != null;
                                     if(listaUsuariosBloqueados.containsKey(firebaseUser.getUid()+usuario.getId())){
                                         listaBloqueados.add(usuario);
                                     }
                                 }
 
                                 peticionesAdapter = new PeticionesAdapter(getContext(),listaPeticiones,listaAmigos);
-                                //usuariosAdapter.notifyDataSetChanged();
                                 recyclerViewPeticiones.setAdapter(peticionesAdapter);
                                 peticionesAdapter.notifyDataSetChanged();
 
@@ -216,17 +187,6 @@ public class Peticiones extends Fragment {
 
             }
         });
-
-
-
-    }
-
-    public List<Usuario> getListaPeticiones() {
-        return listaPeticiones;
-    }
-
-    public void setListaPeticiones(List<Usuario> listaPeticiones) {
-        this.listaPeticiones = listaPeticiones;
     }
 
     private void obtenerAmigos(){
@@ -248,6 +208,4 @@ public class Peticiones extends Fragment {
             }
         });
     }
-
-
 }

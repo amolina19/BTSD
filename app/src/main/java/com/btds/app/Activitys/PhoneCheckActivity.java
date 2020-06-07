@@ -15,8 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
 import com.btds.app.Utils.Funciones;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,22 +25,25 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.hbb20.CountryCodePicker;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.TimeUnit;
+
+/**
+ * @author Alejandro Molina Louchnikov
+ */
 
 public class PhoneCheckActivity extends AppCompatActivity {
 
     private EditText editTextMobile;
     private static Activity activityCheckPhone;
-    private TextView textView_informacion;
-    private TextView textView;
-    private Button buttonOmitir;
-    private Button buttonSalir;
+    private TextView textView_informacion, textView;
+    private Button buttonOmitir, buttonSalir;
     CountryCodePicker codeCountryPicker;
     final private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private Usuario usuarioActual;
     String phoneCode;
-    //String systemLanguage;
-    //String verificationid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,17 +59,15 @@ public class PhoneCheckActivity extends AppCompatActivity {
 
         Intent intentMain = getIntent();
         Bundle bundle = intentMain.getExtras();
+        assert bundle != null;
         usuarioActual = bundle.getParcelable("usuario");
 
-        buttonSalir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent goLogin = new Intent(PhoneCheckActivity.this,LoginActivity.class);
-                startActivity(goLogin);
-                Funciones.actualizarT2A(false, usuarioActual);
-                FirebaseAuth.getInstance().signOut();
-                finish();
-            }
+        buttonSalir.setOnClickListener(v -> {
+            Intent goLogin = new Intent(PhoneCheckActivity.this,LoginActivity.class);
+            startActivity(goLogin);
+            Funciones.actualizarT2A(false, usuarioActual);
+            FirebaseAuth.getInstance().signOut();
+            finish();
         });
         if(!(usuarioActual.getTwoAunthenticatorFactor() == null)){
             if(usuarioActual.getTwoAunthenticatorFactor()){
@@ -83,17 +82,15 @@ public class PhoneCheckActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Usuario usuarioActual = dataSnapshot.getValue(Usuario.class);
+                    assert usuarioActual != null;
                     usuarioActual.setTwoAunthenticatorFactor(false);
 
-                    Funciones.getActualUserDatabaseReference(firebaseUser).setValue(usuarioActual).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Log.d("DEBUG Phone Check","Verificacion omitida");
-                            Intent intent = new Intent(PhoneCheckActivity.this, MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                            startActivity(intent);
-                            finish();
-                        }
+                    Funciones.getActualUserDatabaseReference(firebaseUser).setValue(usuarioActual).addOnCompleteListener(task -> {
+                        Log.d("DEBUG Phone Check","Verificacion omitida");
+                        Intent intent = new Intent(PhoneCheckActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        startActivity(intent);
+                        finish();
                     });
                 }
 
@@ -117,12 +114,7 @@ public class PhoneCheckActivity extends AppCompatActivity {
         codeCountryPicker.changeLanguage(Funciones.obtainLanguageContryPicker());
         phoneCode = "+"+ Funciones.getCountryCode();
 
-        codeCountryPicker.setOnCountryChangeListener(new CountryCodePicker.OnCountryChangeListener() {
-            @Override
-            public void onCountrySelected() {
-                phoneCode = codeCountryPicker.getSelectedCountryCodeWithPlus();
-            }
-        });
+        codeCountryPicker.setOnCountryChangeListener(() -> phoneCode = codeCountryPicker.getSelectedCountryCodeWithPlus());
 
         //firebaseAuth.useAppLanguage();
         //mAuth.setLanguageCode("es");
@@ -164,8 +156,8 @@ public class PhoneCheckActivity extends AppCompatActivity {
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNum, 60 /*timeout*/, TimeUnit.SECONDS, this, new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
-            public void onCodeSent(String verificationId,
-                                   PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            public void onCodeSent(@NotNull String verificationId,
+                                   @NotNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
                 // Save the verification id somewhere
                 // ...
 
@@ -174,13 +166,13 @@ public class PhoneCheckActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+            public void onVerificationCompleted(@NotNull PhoneAuthCredential phoneAuthCredential) {
                 // Sign in with the credential
                 // ...
             }
 
             @Override
-            public void onVerificationFailed(FirebaseException e) {
+            public void onVerificationFailed(@NotNull FirebaseException e) {
                 // ...
                 //UNFINISHED
             }

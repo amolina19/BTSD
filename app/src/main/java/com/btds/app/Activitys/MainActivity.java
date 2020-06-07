@@ -57,14 +57,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * @author Alejandro Molina Louchnikov
  */
 
-
 public class MainActivity extends BasicActivity {
 
     private static final String APP_KEY = "b464b750-1044-4c6c-91f0-d35dde526b58";
     private static final String APP_SECRET = "go21mH/XrUSnK12FmjNtdA==";
     private static final String ENVIRONMENT = "clientapi.sinch.com";
 
-    LinearLayout linearLayout;
+    LinearLayout linearLayout, linearLayoutMainActivity;
     CircleImageView imagen_perfil;
     Button imageProfileButton;
     TextView usuario;
@@ -72,14 +71,12 @@ public class MainActivity extends BasicActivity {
     Fecha fecha;
     BottomNavigationView bottomNav;
     List<Estados> listaEstados;
-    LinearLayout linearLayoutMainActivity;
     private static HashMap<String,String> listaAmigos = new HashMap<>();
     private static HashMap<String, Usuario> usuariosConEstados = new HashMap<>();
     RecyclerView recyclerView;
 
     final private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-    DatabaseReference referenceUserDataBase;
-    DatabaseReference mainDatabasePath;
+    DatabaseReference referenceUserDataBase, mainDatabasePath;
     private Boolean intentTime = false;
 
     @RequiresApi(api = Build.VERSION_CODES.O)

@@ -36,7 +36,6 @@ public class RegisterActivity extends BasicActivity {
     MaterialEditText username, email, password;
     Button button_registrar;
 
-
     //Auntetificacion Firebase
     FirebaseAuth mAuth;
     DatabaseReference reference;

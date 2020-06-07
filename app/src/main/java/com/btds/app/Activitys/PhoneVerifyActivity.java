@@ -33,12 +33,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class PhoneVerifyActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
-    private String verificationid;
+    private String verificationid, nTelefono;
     private EditText editText;
-    private String nTelefono;
     private DatabaseReference databaseUserReference;
     final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -92,9 +95,7 @@ public class PhoneVerifyActivity extends AppCompatActivity {
                     Funciones.actualizarT2A(true,usuario);
                     Funciones.mostrarDatosUsuario(usuario);
                     databaseUserReference.setValue(usuario).addOnCompleteListener(task -> {
-                        if(task.isSuccessful()){
-                           // Toast.makeText(PhoneVerifyActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_SHORT).show();
-                        }
+                        task.isSuccessful();// Toast.makeText(PhoneVerifyActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_SHORT).show();
                     });
                 }
             }

@@ -28,11 +28,7 @@ import java.util.List;
 
 public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder>  {
 
-    //private static final int USUARIO_NO_BLOQUEADO = 0;
-    //private static final int USUARIO_BLOQUEADO = 1;
-
     private Context context;
-    //private HashMap<String,UsuarioBloqueado> listaUsuariosBloqueados;
     private List<ListaMensajesChat> lista;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -40,32 +36,19 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     public ChatsAdapter(Context contexto, List<ListaMensajesChat> lista){
         this.lista = lista;
         this.context = contexto;
-
-
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        //if(viewType == USUARIO_NO_BLOQUEADO){
         View view = LayoutInflater.from(context).inflate(R.layout.usuarios_item_chats_fragment,parent,false);
         return new ChatsAdapter.ViewHolder(view);
-        //}
-
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int posicion) {
 
-        //holder.imagen_perfil.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        //holder.usuario.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        //holder.textoChat.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        //holder.hora.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-        //holder.leido.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
-
         final ListaMensajesChat listaMensaje = lista.get(posicion);
-
         holder.usuario.setText(listaMensaje.getUsuarios().getUsuario());
         if(listaMensaje.getUsuarios().getImagenURL().contentEquals("default")){
             Glide.with(context).load(R.drawable.default_user_picture).into(holder.imagen_perfil);
@@ -83,7 +66,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             holder.textoChat.setText(R.string.audio);
         }
 
-
         int minutosTranscurridos = Funciones.tiempoTranscurrido(listaMensaje.getMensaje().getFecha());
 
         if(minutosTranscurridos < 1440){
@@ -95,8 +77,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             String fecha = listaMensaje.getMensaje().getFecha().dia+"/"+listaMensaje.getMensaje().getFecha().mes+"/"+listaMensaje.getMensaje().getFecha().anno;
             holder.hora.setText(fecha);
         }
-
-
 
         if(firebaseUser != null && listaMensaje.getMensaje().getLeido() && listaMensaje.getMensaje().getEmisor().contentEquals(firebaseUser.getUid())){
             holder.leido.setVisibility(View.VISIBLE);

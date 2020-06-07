@@ -1,9 +1,12 @@
 package com.btds.app.Modelos;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class Audio {
 
-    String pathLocal;
-    String URLfirebase;
+    String pathLocal, URLfirebase;
 
     public Audio() {
 

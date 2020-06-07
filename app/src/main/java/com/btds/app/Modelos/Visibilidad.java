@@ -3,13 +3,13 @@ package com.btds.app.Modelos;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class Visibilidad implements Parcelable {
 
-    private Boolean usuario;
-    private Boolean telefono;
-    private Boolean descripcion;
-    private Boolean foto;
-    private Boolean enLinea;
+    private Boolean usuario, descripcion, telefono, foto, enLinea;
 
     public Visibilidad() {
     }

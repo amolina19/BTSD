@@ -10,17 +10,8 @@ import android.os.Parcelable;
 
 public class Usuario implements Parcelable {
 
-    private String id;
-    private String usuario;
-    private String imagenURL;
-    private String estado;
-    private String hora;
-    private String fecha;
-    private String descripcion;
-    private String telefono;
-    private Boolean twoAunthenticatorFactor;
-    private Boolean phoneVerificationOmited;
-    private Boolean T2Aintroduced;
+    private String id, usuario, imagenURL, estado, hora, fecha, descripcion, telefono;
+    private Boolean twoAunthenticatorFactor, phoneVerificationOmited, T2Aintroduced;
     private Visibilidad visibilidad;
 
     public Usuario(){

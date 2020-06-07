@@ -18,14 +18,18 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.util.Objects;
 
+/**
+ * @author Alejandro Molina Louchnikov
+ */
+
 public class ChangePasswordActivity extends AppCompatActivity {
 
 
-    MaterialEditText password,repeatpassword,oldpassword;
+    MaterialEditText password, repeatpassword, oldpassword;
     ProgressBar progressBar;
-
     Button aplicar_button;
     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +59,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                         Toast.makeText(ChangePasswordActivity.this, getResources().getString(R.string.contraseñaPequeña), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                     } else {
-                        AuthCredential credential = EmailAuthProvider.getCredential(Objects.requireNonNull(firebaseUser.getEmail()), oldpassword.getText().toString());
+                        AuthCredential credential = EmailAuthProvider.getCredential(Objects.requireNonNull(firebaseUser.getEmail()), Objects.requireNonNull(oldpassword.getText()).toString());
                         firebaseUser.reauthenticate(credential).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 firebaseUser.updatePassword(password.getText().toString()).addOnCompleteListener(task1 -> {

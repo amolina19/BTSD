@@ -27,7 +27,6 @@ public class EstadosUsuarioAdapter extends BaseAdapter {
     public EstadosUsuarioAdapter(Context context, List<Estados> listaEstadosUsuario) {
         this.context = context;
         this.listaEstadosUsuario = listaEstadosUsuario;
-        System.out.println("TAMAÑO IMANGES DENTRO ADAPTADOR: " +listaEstadosUsuario.size());
         inflter = (LayoutInflater.from(context));
     }
 
@@ -54,14 +53,8 @@ public class EstadosUsuarioAdapter extends BaseAdapter {
         view = inflter.inflate(R.layout.estados_usuario_items, null); // inflate the layout
         ImageView estadosUsuario = view.findViewById(R.id.estados_usuario_icon); // get the reference of ImageView
         if(estadosUsuario !=null){
-            //System.out.println(listaEstadosUsuario.get(position));
             Picasso.with(context).load(String.valueOf(listaEstadosUsuario.get(position).estadoURL)).into(estadosUsuario);
-            //System.out.println(listaEstadosUsuario.get(position));
-            //estadosUsuario.setImageResource(logos[i]); // set logo images
         }
-
-
         return view;
-
     }
 }
