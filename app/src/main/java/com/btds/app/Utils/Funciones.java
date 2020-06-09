@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -119,7 +118,6 @@ public class Funciones {
         LocalDate dateAfter = LocalDate.of(Integer.parseInt(fecha.obtenerAnno()), Integer.parseInt(fecha.obtenerMes()), Integer.parseInt(fecha.obtenerDia()));
         long nDias = ChronoUnit.DAYS.between(dateBefore, dateAfter);
 
-        Log.d("Debugging Dias transcurridos", "Dias transcurridos ult Conexion Usuario: " + nDias);
         return nDias;
     }
 
@@ -188,7 +186,6 @@ public class Funciones {
 
         refernceBloquedUsers.child(usuarioBloqueadoObject.getKey()).setValue(usuarioBloqueadoObject).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Log.d("Debugging", "Se ha bloqueado al usuario");
             }
         });
 
@@ -221,14 +218,10 @@ public class Funciones {
                             for (Map.Entry<String, UsuarioBloqueado> entry : listaUsuariosBloqueados.entrySet()) {
                                 //System.out.println(entry.getKey());
                                 UsuarioBloqueado value = entry.getValue();
-                                Log.d("DEBUG Funciones, VALOR USUARIO BLOQUEADO", value.getUsuarioBloqueado());
                             }
                         }
-
                     }
                 }
-                Log.d("DEBUG USUARIOS BLOQUEADOS", String.valueOf(listaUsuariosBloqueados.size()));
-
             }
 
             @Override
@@ -331,16 +324,11 @@ public class Funciones {
 
     public static int obtenerMinutosSubida(Estados estado) {
 
-        Log.d("DEBUG obtenerHorasSubida ", "Fecha SUBIDA " + estado.getFecha().toString());
-        Log.d("DEBUG FECHA ESTADO OBJECT", " " + estado.getFecha().toString());
-
         Fecha fecha = new Fecha();
         LocalDateTime dateBefore = LocalDateTime.of(estado.fecha.getAnnoInteger(), estado.fecha.getMesInteger(), estado.fecha.getDiaInteger(), estado.fecha.getHoraInteger(), estado.fecha.getMinutosInteger());
         LocalDateTime dateAfter = LocalDateTime.of(fecha.getAnnoInteger(), fecha.getMesInteger(), fecha.getDiaInteger(), fecha.getHoraInteger(), fecha.getMinutosInteger());
         long minutos = ChronoUnit.MINUTES.between(dateBefore, dateAfter);
         int minutosTranscurridos = (int) minutos;
-        Log.d("Debugging Minutos transcurridos", String.valueOf(+minutos));
-
         return minutosTranscurridos;
     }
 
@@ -527,28 +515,20 @@ public class Funciones {
     public static void mostrarDatosUsuario(Usuario usuario) {
 
         if (usuario.getId() != null) {
-            Log.d("Funcion MostrarDatosUsuario, UID", usuario.getId());
         }
         if (usuario.getUsuario() != null) {
-            Log.d("Funcion MostrarDatosUsuario, Usuario", usuario.getUsuario());
         }
         if (usuario.getDescripcion() != null) {
-            Log.d("Funcion MostrarDatosUsuario, Descripcion", usuario.getDescripcion());
         }
         if (usuario.getEstado() != null) {
-            Log.d("Funcion MostrarDatosUsuario, Estado", usuario.getEstado());
         }
         if (usuario.getFecha() != null) {
-            Log.d("Funcion MostrarDatosUsuario, Fecha", usuario.getFecha());
         }
         if (usuario.getHora() != null) {
-            Log.d("Funcion MostrarDatosUsuario, Hora", usuario.getHora());
         }
         if (usuario.getImagenURL() != null) {
-            Log.d("Funcion MostrarDatosUsuario, IMAGEN URL", usuario.getImagenURL());
         }
         if (usuario.getTelefono() != null) {
-            Log.d("Funcion MostrarDatosUsuario, Telefono", usuario.getTelefono());
         }
     }
 
@@ -1018,8 +998,6 @@ public class Funciones {
 
                 }
             }
-
-            Log.d("Debug Funciones ordenarChat", "Lista total mensajes " + lista.size());
         }
         return lista;
     }

@@ -1,7 +1,8 @@
 <resources>
     <!-- APP Strings -->
     <string name="app_name">BTSD</string>
-    <string name="version">Version 1.0</string>
+    <string name="version">1.0</string>
+    <string name="versionName">Release</string>
     <string name="Autor">Alejandro Molina Louchnikov</string>
 
     <!-- Ajustes Strings-->

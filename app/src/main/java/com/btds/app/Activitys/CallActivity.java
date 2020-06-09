@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.TextView;
@@ -119,7 +118,6 @@ public class CallActivity extends AppCompatActivity {
 
             if (call == null) {
                 call = sinchClient.getCallClient().callUser(usuarioChat.getId().toLowerCase());
-                Log.d("DEBUG CallActivity ","Calling "+ usuarioChat.getUsuario().toLowerCase());
             }
 
         }else{
@@ -153,20 +151,17 @@ public class CallActivity extends AppCompatActivity {
         String callerID = usuarioChat.getUsuario().toLowerCase();
 
 
-        sinchClient.getCallClient().addCallClientListener((callClient, call) -> Log.d("DEBUG CallActivity ","CREATED SinchCallClientListener"));
+        sinchClient.getCallClient().addCallClientListener((callClient, call) ->{});
 
         sinchClient.addSinchClientListener(new SinchClientListener() {
 
             public void onClientStarted(SinchClient client) {
-                Log.d("CallActivity ","VOIP Client Started");
             }
 
             public void onClientStopped(SinchClient client) {
-                Log.d("CallActivity ","VOIP Client Stopped");
             }
 
             public void onClientFailed(SinchClient client, SinchError error) {
-                Log.d("CallActivity ","VOIP Client Failed");
             }
 
             @Override
@@ -180,7 +175,6 @@ public class CallActivity extends AppCompatActivity {
     private class SinchCallListener implements CallListener {
         @Override
         public void onCallEnded(Call endedCall) {
-            Log.d("DEBUG CallActivity SinchCallListener","Call Ended");
             call = null;
             //button.setText("Call");
             //callState.setText("");
@@ -195,13 +189,11 @@ public class CallActivity extends AppCompatActivity {
         @Override
         public void onCallEstablished(Call establishedCall) {
             //callState.setText("connected");
-            Log.d("DEBUG CallActivity SinchCallListener","Call Established");
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
         }
 
         @Override
         public void onCallProgressing(Call progressingCall) {
-            Log.d("DEBUG CallActivity SinchCallListener","Call Progressing");
         }
 
     }
@@ -210,7 +202,6 @@ public class CallActivity extends AppCompatActivity {
         @Override
         public void onIncomingCall(CallClient clientCall, Call incomingCall) {
             call = incomingCall;
-            Log.d("DEBUG CallActivity ","OnIncomingCall idCall "+call.getCallId()+" STATUS "+call.getState()+" DETAILS "+call.getDetails()+" STATUS "+call.getState());
             Toast.makeText(CallActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
             //call.answer();
             call.addCallListener(new SinchCallListener());

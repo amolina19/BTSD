@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,7 +71,6 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_estado);
-        Log.d("DEBUG ","EstadoActivity Created");
 
         context = getApplicationContext();
         Intent intent = getIntent();
@@ -183,7 +181,6 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
 
                     //fechaSubida.setText(listaEstadosUsuario.get(0).getFecha().hora+""+listaEstadosUsuario.get(0).getFecha().minutos);
                     Estados estado = listaEstadosUsuario.get(0);
-                    Log.d("FECHA EstadoActivity ESTADO",estado.getFecha().toString());
 
                     int minutosTranscurridos = Funciones.obtenerMinutosSubida(estado);
                     String fechaSubidaEstado;
@@ -206,7 +203,6 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
                     }
                     //Glide.with(EstadoActivity.this).load(userPictureURL).into(circleImageView);
 
-                    Log.d("DEBUG EstadosActivity","Valor contador "+storiesCount);
                     Picasso.with(context).load(listaEstadosUsuario.get(0).getEstadoURL()).into(storiesImageView, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -239,7 +235,6 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
         //Toast.makeText(this, "onNext", Toast.LENGTH_SHORT).show();
         //
         storiesCount++;
-        Log.d("DEBUG EstadosActivity","Valor contador "+storiesCount);
         Picasso.with(context).load(listaEstadosUsuario.get(storiesCount).getEstadoURL()).into(storiesImageView);
 
         Estados estado = listaEstadosUsuario.get(storiesCount);
@@ -335,7 +330,6 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             // or get a single image only
             Image image = ImagePicker.getFirstImageOrNull(data);
-            Log.d("DEBUG TusEstadosActivity","IMAGEN PATH "+image.getPath());
             //Toast.makeText(this, getResources().getString(R.string.actualizandoImagenPerfil), Toast.LENGTH_SHORT).show();
             subirImagen(image);
 
@@ -371,14 +365,12 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
         //StorageReference storageUserEstadosRef = storageReference.child("Imagenes/Perfil/"+usuarioObject.getId());
         String idEstado = new Fecha().obtenerFechaTotal()+""+Funciones.getAlphaNumericString(8);
         String URLstring = Funciones.getAlphaNumericString(16);
-        Log.d("DEBUG TusEstadosActivity","URL "+ URLstring);
         StorageReference storageUserEstadosRef = storageReference.child("Estados/"+firebaseUser.getUid()+"/"+URLstring);
         UploadTask uploadTask = storageUserEstadosRef.putFile(file);
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(exception -> {
             // Handle unsuccessful uploads
-            Log.d("DEBUG PerfilActivity","El Estado no se ha subido");
             //Toast.makeText(TusEstadosActivity.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
             Toast.makeText(this, "ERROR al subir el estado", Toast.LENGTH_SHORT).show();
             DesignerToast.Warning(EstadoActivity.this,getResources().getString(R.string.errorSubirEstado), Gravity.CENTER, Toast.LENGTH_SHORT);
@@ -386,14 +378,11 @@ public class EstadoActivity extends BasicActivity implements StoriesProgressView
             // getting image uri and converting into string
             //usuarioObject.setImagenURL(downloadUrl.toString());
             //Fecha fecha = new Fecha();
-
             Estados estado = new Estados(idEstado,downloadUrl.toString(),usuarioActual,new Fecha());
-            Log.d("DEBUG TusEstadosActivity ","FECHA SUBIDA "+estado.fecha.toString());
 
             assert firebaseUser != null;
             Funciones.getEstadosDatabaseReference().child(idEstado).setValue(estado).addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
-                    Log.d("DEBUG TusEstadosActivity","Referencia Estado Registrado en la base de datos");
                     if(addHistoria.getVisibility() == View.VISIBLE){
                         finish();
                         startActivity(getIntent());

@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -70,7 +69,6 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
-        Log.d("DEBUG ","PerfilActivity Created");
 
         //INDISPENSABLE
         toolbar = findViewById(R.id.toolbar);
@@ -200,7 +198,6 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
             if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
                 // or get a single image only
                 Image image = ImagePicker.getFirstImageOrNull(data);
-                Log.d("DEBUG PerfilActivity","IMAGEN PATH "+image.getPath());
                 Toast.makeText(this, getResources().getString(R.string.actualizandoImagenPerfil), Toast.LENGTH_SHORT).show();
                 subirImagen(image);
             }
@@ -229,7 +226,6 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(exception -> {
             // Handle unsuccessful uploads
-            Log.d("DEBUG PerfilActivity","LA IMAGEN NO SE HA SUBIDO");
             Toast.makeText(PerfilActivity.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
         }).addOnSuccessListener(taskSnapshot -> {
             storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
@@ -237,12 +233,10 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
                 usuarioActual.setImagenURL(downloadUrl.toString());
                 referenceUserDataBase.child(usuarioActual.getId()).setValue(usuarioActual).addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
-                        Log.d("DEBUG PerfilActivity","Se ha Actualizado la foto de perfil");
                         Toast.makeText(PerfilActivity.this, getResources().getString(R.string.exitoSubirImagenPerfil), Toast.LENGTH_SHORT).show();
                     }
                 });
             });
-            Log.d("DEBUG PerfilActivity","La imagen se ha subido al perfil de "+ usuarioActual.getUsuario());
         });
     }
 

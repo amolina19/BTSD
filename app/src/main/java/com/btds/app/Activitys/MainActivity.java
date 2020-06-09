@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,7 +44,6 @@ import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
 import com.vdx.designertoast.DesignerToast;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +88,6 @@ public class MainActivity extends BasicActivity {
             startActivity(backToStartActivity);
             finish();
         }
-        Log.d("DEBUG ", "MainActivity Created");
         //new Constantes("81165","kH6Jv3mOn4htJ78","8sfBc3Rr-PaR4Wf","BWMGDip2NKWtdp3Hevc9",getApplicationContext());
 
         bottomNav = findViewById(R.id.navigation_view_bottom_home);
@@ -101,14 +98,6 @@ public class MainActivity extends BasicActivity {
 
         linearLayout = findViewById(R.id.linearLayout_estados);
         fecha = new Fecha();
-        Log.d("DEBUG FECHA", LocalDateTime.now().toString());
-        Log.d("DEBUG MainActivity ", "Creacion de la actividad " + fecha.toString());
-        //System.out.println(fecha.toString());
-        //System.out.println(fecha.obtenerFechaTotal());
-
-        //progressBar = findViewById(R.id.progressBar);
-        //progressBar.setVisibility(View.INVISIBLE);
-
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -118,15 +107,10 @@ public class MainActivity extends BasicActivity {
         imageProfileButton = findViewById(R.id.imagenProfileButton);
         imageProfileButton.setBackgroundColor(Color.TRANSPARENT);
         usuario = findViewById(R.id.usuario);
-        //editText_buscarAmigos = findViewById(R.id.buscar_amigos);
-        //editText_buscarAmigos.setVisibility(View.GONE);
 
         if (BuildConfig.DEBUG && !(MainActivity.this.isFinishing() || firebaseUser != null)) {
             throw new AssertionError("Assertion failed");
         }
-
-
-        //Log.d("DEBUG MainActivity","##Lista estados "+listaEstados.size());
 
         imageProfileButton.setOnClickListener(v -> {
             Intent intentToProfile = new Intent(MainActivity.this, PerfilActivity.class);
@@ -186,12 +170,9 @@ public class MainActivity extends BasicActivity {
                             .environmentHost(ENVIRONMENT)
                             .build();
 
-                    //recipientID = intent.getStringExtra("recipientID");
-
                     sinchClient.setSupportCalling(true);
                     sinchClient.startListeningOnActiveConnection();
                     sinchClient.start();
-                    Log.d("Sinch Client ", "Main Activity");
 
                     DatabaseReference llamadasRecibidas = Funciones.getLlamadasReference().child(usuarioActual.getId());
                     List<Llamada> listaLlamadas = new ArrayList<>();
@@ -205,7 +186,6 @@ public class MainActivity extends BasicActivity {
                                 if(!llamada.isFinalizado()){
                                     listaLlamadas.add(llamada);
                                 }
-                                Log.d("HAS RECIBIDO UNA LLAMADA", "E");
 
                             }
                             if (listaLlamadas.size() > 0) {
@@ -214,7 +194,6 @@ public class MainActivity extends BasicActivity {
                                 intentCall.putExtra("usuarioActual", usuarioActual);
                                 startActivity(intentCall);
                             }
-                            Log.d("MAIN ACTIVITY ", "LISTA LLAMADAS " + listaLlamadas.size());
                         }
 
                         @Override
@@ -294,8 +273,6 @@ public class MainActivity extends BasicActivity {
                     }
                 }
 
-
-                Log.d("DEBUG MainActivity", "Lista de estados " + listaEstados.size());
                 EstadosAdapter estadosAdapter = new EstadosAdapter(MainActivity.this, listaEstados);
                 recyclerView.setAdapter(estadosAdapter);
                 estadosAdapter.notifyDataSetChanged();
@@ -355,12 +332,7 @@ public class MainActivity extends BasicActivity {
             case R.id.perfil:
                 intent = new Intent(this, PerfilActivity.class);
                 intentTime = true;
-                //Me ha solucionado un error, Ejemplo abro la camara o galeria en una actividad en el PerfilActivity y al realizar la captura o seleccionar me devuelve a la MainActivity
-                //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                //Funciones.setActividadEnUso(true);
                 startActivity(intent);
-                //Borrar o comentar el comando finish por que sino al volver para atras no realizara la accion ya que la actividad principal esta destruida.
-                //finish();
                 return true;
             case R.id.salir:
                 usuarioActual.setVisibilidad(Funciones.corregirVisibilidad(this));
@@ -368,12 +340,9 @@ public class MainActivity extends BasicActivity {
                 Funciones.actualizarT2A(false, usuarioActual);
                 FirebaseAuth.getInstance().signOut();
                 intent = new Intent(this, StartActivity.class);
-                //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                //Toast.makeText(this, R.string.cerrarSesionCorrectamente, Toast.LENGTH_SHORT).show();
                 DesignerToast.Success(MainActivity.this, getResources().getString(R.string.cerrarSesionCorrectamente), Gravity.BOTTOM, Toast.LENGTH_SHORT);
-
                 finish();
                 return true;
         }

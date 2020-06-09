@@ -3,7 +3,6 @@ package com.btds.app.Activitys;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,7 +47,6 @@ public class PhoneCheckActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_check);
-        Log.d("DEBUG ","PhoneCheckActivity Created");
         activityCheckPhone = this;
         codeCountryPicker = findViewById(R.id.codeCountryPicker);
         buttonOmitir = findViewById(R.id.buttonOmitir);
@@ -86,7 +84,6 @@ public class PhoneCheckActivity extends AppCompatActivity {
                     usuarioActual.setTwoAunthenticatorFactor(false);
 
                     Funciones.getActualUserDatabaseReference(firebaseUser).setValue(usuarioActual).addOnCompleteListener(task -> {
-                        Log.d("DEBUG Phone Check","Verificacion omitida");
                         Intent intent = new Intent(PhoneCheckActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                         startActivity(intent);
@@ -101,10 +98,6 @@ public class PhoneCheckActivity extends AppCompatActivity {
             });
         });
         //systemLanguage = Funciones.getSystemLanguage();
-        Log.d("DEBUG IDIOMA SISTEMA", Funciones.getSystemLanguage());
-
-
-
 
         if(!(Funciones.getCountryCode() == -1)){
             codeCountryPicker.setCountryForPhoneCode(Funciones.getCountryCode());
@@ -130,13 +123,9 @@ public class PhoneCheckActivity extends AppCompatActivity {
                 editTextMobile.requestFocus();
                 return;
             }
-
             mobile = phoneCode+""+mobile;
-            //Log.d("DEBUG TELEFONO INTRODUCIDO",mobile);
-
             Intent intent = new Intent(PhoneCheckActivity.this, PhoneVerifyActivity.class);
             intent.putExtra("phonenumber", mobile);
-            Log.d("DEBUG TELEFONO INTRODUCIDO",mobile);
             startActivity(intent);
             //enviarVerificacionTelefono(mobile);
 

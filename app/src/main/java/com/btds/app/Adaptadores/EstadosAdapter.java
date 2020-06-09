@@ -2,7 +2,6 @@ package com.btds.app.Adaptadores;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +29,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHolder>  {
 
-
-    //public static int ESTADO_NO_VISTO = 0;
     private List<Estados> listaEstados;
     private Context context;
-    //private HashMap<String,Usuario> usuariosEstados;
     final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
     public EstadosAdapter(Context contexto, List<Estados> listaEstados){
@@ -65,10 +61,6 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
         holder.usuario.setAnimation(AnimationUtils.loadAnimation(context,R.anim.recyclerview_users_anim));
 
         final Estados estado = listaEstados.get(posicion);
-        //holder.usuario.setText(estado.getUsuarioEstado().getUsuario());
-
-        //usuariosEstados.put(usuarioObject.getId(),usuarioObject);
-
         holder.usuario.setText(estado.getUsuario().getUsuario());
 
         if(posicion == 0){
@@ -94,7 +86,6 @@ public class EstadosAdapter extends RecyclerView.Adapter<EstadosAdapter.ViewHold
 
             //ENTRAR A TU PROPIA HISTORA Y SUBIR CONTENIDO O BORRAR
             if(position == 0){
-                Log.d("DEBUG EstadosAdapter","Has entrado en tus estados");
                 Intent tusEstados = new Intent(context, EstadoActivity.class);
                 assert firebaseUser != null;
                 tusEstados.putExtra("estadoUsuarioIDFirebase",firebaseUser.getUid());

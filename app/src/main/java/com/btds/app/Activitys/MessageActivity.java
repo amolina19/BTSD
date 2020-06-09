@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -122,15 +121,11 @@ public class MessageActivity extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
-        Log.d("DEBUG ","MessageActivity Created");
-        //Funciones.setActividadEnUso(true);
-        //Funciones.setBackPressed(false);
         contexto = getApplicationContext();
         invalidateOptionsMenu();
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         getInstance().getReference("Usuarios");
-        //Funciones.actualizarConexion(getResources().getString(R.string.online), firebaseUser);
         listaUsuariosBloqueados = Funciones.obtenerUsuariosBloqueados(firebaseUser);
         listaAmigos = Funciones.obtenerListaAmigos(firebaseUser);
 
@@ -156,10 +151,8 @@ public class MessageActivity extends BasicActivity {
         fab.setOnClickListener(v -> animarFab());
         fab1.setOnClickListener(v -> {
             abrirCamara();
-            //Toast.makeText(contexto, "ABRIENDO CAMARA", Toast.LENGTH_SHORT).show();
         });
         fab2.setOnClickListener(v -> {
-            //Toast.makeText(contexto, "ABRIENDO MICRO", Toast.LENGTH_SHORT).show();
             preguntarPermisosAudio();
         });
 
@@ -272,7 +265,6 @@ public class MessageActivity extends BasicActivity {
 
         chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
-                Log.d("DEBUG Mensaje","Se ha enviado el mensaje");
             }
         });
     }
@@ -288,7 +280,6 @@ public class MessageActivity extends BasicActivity {
 
         chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
-                Log.d("DEBUG Mensaje","Se ha enviado La foto");
             }
         });
     }
@@ -325,7 +316,6 @@ public class MessageActivity extends BasicActivity {
                     mensajesAdapter = new MensajesAdapter(MessageActivity.this,listaMensajes,usuarioChat,usuarioActual);
                     recyclerView.setAdapter(mensajesAdapter);
                 }
-                Log.d("DEBUG Lista mensajes totales recibidos","LISTA MENSAJES "+ listaMensajes.size());
             }
 
             @Override
@@ -363,7 +353,6 @@ public class MessageActivity extends BasicActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Log.i("DEBUG Menu inflating error","onCreateOptionsMenu: error: "+e.getMessage());
         }
         return true;
     }
@@ -486,13 +475,9 @@ public class MessageActivity extends BasicActivity {
                     }
                 }
 
-                //Esta línea está para comprobar en modo depuración si los datos visuales se corresponden a los de este log.
-                Log.d("DEBUG Usuarios Bloqueados","USUARIOS BLOQUEADOS " + listaUsuariosBloqueados.size());
-
                 if(!listaUsuariosBloqueados.containsKey(usuarioChat.getId())){
                     leerMensaje(firebaseUser.getUid(),usuarioChat.getId());
                     //De todos los mensajes recibidos por parte nuestra conversación han sido leídos.
-                    Log.d("DEBUG Mensajes Leidos","HA LEIDO LOS MENSAJES");
                 }
             }
 
@@ -665,7 +650,6 @@ public class MessageActivity extends BasicActivity {
             mediaRecorder.prepare();
             mediaRecorder.start();
         }catch (IOException ioe){
-            Log.d("DEBUG MensageActivity MediaRecorder error","ERROR");
             ioe.printStackTrace();
         }
     }
@@ -699,7 +683,6 @@ public class MessageActivity extends BasicActivity {
         mediaRecorder.stop();
 
         Uri audio = Uri.fromFile(new File(pathSaveAudio));
-        Log.d("DEBUG MessageActivity AudioRecorder","Save path"+pathSaveAudio);
 
         StorageReference storageReference = Funciones.getFirebaseStorageReference();
         StorageReference storageAudioRef = storageReference.child("Audios/"+firebaseUser.getUid()+"/"+audioName);
@@ -718,7 +701,6 @@ public class MessageActivity extends BasicActivity {
 
         chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
-                Log.d("DEBUG Mensaje","Se ha enviado el Audio");
             }
         });
     }

@@ -120,17 +120,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
     }
 
     public int getItemViewType(int posicion) {
-
-        /*
-        if(Funciones.obtenerUsuariosBloqueados(firebaseUser).containsKey(listaUsuarios.get(posicion).getId())){
-            System.out.println("error encontrado");
-            return  USUARIO_BLOQUEADO;
-        }else{
-            System.out.println("error no encontrado");
-            return USUARIO_NO_BLOQUEADO;
-        }
-
-         */
         return 0;
     }
 

@@ -171,4 +171,5 @@
     <string name="introduceContrasenaActual">Insert your current password</string>
     <string name="salir">Exit</string>
     <string name="introduceTelefonoT2A">Enter phone number to login</string>
+    <string name="versionName">Release</string>
 </resources>

@@ -2,7 +2,6 @@ package com.btds.app.Activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -58,7 +57,6 @@ public class ViewImageActivity extends AppCompatActivity {
         fechaTextView.setText(fechaStr);
 
         if(Funciones.conectividadDisponible(this)){
-            Log.d("DEBUG ViewImageActivity","FOTOURL "+mensaje.getMensaje());
             Picasso.with(this).load(mensaje.getMensaje()).into(photoView);
         }else{
             image_view_error.setVisibility(View.VISIBLE);
@@ -70,10 +68,7 @@ public class ViewImageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //Funciones.setBackPressed();
         super.onBackPressed();
-        //Intent backToChats = new Intent(MessageActivity.this,MainActivity.class);
-        //startActivity(backToChats);
         finish();
     }
 }

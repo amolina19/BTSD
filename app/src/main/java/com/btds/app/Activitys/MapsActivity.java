@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -73,7 +72,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //getIntent().getSerializableExtra("Ubicacion");
         ubicacionCompartida = (LatLng) getIntent().getSerializableExtra("Ubicacion");
         if (ubicacionCompartida != null) {
-            Log.d("Debug MapsActivity", "La ubicacion obtenida es obtenida a traves del chat");
         }
 
     }
@@ -95,7 +93,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setMyLocationEnabled(true);
         googleMap.setMinZoomPreference(1);
         googleMap.setMaxZoomPreference(20);
-        Log.d("DEBUG MapsActivity", "Mapa cargado");
 
         if(ubicacionCompartida == null){
             locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -104,8 +101,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onLocationChanged(Location location) {
                     actualLocation = new com.google.android.gms.maps.model.LatLng(location.getLatitude(), location.getLongitude());
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.google.android.gms.maps.model.LatLng(actualLocation.latitude,actualLocation.longitude) , 18.0f));
-                    Log.d("DEBUG MapsActivity", "Localizacion Latitud " + location.getLatitude() + " Longitud " + location.getLongitude());
-
                     if(isLocationEnabled(MapsActivity.this)){
                         compartirUbicacion.setClickable(true);
                         compartirUbicacion.setVisibility(View.VISIBLE);
@@ -157,11 +152,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if(lastLocation != null){
             actualLocation = new com.google.android.gms.maps.model.LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
-            Log.d("DEBUG MapsActivity","Ultima localizacion Latitud "+lastLocation.getLatitude()+" Longitud "+lastLocation.getLongitude());
             googleMap.clear();
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.google.android.gms.maps.model.LatLng(actualLocation.latitude,actualLocation.longitude) , 18.0f));
         }else{
-            Log.d("DEBUG MapsActivity", "lastLocation Nulo");
         }
 
     }
@@ -205,7 +198,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
-                    Log.d("DEBUG Mensaje","Se ha enviado la localización");
                 }
             });
         }

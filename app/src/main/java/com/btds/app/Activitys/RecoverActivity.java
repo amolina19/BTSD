@@ -2,7 +2,6 @@ package com.btds.app.Activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -48,7 +47,6 @@ public class RecoverActivity extends AppCompatActivity {
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     progressBar.setVisibility(View.GONE);
-                                    Log.d("DEBUG RecoverActivity", "Email enviado");
                                     Intent intentLogin = new Intent(RecoverActivity.this,LoginActivity.class);
                                     startActivity(intentLogin);
                                     Toast.makeText(RecoverActivity.this, getResources().getString(R.string.emailEnviado), Toast.LENGTH_SHORT).show();

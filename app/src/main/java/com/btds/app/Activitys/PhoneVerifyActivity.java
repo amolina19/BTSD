@@ -2,7 +2,6 @@ package com.btds.app.Activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +29,6 @@ import com.vdx.designertoast.DesignerToast;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,7 +47,6 @@ public class PhoneVerifyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_verify);
-        Log.d("DEBUG ","PhoneVerifiyActivity Created");
         progressBar = findViewById(R.id.progressbar);
 
         editText = findViewById(R.id.editTextCode);
@@ -79,11 +76,9 @@ public class PhoneVerifyActivity extends AppCompatActivity {
     private void verificarCodigo(String codigo){
         PhoneAuthCredential credencial = PhoneAuthProvider.getCredential(verificationid, codigo);
         editText.setText(credencial.getSmsCode());
-        Log.d("DEBUG SMS CODE", Objects.requireNonNull(credencial.getSmsCode()));
 
         assert firebaseUser != null;
         databaseUserReference = Funciones.getUsersDatabaseReference().child(firebaseUser.getUid());
-        Log.d("DEBUG PHONE VERIFY USER FIREBASE ID ",firebaseUser.getUid());
 
         databaseUserReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -125,7 +120,6 @@ public class PhoneVerifyActivity extends AppCompatActivity {
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
             String codigoSMSrecibido = phoneAuthCredential.getSmsCode();
             assert codigoSMSrecibido != null;
-            Log.d("DEBUG SMS RECIBIDO",codigoSMSrecibido);
             progressBar.setVisibility(View.VISIBLE);
             verificarCodigo(codigoSMSrecibido);
         }

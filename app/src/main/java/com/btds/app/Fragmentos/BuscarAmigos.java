@@ -3,7 +3,6 @@ package com.btds.app.Fragmentos;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -121,10 +120,7 @@ public class BuscarAmigos extends Fragment {
                                         }
                                     }
                                 }
-                                Log.d("DEBUG Buscar Amigos", String.valueOf(listaUsuarios.size()));
-                                Log.d("DEBUG BuscarAmigosAdapter","Lista de peticiones enviadas "+peticionAmistadUsuarios.size());
                                 buscarAmigosAdapter = new BuscarAmigosAdapter(getActivity(),listaUsuarios,peticionAmistadUsuarios);
-
                                 recyclerView.setAdapter(buscarAmigosAdapter);
                                 buscarAmigosAdapter.notifyDataSetChanged();
                             }
@@ -169,11 +165,8 @@ public class BuscarAmigos extends Fragment {
 
                                         Usuario usuario = snapshot.getValue(Usuario.class);
                                         if(usuario !=null){
-                                            Log.d("DEBUG Buscar Amigos","VALOR USUARIO "+usuario.getId());
-
                                             assert firebaseUser != null;
                                             if(!usuario.getId().equals(firebaseUser.getUid()) && !listaAmigos.containsKey(usuario.getId())){
-                                                Log.d("DEBUG Buscar Amigos","LISTA NUEVOS AMIGOS SIN AGREGAR "+listaUsuarios.size());
 
                                                 if(usuario.getUsuario().toLowerCase().contains(buscarAmigosEditText.getText().toString().toLowerCase())){
                                                     listaUsuarios.add(usuario);

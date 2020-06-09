@@ -3,7 +3,6 @@ package com.btds.app.Utils;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -105,8 +104,6 @@ public class Fecha implements Parcelable {
                 this.milisegundos = java.time.LocalDateTime.now().toString().substring((longitudPunto+1),fecha.length());
             }catch (StringIndexOutOfBoundsException sioobe){
                 this.milisegundos = "000";
-                //sioobe.printStackTrace();
-                Log.d("Debug Fecha ObtenerMilisegundos","Milisegundos mal concatenados");
             }
 
         return milisegundos;
@@ -122,8 +119,6 @@ public class Fecha implements Parcelable {
             this.minutos = java.time.LocalDateTime.now().toString().substring(17,19);
         }catch (StringIndexOutOfBoundsException sioobe){
             this.segundos = "00";
-            //sioobe.printStackTrace();
-            Log.d("Debug Fecha ObtenerSegundos","Segundos mal concatenados");
         }
         return this.minutos;
     }

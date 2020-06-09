@@ -2,7 +2,6 @@ package com.btds.app.Adaptadores;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +83,6 @@ public class BuscarAmigosAdapter extends RecyclerView.Adapter<BuscarAmigosAdapte
             });
 
             holder.buttonPeticion.setOnClickListener(v -> {
-                Log.d("DEBUG BuscarAmigosAdapter","Peticion enviada a "+holder.usuario.getText());
                 if(holder.buttonPeticion.getText().toString().contentEquals(context.getResources().getString(R.string.enviarPeticion))){
                     PeticionAmistadUsuario peticion = new PeticionAmistadUsuario(firebaseUser.getUid()+""+usuario.getId(),firebaseUser.getUid(),usuario.getId());
                     Funciones.getPeticionesAmistadReference().child(firebaseUser.getUid()+""+usuario.getId()).setValue(peticion);

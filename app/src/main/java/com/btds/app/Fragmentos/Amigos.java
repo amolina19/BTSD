@@ -1,7 +1,6 @@
 package com.btds.app.Fragmentos;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.btds.app.Adaptadores.UsuariosAdapter;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.Modelos.UsuarioBloqueado;
+import com.btds.app.Modelos.Visibilidad;
 import com.btds.app.R;
 import com.btds.app.Utils.Funciones;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-
-import in.shrinathbhosale.preffy.Preffy;
 
 /**
  * @author Alejandro Molina Louchnikov
@@ -59,9 +57,6 @@ public class Amigos extends Fragment {
 
         usuariosAdapter = new UsuariosAdapter(getActivity(),listaUsuarios,listaUsuariosBloqueados,listaAmigos);
         recyclerView.setAdapter(usuariosAdapter);
-
-        Preffy preffy = Preffy.getInstance(getContext());
-        preffy.putString("FragmentHome", "Amigos");
 
         listaUsuarios = new ArrayList<>();
         obtenerAmigos();
@@ -93,6 +88,7 @@ public class Amigos extends Fragment {
 
     private void obtenerUsuarios(){
 
+
         Funciones.getBlockUsersListDatabaseReference().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -110,8 +106,14 @@ public class Amigos extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         listaUsuarios.clear();
+                        Visibilidad visibilidad;
+                        Usuario usuario;
                         for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                            Usuario usuario = snapshot.getValue(Usuario.class);
+                            usuario = snapshot.getValue(Usuario.class);
+                            if(usuario.getVisibilidad() == null){
+                                Funciones.VisibilidadUsuarioPublica(usuario);
+                            }
+
                             if(usuario !=null){
                                 assert firebaseUser != null;
                                 if(!usuario.getId().equals(firebaseUser.getUid())  && listaAmigos.containsKey(usuario.getId())){
@@ -119,11 +121,7 @@ public class Amigos extends Fragment {
                                 }
                             }
                         }
-                        //System.out.println("ARRAY "+listaUsuarios.size());
-                        Log.d("DEBUG Fragment Amigos","Lista de Amigos "+listaUsuarios.size() );
-                        Log.d("DEBUG Fragment Amigos","Lista de Amigos Bloqueados "+listaUsuariosBloqueados.size());
                         usuariosAdapter = new UsuariosAdapter(getContext(),listaUsuarios,listaUsuariosBloqueados,listaAmigos);
-                        //usuariosAdapter.notifyDataSetChanged();
                         recyclerView.setAdapter(usuariosAdapter);
                         usuariosAdapter.notifyDataSetChanged();
                     }

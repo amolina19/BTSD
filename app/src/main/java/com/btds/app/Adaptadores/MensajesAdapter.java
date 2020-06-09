@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,7 +142,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
             }else{
                 if(mensaje.getEmisor().contentEquals(firebaseUser.getUid())){
                     if(getMensajePosicionDerecha(getItemViewType(posicion))){
-                        Log.d("MENSAJE LEIDO ",mensaje.getTipoMensaje()+" "+mensaje.getMensaje());
                         if(mensaje.getLeido()){
                             holder.visto.setImageDrawable(null);
                             holder.visto.setImageResource(R.drawable.ic_leido);
@@ -155,7 +153,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
         }
 
         if(mensaje.getTipoMensaje() == Mensaje.Tipo.TEXTO){
-            Log.d("Debug MensajeAdapter","Mensaje Tipo TEXTO");
             holder.show_message.setText(mensaje.getMensaje());
             String hora = mensaje.fecha.hora+":"+mensaje.fecha.minutos;
             holder.hora.setText(hora);
@@ -164,7 +161,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
             if(Funciones.conectividadDisponible(context)){
                 String hora = mensaje.fecha.hora+":"+mensaje.fecha.minutos;
                 holder.hora.setText(hora);
-                Log.d("Debug MensajeAdapter","Mensaje Tipo FOTO URL "+mensaje.getMensaje());
                 Picasso.with(context).load(mensaje.getMensaje()).fit().centerCrop().into(holder.mensaje_foto);
                 holder.mensaje_foto.setOnClickListener(v -> {
 
@@ -195,7 +191,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 String URLMAP = "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s-marker+80ff80("+mensaje.getUbicacion().getLongitude()+","+mensaje.getUbicacion().getLatitude()+")/"
                         +mensaje.getUbicacion().getLongitude()+","+mensaje.getUbicacion().getLatitude()+
                         ",16,0,60/300x300@2x?access_token=pk.eyJ1IjoibG9sbTMiLCJhIjoiY2szcnV0dXZsMDBjNDNlbHV2aW05b2dwMSJ9.zjKTLo61BZzfI6e4OSzgEg&logo=false";
-                Log.d("Debug MensajesAdapter","MAPBOX URL ubicacion "+URLMAP);
                 Picasso.with(context).load(URLMAP).fit().centerCrop().into(holder.ubicacion);
 
                 holder.ubicacion.setOnClickListener(v -> {
@@ -320,7 +315,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
     public boolean getMensajePosicionDerecha(int tipoMensajeIntView){
         boolean valor;
         valor = (tipoMensajeIntView % 2) != 0;
-        Log.d("TIPO MENSAJE ",""+valor+" "+tipoMensajeIntView);
         return valor;
     }
 
