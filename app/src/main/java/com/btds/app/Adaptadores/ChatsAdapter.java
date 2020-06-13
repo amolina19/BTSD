@@ -105,8 +105,6 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         TextView textoChat;
         public TextView hora;
         TextView leido;
-        //Button estado;
-
 
         ViewHolder(View itemView){
             super(itemView);

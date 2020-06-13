@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-
-    <item
-        android:id="@+id/llamar_mensaje_item_menu_toolbar"
-        android:title="Llamar"
-        android:icon="@drawable/llamar_icon"
-        app:showAsAction="always" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/bloquear"
         android:title="@string/desbloquear" />

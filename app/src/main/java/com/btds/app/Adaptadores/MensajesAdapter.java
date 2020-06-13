@@ -180,7 +180,10 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 holder.error_imagen.setVisibility(View.VISIBLE);
                 holder.mensaje_foto.setVisibility(GONE);
                 holder.hora.setVisibility(GONE);
-                holder.visto.setVisibility(GONE);
+                //Item derecha foto no existe definido el visto, error tiempo ejecución.
+                if(getItemViewType(posicion) == MENSAGE_TIPO_DERECHA_FOTO){
+                    holder.visto.setVisibility(GONE);
+                }
             }
 
         }else if(mensaje.getTipoMensaje() == Mensaje.Tipo.LOCALIZACION){
@@ -205,7 +208,10 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 holder.error_ubicacion.setVisibility(View.VISIBLE);
                 holder.ubicacion.setVisibility(GONE);
                 holder.hora.setVisibility(GONE);
-                holder.visto.setVisibility(GONE);
+                //Item derecha localización no existe definido el visto, error tiempo ejecución.
+                if(getItemViewType(posicion) == MENSAGE_TIPO_DERECHA_LOCALIZACION){
+                    holder.visto.setVisibility(GONE);
+                }
             }
 
 

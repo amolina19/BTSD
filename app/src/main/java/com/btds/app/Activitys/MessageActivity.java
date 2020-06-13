@@ -416,9 +416,6 @@ public class MessageActivity extends BasicActivity {
                     Funciones.getPeticionesAmistadReference().child(firebaseUser.getUid()+""+usuario.getId()).setValue(peticion);
                 }
                 return true;
-            case R.id.llamar_mensaje_item_menu_toolbar:
-                //llamar();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

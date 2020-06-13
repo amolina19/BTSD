@@ -110,6 +110,8 @@ public class Funciones {
         fecha = new Fecha();
         String fechaUsuario = usuarioChat.getFecha();
 
+        System.out.println(" fecha usuario" +fechaUsuario);
+
         int userChatDateDay = Integer.parseInt(fechaUsuario.replace(" ", "").substring(0, 2));
         int userChatDateMonth = Integer.parseInt(fechaUsuario.replace(" ", "").substring(2, 4));
         int userChatDateYear = Integer.parseInt(fechaUsuario.replace(" ", "").substring(4, 8));
@@ -322,6 +324,7 @@ public class Funciones {
      * @return devuelve en integer los minutos transcurridos desde su subida.
      */
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static int obtenerMinutosSubida(Estados estado) {
 
         Fecha fecha = new Fecha();
@@ -402,6 +405,7 @@ public class Funciones {
      * @return devulve en integer los segundos transcurridos entre un mensaje y otro. Si es negativo el mensaje1 es mas viejo que mensaje2 y positivo al reves. Devuelve
      */
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static int obtenerTiempoPasadosMensajes(Mensaje mensaje1, Mensaje mensaje2) {
 
         LocalDateTime dateMensaje1 = LocalDateTime.of(mensaje1.getFecha().getAnnoInteger(), mensaje1.getFecha().getMesInteger(), mensaje1.getFecha().getDiaInteger(), mensaje1.getFecha().getHoraInteger(), mensaje1.getFecha().getMinutosInteger(), mensaje1.getFecha().getSegundosInteger());
@@ -417,6 +421,7 @@ public class Funciones {
      * @return devulve en String en formato es-es o us-en el idioma del sistema.
      */
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static String getSystemLanguage() {
         return Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage();
     }
@@ -471,6 +476,7 @@ public class Funciones {
      * @return devulve en Integer el código +34, +1 según el idioma del sistema.
      */
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static int getCountryCode() {
         int countryCode;
 
@@ -961,6 +967,7 @@ public class Funciones {
      * @return el tiempo transcurrido en minutos entre las 2 fechas.
      */
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static int tiempoTranscurrido(Fecha fecha) {
 
         Fecha fechaActual = new Fecha();
