@@ -1,7 +1,7 @@
 <resources>
     <!-- APP Strings -->
     <string name="app_name">BTSD</string>
-    <string name="version">1.0</string>
+    <string name="version">1.2</string>
     <string name="versionName">Release</string>
     <string name="Autor">Alejandro Molina Louchnikov</string>
 
@@ -98,7 +98,7 @@
     <string name="ubicacion">UBICACIÓN</string>
     <string name="audio">AUDIO</string>
     <string name="errorCargarImagen">Imagen no disponible sin red.</string>
-    <string name="errorCargarUbicacion">Ubicación no disponible sin red.</string>
+    <string name="errorCargarUbicacion">Ubicación no previsualizable, click aquí para ir a la ubicación.</string>
     <string name="errorCargarAudio">Error cargar audio.</string>
     <string name="ahoraMismo">Ahora mismo</string>
     <string name="compartirUbicacion">Compartir Ubicación</string>
@@ -206,6 +206,10 @@
     <string name="buscar">Buscar</string>
     <string name="llamadas">Llamadas</string>
     <string name="add_amigo">Añadir Amigo</string>
+    <string name="acercaDe">Acerca de</string>
+    <string name="informationBTSD">BTSD es una aplicación desarrollada por Alejandro Molina para el proyecto integrado de FP Desarrollo de Aplicaciones Multiplataforma del instituto I.E.S. Murgi.</string>
+    <string name="contacto">Contacto:</string>
+    <string name="contactoEmail" translatable="false">alejandro.molina.dam@gmail.com</string>
 
 
 </resources>

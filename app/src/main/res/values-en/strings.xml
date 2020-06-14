@@ -59,7 +59,7 @@
     <string name="ubicacion">LOCATION</string>
     <string name="audio">AUDIO</string>
     <string name="errorCargarImagen">Image not available without network.</string>
-    <string name="errorCargarUbicacion">Location not available without network.</string>
+    <string name="errorCargarUbicacion">Location not previewable, click here to go to the location.</string>
     <string name="errorCargarAudio">Audio loading failed.</string>
     <string name="ahoraMismo">Right now</string>
     <string name="compartirUbicacion">Share Location</string>
@@ -172,4 +172,7 @@
     <string name="salir">Exit</string>
     <string name="introduceTelefonoT2A">Enter phone number to login</string>
     <string name="versionName">Release</string>
+    <string name="contacto">Contact:</string>
+    <string name="informationBTSD">BTSD is an application developed by Alejandro Molina for the integrated project of FP Development of Multiplatform Applications of the I.E.S. Murgi.</string>
+    <string name="acercaDe">About</string>
 </resources>

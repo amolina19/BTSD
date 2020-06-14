@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
 import com.btds.app.Utils.Funciones;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
@@ -89,9 +90,8 @@ public class PhoneVerifyActivity extends AppCompatActivity {
                     usuario.setTwoAunthenticatorFactor(true);
                     Funciones.actualizarT2A(true,usuario);
                     Funciones.mostrarDatosUsuario(usuario);
-                    databaseUserReference.setValue(usuario).addOnCompleteListener(task -> {
-                        task.isSuccessful();// Toast.makeText(PhoneVerifyActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_SHORT).show();
-                    });
+                    // Toast.makeText(PhoneVerifyActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_SHORT).show();
+                    databaseUserReference.setValue(usuario).addOnCompleteListener(Task::isSuccessful);
                 }
             }
 

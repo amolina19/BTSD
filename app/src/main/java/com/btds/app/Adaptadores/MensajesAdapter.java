@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -200,10 +199,12 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
 
                     Intent intentMaps = new Intent(context, MapsActivity.class);
                     LatLng ubicacion = mensaje.getUbicacion();
-                    intentMaps.putExtra("Ubicacion", (Parcelable) ubicacion);
+                    intentMaps.putExtra("Ubicacion",  ubicacion);
                     context.startActivity(intentMaps);
 
                 });
+
+
             }else{
                 holder.error_ubicacion.setVisibility(View.VISIBLE);
                 holder.ubicacion.setVisibility(GONE);
@@ -212,6 +213,15 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
                 if(getItemViewType(posicion) == MENSAGE_TIPO_DERECHA_LOCALIZACION){
                     holder.visto.setVisibility(GONE);
                 }
+
+                holder.error_ubicacion.setOnClickListener(v -> {
+
+                    Intent intentMaps = new Intent(context, MapsActivity.class);
+                    LatLng ubicacion = mensaje.getUbicacion();
+                    intentMaps.putExtra("Ubicacion",  ubicacion);
+                    context.startActivity(intentMaps);
+
+                });
             }
 
 
@@ -323,8 +333,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.ViewHo
         valor = (tipoMensajeIntView % 2) != 0;
         return valor;
     }
-
-
 
     @Override
     public int getItemViewType(int posicion) {

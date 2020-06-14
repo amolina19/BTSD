@@ -54,12 +54,9 @@ public class LoginActivity extends BasicActivity {
         progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.GONE);
 
-        textView_contrasena_perdida.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentRecover = new Intent(LoginActivity.this,RecoverActivity.class);
-                startActivity(intentRecover);
-            }
+        textView_contrasena_perdida.setOnClickListener(v -> {
+            Intent intentRecover = new Intent(LoginActivity.this,RecoverActivity.class);
+            startActivity(intentRecover);
         });
 
         button_iniciarSesion.setOnClickListener(v -> {

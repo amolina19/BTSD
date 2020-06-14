@@ -93,50 +93,50 @@ public class BuscarAmigos extends Fragment {
 
     private void obtenerUsuarios(){
 
-            Funciones.getPeticionesAmistadReference().addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    //obtenerAmigos();
-                    peticionAmistadUsuarios.clear();
-                    for (DataSnapshot data:dataSnapshot.getChildren()){
-                        PeticionAmistadUsuario peticion = data.getValue(PeticionAmistadUsuario.class);
-                        assert firebaseUser != null;
-                        assert peticion != null;
-                        if(peticion.getUsuarioAccionPeticion().contentEquals(firebaseUser.getUid()) && !listaAmigos.containsKey(peticion.getUsuarioAccionPeticion())){
-                            peticionAmistadUsuarios.put(data.getKey(),peticion);
-                        }
+        Funciones.getPeticionesAmistadReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //obtenerAmigos();
+                peticionAmistadUsuarios.clear();
+                for (DataSnapshot data:dataSnapshot.getChildren()){
+                    PeticionAmistadUsuario peticion = data.getValue(PeticionAmistadUsuario.class);
+                    assert firebaseUser != null;
+                    assert peticion != null;
+                    if(peticion.getUsuarioAccionPeticion().contentEquals(firebaseUser.getUid()) && !listaAmigos.containsKey(peticion.getUsuarioAccionPeticion())){
+                        peticionAmistadUsuarios.put(data.getKey(),peticion);
                     }
-                        Funciones.getUsersDatabaseReference().addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                listaUsuarios.clear();
-                                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                                    Usuario usuario = snapshot.getValue(Usuario.class);
-                                    if(usuario !=null){
-                                        assert firebaseUser != null;
-                                        if(!usuario.getId().equals(firebaseUser.getUid())  && !listaAmigos.containsKey(usuario.getId())){
-                                            listaUsuarios.add(usuario);
+                }
+                Funciones.getUsersDatabaseReference().addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        listaUsuarios.clear();
+                        for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                            Usuario usuario = snapshot.getValue(Usuario.class);
+                            if(usuario !=null){
+                                assert firebaseUser != null;
+                                if(!usuario.getId().equals(firebaseUser.getUid())  && !listaAmigos.containsKey(usuario.getId())){
+                                    listaUsuarios.add(usuario);
 
-                                        }
-                                    }
                                 }
-                                buscarAmigosAdapter = new BuscarAmigosAdapter(getActivity(),listaUsuarios,peticionAmistadUsuarios);
-                                recyclerView.setAdapter(buscarAmigosAdapter);
-                                buscarAmigosAdapter.notifyDataSetChanged();
                             }
+                        }
+                        buscarAmigosAdapter = new BuscarAmigosAdapter(getActivity(),listaUsuarios,peticionAmistadUsuarios);
+                        recyclerView.setAdapter(buscarAmigosAdapter);
+                        buscarAmigosAdapter.notifyDataSetChanged();
+                    }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            }
-                        });
-                }
+                    }
+                });
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                }
-            });
+            }
+        });
     }
 
 

@@ -1,5 +1,6 @@
 package com.btds.app.Activitys;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,10 +26,8 @@ import com.btds.app.BuildConfig;
 import com.btds.app.Fragmentos.Amigos;
 import com.btds.app.Fragmentos.BuscarAmigos;
 import com.btds.app.Fragmentos.Chats;
-import com.btds.app.Fragmentos.Llamadas;
 import com.btds.app.Fragmentos.Peticiones;
 import com.btds.app.Modelos.Estados;
-import com.btds.app.Modelos.Llamada;
 import com.btds.app.Modelos.Usuario;
 import com.btds.app.R;
 import com.btds.app.Utils.Fecha;
@@ -40,8 +40,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.sinch.android.rtc.Sinch;
-import com.sinch.android.rtc.SinchClient;
 import com.vdx.designertoast.DesignerToast;
 
 import java.util.ArrayList;
@@ -148,7 +146,7 @@ public class MainActivity extends BasicActivity {
                         }
                     }
 
-                    Funciones.mostrarDatosUsuario(usuarioActual);
+                    //Funciones.mostrarDatosUsuario(usuarioActual);
                     Funciones.actualizarConexion(getResources().getString(R.string.online), usuarioActual);
 
                     if(usuarioActual.getT2Aintroduced() == null){
@@ -161,6 +159,7 @@ public class MainActivity extends BasicActivity {
                         finish();
                     }
 
+                    /*
                     String userTest = "usertest";
                     SinchClient sinchClient = Sinch.getSinchClientBuilder()
                             .context(MainActivity.this)
@@ -174,6 +173,9 @@ public class MainActivity extends BasicActivity {
                     sinchClient.startListeningOnActiveConnection();
                     sinchClient.start();
 
+                     */
+
+                    /*
                     DatabaseReference llamadasRecibidas = Funciones.getLlamadasReference().child(usuarioActual.getId());
                     List<Llamada> listaLlamadas = new ArrayList<>();
                     llamadasRecibidas.addValueEventListener(new ValueEventListener() {
@@ -201,6 +203,8 @@ public class MainActivity extends BasicActivity {
 
                         }
                     });
+
+                     */
 
 
                 } else {
@@ -305,8 +309,11 @@ public class MainActivity extends BasicActivity {
             case R.id.nav_buscar:
                 selectedFragment = new BuscarAmigos();
                 break;
+                /*
             case R.id.nav_llamadas:
                 selectedFragment = new Llamadas();
+
+                 */
         }
 
         if (selectedFragment != null) {
@@ -333,6 +340,13 @@ public class MainActivity extends BasicActivity {
                 intent = new Intent(this, PerfilActivity.class);
                 intentTime = true;
                 startActivity(intent);
+                return true;
+            case R.id.acercaDe:
+                Dialog acercade = new Dialog(MainActivity.this);
+                acercade.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                acercade.setCancelable(true);
+                acercade.setContentView(R.layout.acerca_de_dialog);
+                acercade.show();
                 return true;
             case R.id.salir:
                 usuarioActual.setVisibilidad(Funciones.corregirVisibilidad(this));

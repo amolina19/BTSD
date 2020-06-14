@@ -3,13 +3,11 @@ package com.btds.app.Modelos;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
 /**
  * @author Alejandro Molina Louchnikov
  */
 
-public class LatLng implements Parcelable, Serializable {
+public class LatLng implements Parcelable {
     private Double latitude, longitude;
 
     public LatLng() {}

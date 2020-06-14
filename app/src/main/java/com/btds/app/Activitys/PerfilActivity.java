@@ -101,17 +101,12 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
         storageReference = Funciones.getFirebaseStorageReference();
 
         imageButtonCheck.setOnClickListener(v -> {
-            if(descripcion.getText().length() > 80){
-                Toast.makeText(PerfilActivity.this, getResources().getString(R.string.descripcionGrandeError), Toast.LENGTH_LONG).show();
-
-            }else{
-                usuarioActual.setDescripcion(descripcion.getText().toString());
-                Funciones.getUsersDatabaseReference().child(usuarioActual.getId()).setValue(usuarioActual);
-                imageButtonCheck.setClickable(false);
-                imageButtonCheck.setVisibility(View.GONE);
-                Toast.makeText(PerfilActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_LONG).show();
-            }
-
+            usuarioActual.setDescripcion(descripcion.getText().toString());
+            Funciones.getUsersDatabaseReference().child(usuarioActual.getId()).setValue(usuarioActual);
+            Toast.makeText(PerfilActivity.this, getResources().getString(R.string.cambiosGuardados), Toast.LENGTH_LONG).show();
+            descripcion.clearFocus();
+            imageButtonCheck.setClickable(false);
+            imageButtonCheck.setVisibility(View.GONE);
         });
 
         masAjustesButton.setOnClickListener(v -> {
@@ -213,11 +208,6 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
     public void subirImagen(Image image){
 
         Uri file = Uri.fromFile(new File(image.getPath()));
-
-        //FirebaseStorage storage;
-        //StorageReference storageReference;
-
-        //storage = FirebaseStorage.getInstance();
         storageReference = Funciones.getFirebaseStorageReference();
 
         StorageReference storageUserProfileRef = storageReference.child("Imagenes/Perfil/"+ usuarioActual.getId());
@@ -227,17 +217,15 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
         uploadTask.addOnFailureListener(exception -> {
             // Handle unsuccessful uploads
             Toast.makeText(PerfilActivity.this, getResources().getString(R.string.errorSubirImagenPerfil), Toast.LENGTH_SHORT).show();
-        }).addOnSuccessListener(taskSnapshot -> {
-            storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
-                // getting image uri and converting into string
-                usuarioActual.setImagenURL(downloadUrl.toString());
-                referenceUserDataBase.child(usuarioActual.getId()).setValue(usuarioActual).addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        Toast.makeText(PerfilActivity.this, getResources().getString(R.string.exitoSubirImagenPerfil), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        }).addOnSuccessListener(taskSnapshot -> storageUserProfileRef.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+            // getting image uri and converting into string
+            usuarioActual.setImagenURL(downloadUrl.toString());
+            referenceUserDataBase.child(usuarioActual.getId()).setValue(usuarioActual).addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    Toast.makeText(PerfilActivity.this, getResources().getString(R.string.exitoSubirImagenPerfil), Toast.LENGTH_SHORT).show();
+                }
             });
-        });
+        }));
     }
 
 
@@ -277,18 +265,18 @@ public class PerfilActivity extends BasicActivity implements EasyPermissions.Per
 
                         @Override
                         public void onTextChanged(CharSequence s, int start, int before, int count) {
-                            //imageButtonCheck.setVisibility(View.VISIBLE);
+
                         }
 
                         @Override
                         public void afterTextChanged(Editable s) {
-                            if(!usuarioActual.getDescripcion().contentEquals(descripcion.getText().toString())){
-                                imageButtonCheck.setVisibility(View.VISIBLE);
-                                imageButtonCheck.setClickable(true);
-                            }
-
+                            imageButtonCheck.setVisibility(View.VISIBLE);
+                            imageButtonCheck.setClickable(true);
                         }
                     });
+                }else{
+                    imageButtonCheck.setVisibility(View.GONE);
+                    imageButtonCheck.setClickable(false);
                 }
             });
         } catch (Throwable t) {

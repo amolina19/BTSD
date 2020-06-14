@@ -44,6 +44,7 @@ import com.bumptech.glide.Glide;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.ReturnMode;
 import com.esafirm.imagepicker.model.Image;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -70,7 +71,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static android.os.Environment.getExternalStorageDirectory;
 import static com.btds.app.Utils.Funciones.borrarAmigo;
 import static com.google.firebase.database.FirebaseDatabase.getInstance;
 
@@ -149,12 +149,8 @@ public class MessageActivity extends BasicActivity {
         backRotateForward = AnimationUtils.loadAnimation(this,R.anim.rotate_forward);
         rotateBackWard = AnimationUtils.loadAnimation(this,R.anim.rotate_backward);
         fab.setOnClickListener(v -> animarFab());
-        fab1.setOnClickListener(v -> {
-            abrirCamara();
-        });
-        fab2.setOnClickListener(v -> {
-            preguntarPermisosAudio();
-        });
+        fab1.setOnClickListener(v -> abrirCamara());
+        fab2.setOnClickListener(v -> preguntarPermisosAudio());
 
         circleButton_save.setOnClickListener(v -> stopRecordingSave());
 
@@ -263,10 +259,7 @@ public class MessageActivity extends BasicActivity {
         Mensaje mensajeObject = new Mensaje(id,emisor,receptor,mensaje,tipoMensaje,false,new Fecha());
         chatsReference = Funciones.getChatsDatabaseReference();
 
-        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
-            }
-        });
+        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(Task::isSuccessful);
     }
 
     private void enviarFoto(String emisor, String receptor, String URLFoto){
@@ -278,10 +271,7 @@ public class MessageActivity extends BasicActivity {
         Mensaje mensajeObject = new Mensaje(id,emisor,receptor,URLFoto,tipoMensaje,false,new Fecha());
         chatsReference = Funciones.getChatsDatabaseReference();
 
-        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
-            }
-        });
+        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(Task::isSuccessful);
     }
 
     /**
@@ -640,8 +630,7 @@ public class MessageActivity extends BasicActivity {
         }
 
          */
-        pathSaveAudio = getExternalStorageDirectory().getAbsolutePath()+"/"+audioName;
-
+        pathSaveAudio = Objects.requireNonNull(contexto.getExternalFilesDir(null)).getAbsolutePath()+"/"+audioName;
         setMediaRecorder();
         try{
             mediaRecorder.prepare();
@@ -696,10 +685,7 @@ public class MessageActivity extends BasicActivity {
         Mensaje mensajeObject = new Mensaje(id,usuarioActual.getId(),usuarioChat.getId(),audioObject,false,new Fecha());
         chatsReference = Funciones.getChatsDatabaseReference();
 
-        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
-            }
-        });
+        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(Task::isSuccessful);
     }
 
     private void setMediaRecorder(){

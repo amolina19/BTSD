@@ -9,7 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -32,11 +32,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
-import static android.provider.Settings.Secure.LOCATION_MODE;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * @author Alejandro Molina Louchnikov
- */
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -47,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String usuarioID;
     private LatLng ubicacionCompartida;
     private Button compartirUbicacion;
+    private DatabaseReference chatsReference;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
@@ -57,22 +57,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         assert googleMapFragment != null;
         googleMapFragment.getMapAsync(this);
 
-        statusCheckGPS();
+
         Intent intent = getIntent();
 
         compartirUbicacion = findViewById(R.id.compartirUbicacionButton);
+        compartirUbicacion.setVisibility(View.GONE);
         compartirUbicacion.setOnClickListener(v -> {
             enviarUbicacion(firebaseUser.getUid(), usuarioID);
             onBackPressed();
         });
+        preguntarPermisosLocalizacion();
 
         assert usuarioID != null;
         usuarioID = intent.getStringExtra("userID");
         //ubicacionStr = intent.getStringExtra("Ubicacion");
         //getIntent().getSerializableExtra("Ubicacion");
-        ubicacionCompartida = (LatLng) getIntent().getSerializableExtra("Ubicacion");
-        if (ubicacionCompartida != null) {
-        }
+        Bundle bundle = intent.getExtras();
+        ubicacionCompartida = bundle.getParcelable("Ubicacion");
 
     }
 
@@ -80,6 +81,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap map) {
         googleMap = map;
+
+        if (ubicacionCompartida != null) {
+            googleMap.clear();
+            googleMap.addMarker(new MarkerOptions().position(new com.google.android.gms.maps.model.LatLng(ubicacionCompartida.getLatitude(),ubicacionCompartida.getLongitude())).title(getResources().getString(R.string.compartido)));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.google.android.gms.maps.model.LatLng(ubicacionCompartida.getLatitude(),ubicacionCompartida.getLongitude()), 16.0f));
+            compartirUbicacion.setVisibility(View.GONE);
+        }
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -93,6 +102,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setMyLocationEnabled(true);
         googleMap.setMinZoomPreference(1);
         googleMap.setMaxZoomPreference(20);
+        Log.d("DEBUG MapsActivity", "Mapa cargado");
+        //googleMap.clear();
+        //googleMap.addMarker(new MarkerOptions().position(actualLocation).title(getResources().getString(R.string.ahoraMismo)));
+        //googleMap.addMarker(new MarkerOptions().position(actualLocation).title(getResources().getString(R.string.ahoraMismo)));
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
 
         if(ubicacionCompartida == null){
             locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -101,13 +115,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onLocationChanged(Location location) {
                     actualLocation = new com.google.android.gms.maps.model.LatLng(location.getLatitude(), location.getLongitude());
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.google.android.gms.maps.model.LatLng(actualLocation.latitude,actualLocation.longitude) , 18.0f));
-                    if(isLocationEnabled(MapsActivity.this)){
-                        compartirUbicacion.setClickable(true);
-                        compartirUbicacion.setVisibility(View.VISIBLE);
-                    }else{
-                        compartirUbicacion.setClickable(false);
-                        compartirUbicacion.setVisibility(View.GONE);
-                    }
+                    //googleMap.clear();
+                    //googleMap.addMarker(new MarkerOptions().position(actualLocation).title(getResources().getString(R.string.ahoraMismo)));
+                    //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
+                    //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
+                    //googleMap
+
+                    compartirUbicacion.setVisibility(View.VISIBLE);
 
                 }
 
@@ -129,7 +143,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ubicacionActual();
         }else{
             googleMap.clear();
-            googleMap.addMarker(new MarkerOptions().position(new com.google.android.gms.maps.model.LatLng(ubicacionCompartida.getLatitude(),ubicacionCompartida.getLongitude())).title(getResources().getString(R.string.ahoraMismo)));
+            googleMap.addMarker(new MarkerOptions().position(new com.google.android.gms.maps.model.LatLng(ubicacionCompartida.getLatitude(),ubicacionCompartida.getLongitude())).title(getResources().getString(R.string.compartido)));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.google.android.gms.maps.model.LatLng(ubicacionCompartida.getLatitude(),ubicacionCompartida.getLongitude()), 16.0f));
             compartirUbicacion.setVisibility(View.GONE);
         }
@@ -152,9 +166,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if(lastLocation != null){
             actualLocation = new com.google.android.gms.maps.model.LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+            Log.d("DEBUG MapsActivity","Ultima localizacion Latitud "+lastLocation.getLatitude()+" Longitud "+lastLocation.getLongitude());
             googleMap.clear();
+            //googleMap.addMarker(new MarkerOptions().position(actualLocation).title(getResources().getString(R.string.ahoraMismo)));
+
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.google.android.gms.maps.model.LatLng(actualLocation.latitude,actualLocation.longitude) , 18.0f));
-        }else{
+            compartirUbicacion.setVisibility(View.VISIBLE);
+            //googleMap.moveCamera(CameraUpdateFactory.newLatLng(actualLocation));
         }
 
     }
@@ -164,6 +182,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         assert manager != null;
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             alertaNoGPS();
+        }else{
+            compartirUbicacion.setVisibility(View.VISIBLE);
         }
     }
 
@@ -172,12 +192,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setMessage(getResources().getString(R.string.GPSAdvertencia))
                 .setCancelable(false)
                 .setPositiveButton(getResources().getString(R.string.Aceptar), (dialog, id) -> startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)))
-                .setNegativeButton(getResources().getString(R.string.Cancelar), (dialog, id) -> {
-                    dialog.cancel();
-                    compartirUbicacion.setVisibility(View.GONE);
-                    compartirUbicacion.setClickable(false);
-                })
-                ;
+                .setNegativeButton(getResources().getString(R.string.Cancelar), (dialog, id) -> dialog.cancel());
         final AlertDialog alert = builder.create();
         alert.show();
     }
@@ -188,42 +203,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Luego instanciar la fecha actual del dispositivo.
         //Fecha fecha = new Fecha();
         String id = new Fecha().obtenerFechaTotal();
+        LatLng ubicacion = new LatLng(actualLocation.latitude,actualLocation.longitude);
+        Mensaje mensajeObject = new Mensaje(id,emisor,receptor,ubicacion,false,new Fecha());
+        chatsReference = Funciones.getChatsDatabaseReference();
 
-
-        if(actualLocation != null){
-            LatLng ubicacion = new LatLng(actualLocation.latitude,actualLocation.longitude);
-
-            Mensaje mensajeObject = new Mensaje(id,emisor,receptor,ubicacion,false,new Fecha());
-            DatabaseReference chatsReference = Funciones.getChatsDatabaseReference();
-
-            chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
-                if(task.isSuccessful()){
-                }
-            });
-        }
+        chatsReference.child(mensajeObject.getId()).setValue(mensajeObject).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                Log.d("DEBUG Mensaje","Se ha enviado la localización");
+            }
+        });
     }
 
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Intent intentChat = new Intent(MapsActivity.this, MessageActivity.class);
+        intentChat.putExtra("userID",usuarioID);
+        startActivity(intentChat);
         finish();
     }
 
-    public static Boolean isLocationEnabled(Context context)
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-// This is new method provided in API 28
-            LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            assert lm != null;
-            return lm.isLocationEnabled();
-        } else {
-// This is Deprecated in API 28
-            int mode = Settings.Secure.getInt(context.getContentResolver(), LOCATION_MODE,
-                    Settings.Secure.LOCATION_MODE_OFF);
-            return  (mode != Settings.Secure.LOCATION_MODE_OFF);
 
+
+    @AfterPermissionGranted(4)
+    public void preguntarPermisosLocalizacion() {
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            statusCheckGPS();
+        }else{
+            EasyPermissions.requestPermissions(this,getResources().getString(R.string.permisoLocalizacion),4,perms);
         }
+        //
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     /*

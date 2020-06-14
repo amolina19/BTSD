@@ -72,8 +72,6 @@ public class BuscarAmigosAdapter extends RecyclerView.Adapter<BuscarAmigosAdapte
                 holder.buttonPeticion.setText(context.getResources().getString(R.string.enviarPeticion));
                 holder.buttonPeticion.setBackgroundColor(context.getColor(R.color.spring_green));
             }
-
-
             //EnviarPeticion
             holder.itemView.setOnClickListener(v -> {
                 Intent intentChat = new Intent(context, MessageActivity.class);

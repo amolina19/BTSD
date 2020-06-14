@@ -13,11 +13,6 @@
         android:title="@string/chats" />
 
     <item
-        android:id="@+id/nav_llamadas"
-        android:icon="@drawable/ic_call_end"
-        android:title="@string/llamadas" />
-
-    <item
         android:id="@+id/nav_peticiones"
         android:icon="@drawable/ic_people_outline"
         android:title="@string/peticiones" />
